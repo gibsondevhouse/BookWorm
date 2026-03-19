@@ -1,0 +1,19 @@
+node_modules/
+.pnpm-store/
+.turbo/
+.next/
+dist/
+coverage/
+.env
+data/
+tmp/
+
+# macOS / editor noise
+.DS_Store
+*.swp
+*.swo
+
+# Local backup artifacts
+*.dump
+*.backup
+*.bak

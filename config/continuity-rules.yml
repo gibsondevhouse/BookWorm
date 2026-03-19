@@ -1,0 +1,8 @@
+ruleset: phase-0-baseline
+version: 0.1.0
+thresholds:
+  blockingIssues: 1
+  warningIssues: 10
+checks:
+  characterSlugImmutableAfterPublication: true
+  releaseDependenciesMustResolve: true

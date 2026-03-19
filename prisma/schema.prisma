@@ -1,0 +1,311 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PUBLIC
+  EDITOR
+  AUTHOR_ADMIN
+}
+
+enum Visibility {
+  PUBLIC
+  RESTRICTED
+  PRIVATE
+}
+
+enum ReleaseStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum EntityType {
+  CHARACTER
+  FACTION
+  LOCATION
+  EVENT
+  ARTIFACT
+  CREATURE
+  BELIEF_SYSTEM
+  POLITICAL_BODY
+  LANGUAGE
+  SECRET
+  REVEAL
+  TAG
+  TIMELINE_ERA
+}
+
+enum ManuscriptType {
+  CHAPTER
+  SCENE
+}
+
+enum RelationshipRevisionState {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ContinuityIssueSeverity {
+  BLOCKING
+  WARNING
+}
+
+enum ContinuityIssueStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum ContinuityIssueSubjectType {
+  RELEASE
+  ENTITY_REVISION
+  MANUSCRIPT_REVISION
+  RELATIONSHIP_REVISION
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  displayName  String
+  passwordHash String
+  role         Role             @default(EDITOR)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  sessions     Session[]
+  revisions    EntityRevision[]
+  manuscriptRevisions ManuscriptRevision[]
+  relationshipRevisions RelationshipRevision[]
+  releases     Release[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Entity {
+  id             String           @id @default(cuid())
+  type           EntityType
+  slug           String           @unique
+  retiredAt      DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  revisions      EntityRevision[]
+  releaseEntries ReleaseEntry[]
+  continuityIssues ContinuityIssue[]
+  sourceRelationships Relationship[] @relation("RelationshipSource")
+  targetRelationships Relationship[] @relation("RelationshipTarget")
+
+  @@index([type])
+}
+
+model EntityRevision {
+  id             String         @id @default(cuid())
+  entityId       String
+  createdById    String
+  version        Int
+  name           String
+  summary        String
+  visibility     Visibility     @default(PRIVATE)
+  payload        Json?
+  createdAt      DateTime       @default(now())
+  entity         Entity         @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  releaseEntries ReleaseEntry[]
+  continuityIssues ContinuityIssue[]
+
+  @@unique([entityId, version])
+  @@index([entityId, createdAt])
+  @@index([visibility])
+}
+
+model Release {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  status      ReleaseStatus  @default(DRAFT)
+  createdById String
+  activatedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  createdBy   User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  entries     ReleaseEntry[]
+  manuscriptEntries ReleaseManuscriptEntry[]
+  relationshipEntries ReleaseRelationshipEntry[]
+  continuityIssues ContinuityIssue[]
+
+  @@index([status])
+}
+
+model Manuscript {
+  id             String                 @id @default(cuid())
+  type           ManuscriptType
+  slug           String                 @unique
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  revisions      ManuscriptRevision[]
+  releaseEntries ReleaseManuscriptEntry[]
+  continuityIssues ContinuityIssue[]
+
+  @@index([type])
+}
+
+model ManuscriptRevision {
+  id             String                 @id @default(cuid())
+  manuscriptId   String
+  createdById    String
+  version        Int
+  title          String
+  summary        String
+  visibility     Visibility             @default(PRIVATE)
+  payload        Json?
+  createdAt      DateTime               @default(now())
+  manuscript     Manuscript             @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  createdBy      User                   @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  releaseEntries ReleaseManuscriptEntry[]
+  continuityIssues ContinuityIssue[]
+
+  @@unique([manuscriptId, version])
+  @@index([manuscriptId, createdAt])
+  @@index([visibility])
+}
+
+model ReleaseManuscriptEntry {
+  id                   String             @id @default(cuid())
+  releaseId            String
+  manuscriptId         String
+  manuscriptRevisionId String
+  createdAt            DateTime           @default(now())
+  release              Release            @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  manuscript           Manuscript         @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  manuscriptRevision   ManuscriptRevision @relation(fields: [manuscriptRevisionId], references: [id], onDelete: Cascade)
+
+  @@unique([releaseId, manuscriptId])
+  @@unique([releaseId, manuscriptRevisionId])
+  @@index([manuscriptId])
+  @@index([manuscriptRevisionId])
+}
+
+model ReleaseEntry {
+  id         String         @id @default(cuid())
+  releaseId  String
+  entityId   String
+  revisionId String
+  createdAt  DateTime       @default(now())
+  release    Release        @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  entity     Entity         @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  revision   EntityRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@unique([releaseId, entityId])
+  @@unique([releaseId, revisionId])
+  @@index([entityId])
+  @@index([revisionId])
+}
+
+model Relationship {
+  id                String                 @id @default(cuid())
+  sourceEntityId    String
+  targetEntityId    String
+  relationType      String
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+  sourceEntity      Entity                 @relation("RelationshipSource", fields: [sourceEntityId], references: [id], onDelete: Cascade)
+  targetEntity      Entity                 @relation("RelationshipTarget", fields: [targetEntityId], references: [id], onDelete: Cascade)
+  revisions         RelationshipRevision[]
+  releaseEntries    ReleaseRelationshipEntry[]
+  continuityIssues  ContinuityIssue[]
+
+  @@unique([sourceEntityId, targetEntityId, relationType])
+  @@index([sourceEntityId])
+  @@index([targetEntityId])
+  @@index([relationType])
+}
+
+model RelationshipRevision {
+  id                String                    @id @default(cuid())
+  relationshipId    String
+  createdById       String
+  version           Int
+  state             RelationshipRevisionState
+  visibility        Visibility                @default(PRIVATE)
+  metadata          Json?
+  createdAt         DateTime                  @default(now())
+  relationship      Relationship              @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  createdBy         User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  releaseEntries    ReleaseRelationshipEntry[]
+  continuityIssues  ContinuityIssue[]
+
+  @@unique([relationshipId, version])
+  @@index([relationshipId, createdAt])
+  @@index([state])
+}
+
+model ReleaseRelationshipEntry {
+  id                     String               @id @default(cuid())
+  releaseId              String
+  relationshipId         String
+  relationshipRevisionId String
+  createdAt              DateTime             @default(now())
+  release                Release              @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  relationship           Relationship         @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  relationshipRevision   RelationshipRevision @relation(fields: [relationshipRevisionId], references: [id], onDelete: Cascade)
+
+  @@unique([releaseId, relationshipId])
+  @@unique([releaseId, relationshipRevisionId])
+  @@index([relationshipId])
+  @@index([relationshipRevisionId])
+}
+
+model ContinuityIssue {
+  id                     String                     @id @default(cuid())
+  releaseId              String
+  ruleCode               String
+  severity               ContinuityIssueSeverity
+  status                 ContinuityIssueStatus     @default(OPEN)
+  subjectType            ContinuityIssueSubjectType
+  subjectId              String
+  title                  String
+  details                String
+  fingerprint            String
+  metadata               Json?
+  detectedAt             DateTime                   @default(now())
+  resolvedAt             DateTime?
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
+  entityId               String?
+  entityRevisionId       String?
+  manuscriptId           String?
+  manuscriptRevisionId   String?
+  relationshipId         String?
+  relationshipRevisionId String?
+
+  release                Release                    @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  entity                 Entity?                    @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  entityRevision         EntityRevision?            @relation(fields: [entityRevisionId], references: [id], onDelete: SetNull)
+  manuscript             Manuscript?                @relation(fields: [manuscriptId], references: [id], onDelete: SetNull)
+  manuscriptRevision     ManuscriptRevision?        @relation(fields: [manuscriptRevisionId], references: [id], onDelete: SetNull)
+  relationship           Relationship?              @relation(fields: [relationshipId], references: [id], onDelete: SetNull)
+  relationshipRevision   RelationshipRevision?      @relation(fields: [relationshipRevisionId], references: [id], onDelete: SetNull)
+
+  @@unique([releaseId, fingerprint])
+  @@index([releaseId, status, severity])
+  @@index([ruleCode])
+  @@index([subjectType, subjectId])
+  @@map("continuity_issues")
+}

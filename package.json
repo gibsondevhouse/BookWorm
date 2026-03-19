@@ -1,0 +1,41 @@
+{
+  "name": "book-worm",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.7.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "node ./scripts/runDevWithPortSummary.mjs",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/*.test.ts",
+    "type-check": "pnpm --recursive type-check",
+    "lint": "pnpm --recursive lint",
+    "portability:export": "pnpm --filter @book-worm/api exec tsx ../../scripts/exportPortability.ts",
+    "portability:import": "pnpm --filter @book-worm/api exec tsx ../../scripts/importPortability.ts",
+    "auth:bootstrap-admin": "pnpm --filter @book-worm/api exec tsx ../../scripts/bootstrapAuthorAdmin.ts",
+    "db:backup": "node ./scripts/backupDatabase.mjs",
+    "db:restore": "node ./scripts/restoreDatabase.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "pnpm --filter @book-worm/api exec tsx ../../scripts/seedPhase0.ts",
+    "db:reset": "prisma migrate reset --force",
+    "phase0:verify": "pnpm --filter @book-worm/api exec tsx ../../scripts/verifyPhase0Slice.ts",
+    "phase1:verify": "pnpm --filter @book-worm/api exec tsx ../../scripts/verifyPhase1Slice.ts",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.2",
+    "prisma": "^6.6.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.25.0"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.2"
+  }
+}
