@@ -14,7 +14,8 @@ const normalizeBooleanFlags = (argv: string[]): string[] =>
 const parseArgs = (
   argv: string[]
 ): {
-  format: "json" | "markdown";
+  packageFormat: "directory" | "zip";
+  format?: "json" | "markdown";
   input: string;
   actorEmail: string;
   dryRun: boolean;
@@ -24,14 +25,23 @@ const parseArgs = (
   const values = parseCliArgs(normalizeBooleanFlags(argv));
 
   const format = values.get("format");
+  const packageFormat = values.get("package-format") ?? "directory";
   const input = values.get("input");
   const actorEmail = values.get("actor-email");
   const dryRun = values.get("dry-run") === "true";
   const report = values.get("report");
   const conflict = values.get("conflict");
 
-  if (format !== "json" && format !== "markdown") {
-    throw new Error("--format must be json or markdown");
+  if (packageFormat !== "directory" && packageFormat !== "zip") {
+    throw new Error("--package-format must be directory or zip");
+  }
+
+  if (packageFormat === "directory" && format !== "json" && format !== "markdown") {
+    throw new Error("--format must be json or markdown when --package-format=directory");
+  }
+
+  if (packageFormat === "zip" && format && format !== "json" && format !== "markdown") {
+    throw new Error("--format must be json or markdown when provided");
   }
 
   if (!input) {
@@ -47,7 +57,8 @@ const parseArgs = (
   }
 
   return {
-    format,
+    packageFormat,
+    ...(format === "json" || format === "markdown" ? { format } : {}),
     input,
     actorEmail,
     dryRun,
@@ -59,13 +70,22 @@ const parseArgs = (
 export const importPortability = async (argv: string[] = process.argv.slice(2)): Promise<void> => {
   const parsed = parseArgs(argv);
 
-  const importReport = await portabilityImportService.runImport({
-    inputPath: parsed.input,
-    format: parsed.format,
-    actorEmail: parsed.actorEmail,
-    dryRun: parsed.dryRun,
-    conflictMode: parsed.conflictMode
-  });
+  const importReport =
+    parsed.packageFormat === "zip"
+      ? await portabilityImportService.runZipImport({
+          inputPath: parsed.input,
+          ...(parsed.format ? { format: parsed.format } : {}),
+          actorEmail: parsed.actorEmail,
+          dryRun: parsed.dryRun,
+          conflictMode: parsed.conflictMode
+        })
+      : await portabilityImportService.runImport({
+          inputPath: parsed.input,
+          format: parsed.format ?? "json",
+          actorEmail: parsed.actorEmail,
+          dryRun: parsed.dryRun,
+          conflictMode: parsed.conflictMode
+        });
 
   const reportJson = JSON.stringify(importReport, null, 2);
 

@@ -17,6 +17,7 @@ import type {
 } from "../lib/portability/jsonPortabilityParser.js";
 import { jsonPortabilityParser } from "../lib/portability/jsonPortabilityParser.js";
 import { markdownPortabilityParser } from "../lib/portability/markdownPortabilityParser.js";
+import { portabilityZipPackage } from "../lib/portability/portabilityZipPackage.js";
 import type {
   EntityApplyOp,
   EntityRecord,
@@ -50,8 +51,45 @@ export type ImportErrorRecord = {
   message: string;
 };
 
+export type ImportConflictClass =
+  | "IDENTITY_MISMATCH"
+  | "DUPLICATE_SLUG"
+  | "RELEASE_SLUG_COLLISION"
+  | "UNRESOLVED_RELATIONSHIP_REFERENCE"
+  | "SCHEMA_VERSION_INCOMPATIBLE"
+  | "OTHER";
+
+type ImportPolicyMode = "fail" | "create-revision" | "not-applicable";
+
+type ImportDecisionOutcome = "CREATE" | "CREATE_REVISION" | "NO_CHANGE" | "UPSERT" | "ERROR";
+
+export type ImportDecisionRecord = {
+  kind: ImportChangeRecord["kind"] | "package";
+  record: string;
+  file?: string;
+  policy: ImportPolicyMode;
+  outcome: ImportDecisionOutcome;
+  reason: string;
+  conflictClass?: ImportConflictClass;
+};
+
+export type ImportConflictSummaryRecord = {
+  conflictClass: ImportConflictClass;
+  policy: ImportPolicyMode;
+  outcome: Extract<ImportDecisionOutcome, "CREATE_REVISION" | "ERROR">;
+  count: number;
+};
+
 export type ImportReport = {
   dryRun: boolean;
+  execution: {
+    mode: "dry-run" | "apply";
+    status: "succeeded" | "failed";
+    rollback: {
+      status: "not-applicable" | "not-required" | "confirmed";
+      transactionality: "single-transaction";
+    };
+  };
   summary: {
     entities: { created: number; revised: number; unchanged: number };
     manuscripts: { created: number; revised: number; unchanged: number };
@@ -59,6 +97,8 @@ export type ImportReport = {
     releases: { created: number };
   };
   changes: ImportChangeRecord[];
+  conflicts: ImportConflictSummaryRecord[];
+  decisions: ImportDecisionRecord[];
   warnings: string[];
   errors: ImportErrorRecord[];
 };
@@ -197,18 +237,125 @@ const planToChanges = (plan: ImportApplyPlan): ImportChangeRecord[] => {
   return changes;
 };
 
-const failReport = (dryRun: boolean, errors: ImportErrorRecord[]): ImportReport => ({
-  dryRun,
-  summary: {
-    entities: { created: 0, revised: 0, unchanged: 0 },
-    manuscripts: { created: 0, revised: 0, unchanged: 0 },
-    relationships: { created: 0, revised: 0, unchanged: 0 },
-    releases: { created: 0 }
-  },
-  changes: [],
-  warnings: [],
-  errors
+const classifyConflict = (error: ImportErrorRecord): ImportConflictClass | null => {
+  if (error.code === "IDENTITY_AMBIGUOUS") return "IDENTITY_MISMATCH";
+  if (error.code === "RELEASE_CONFLICT") return "RELEASE_SLUG_COLLISION";
+  if (error.code === "SCHEMA_VERSION_UNSUPPORTED") return "SCHEMA_VERSION_INCOMPATIBLE";
+
+  if (error.code === "DEPENDENCY_MISSING" && /relationship/i.test(error.message)) {
+    return "UNRESOLVED_RELATIONSHIP_REFERENCE";
+  }
+
+  if (error.code === "MANIFEST_INVALID") {
+    return "SCHEMA_VERSION_INCOMPATIBLE";
+  }
+
+  if (error.code === "PAYLOAD_INVALID" && /exists with different content/i.test(error.message)) {
+    return "DUPLICATE_SLUG";
+  }
+
+  return null;
+};
+
+const buildConflictSummary = (decisions: ImportDecisionRecord[]): ImportConflictSummaryRecord[] => {
+  const aggregate = new Map<string, ImportConflictSummaryRecord>();
+
+  for (const decision of decisions) {
+    if (!decision.conflictClass) continue;
+    if (decision.outcome !== "CREATE_REVISION" && decision.outcome !== "ERROR") continue;
+
+    const key = `${decision.conflictClass}|${decision.policy}|${decision.outcome}`;
+    const existing = aggregate.get(key);
+
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+
+    aggregate.set(key, {
+      conflictClass: decision.conflictClass,
+      policy: decision.policy,
+      outcome: decision.outcome,
+      count: 1
+    });
+  }
+
+  return [...aggregate.values()].sort((left, right) => {
+    const classCompare = left.conflictClass.localeCompare(right.conflictClass);
+    if (classCompare !== 0) return classCompare;
+
+    const policyCompare = left.policy.localeCompare(right.policy);
+    if (policyCompare !== 0) return policyCompare;
+
+    return left.outcome.localeCompare(right.outcome);
+  });
+};
+
+const buildExecution = (input: {
+  dryRun: boolean;
+  status: "succeeded" | "failed";
+  rollbackStatus: "not-applicable" | "not-required" | "confirmed";
+}): ImportReport["execution"] => ({
+  mode: input.dryRun ? "dry-run" : "apply",
+  status: input.status,
+  rollback: {
+    status: input.rollbackStatus,
+    transactionality: "single-transaction"
+  }
 });
+
+const errorToDecision = (
+  error: ImportErrorRecord,
+  policy: ImportPolicyMode,
+  fallbackRecord: string
+): ImportDecisionRecord => {
+  const conflictClass = classifyConflict(error) ?? "OTHER";
+
+  return {
+    kind: "package",
+    record: error.file ?? fallbackRecord,
+    ...(error.file ? { file: error.file } : {}),
+    policy,
+    outcome: "ERROR",
+    reason: error.message,
+    conflictClass
+  };
+};
+
+const failReport = (
+  dryRun: boolean,
+  errors: ImportErrorRecord[],
+  input?: {
+    policy?: ImportPolicyMode;
+    changes?: ImportChangeRecord[];
+    warnings?: string[];
+    decisions?: ImportDecisionRecord[];
+    rollbackStatus?: "not-applicable" | "not-required" | "confirmed";
+  }
+): ImportReport => {
+  const policy = input?.policy ?? "not-applicable";
+  const decisions = input?.decisions ?? errors.map((error) => errorToDecision(error, policy, "import"));
+
+  return {
+    dryRun,
+    execution: buildExecution({
+      dryRun,
+      status: "failed",
+      rollbackStatus: input?.rollbackStatus ?? (dryRun ? "not-applicable" : "not-required")
+    }),
+    summary: {
+      entities: { created: 0, revised: 0, unchanged: 0 },
+      manuscripts: { created: 0, revised: 0, unchanged: 0 },
+      relationships: { created: 0, revised: 0, unchanged: 0 },
+      releases: { created: 0 }
+    },
+    changes: input?.changes ?? [],
+    conflicts: buildConflictSummary(decisions),
+    decisions,
+    warnings: input?.warnings ?? [],
+    errors
+  };
+};
 
 export const portabilityImportService = {
   async runImport(input: {
@@ -220,6 +367,7 @@ export const portabilityImportService = {
   }): Promise<ImportReport> {
     const dryRun = input.dryRun ?? false;
     const conflictMode = input.conflictMode ?? "fail";
+    const decisions: ImportDecisionRecord[] = [];
 
     // Phase 1: Parse
     const parseResult =
@@ -228,9 +376,19 @@ export const portabilityImportService = {
         : await markdownPortabilityParser.parseDirectory(input.inputPath);
 
     if (!parseResult.success) {
+      const parseErrors = parseResult.errors.map((e: ParseFailure) => ({
+        file: e.file,
+        code: e.code,
+        message: e.message
+      }));
+
       return failReport(
         dryRun,
-        parseResult.errors.map((e: ParseFailure) => ({ file: e.file, code: e.code, message: e.message }))
+        parseErrors,
+        {
+          policy: "not-applicable",
+          decisions: parseErrors.map((error) => errorToDecision(error, "not-applicable", "parse"))
+        }
       );
     }
 
@@ -269,10 +427,21 @@ export const portabilityImportService = {
         const byId = await portabilityImportRepository.findEntityById(entity.id);
 
         if (byId && byId.slug !== entity.slug) {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: entityFile.filePath,
             code: "IDENTITY_AMBIGUOUS",
             message: `Entity id "${entity.id}" resolves to slug "${byId.slug}" but package declares slug "${entity.slug}"`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "entity",
+            record: entity.slug,
+            file: entityFile.filePath,
+            policy: "not-applicable",
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "IDENTITY_MISMATCH"
           });
           continue;
         }
@@ -282,6 +451,15 @@ export const portabilityImportService = {
       importedEntitySlugs.add(entity.slug);
 
       if (!existing) {
+        decisions.push({
+          kind: "entity",
+          record: entity.slug,
+          file: entityFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE",
+          reason: "Entity slug does not exist; create new record"
+        });
+
         entityOps.push({
           action: "CREATE",
           slug: entity.slug,
@@ -297,15 +475,36 @@ export const portabilityImportService = {
         });
       } else if (entityRevisionChanged(revision, existing.latestRevision)) {
         if (conflictMode === "fail") {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: entityFile.filePath,
             code: "PAYLOAD_INVALID",
             message: `Entity "${entity.slug}" exists with different content; use --conflict=create-revision`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "entity",
+            record: entity.slug,
+            file: entityFile.filePath,
+            policy: conflictMode,
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "DUPLICATE_SLUG"
           });
           continue;
         }
 
         const nextVersion = (existing.latestRevision?.version ?? 0) + 1;
+        decisions.push({
+          kind: "entity",
+          record: entity.slug,
+          file: entityFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE_REVISION",
+          reason: "Entity slug exists with different content; creating a new revision",
+          conflictClass: "DUPLICATE_SLUG"
+        });
+
         entityOps.push({
           action: "CREATE_REVISION",
           slug: entity.slug,
@@ -324,6 +523,15 @@ export const portabilityImportService = {
         const existingRetiredAt = existing.retiredAt;
         const retiredAtDiffers =
           (packageRetiredAt?.toISOString() ?? null) !== (existingRetiredAt?.toISOString() ?? null);
+
+        decisions.push({
+          kind: "entity",
+          record: entity.slug,
+          file: entityFile.filePath,
+          policy: conflictMode,
+          outcome: "NO_CHANGE",
+          reason: "Entity content already matches package payload"
+        });
 
         entityOps.push({
           action: "NO_CHANGE",
@@ -346,10 +554,21 @@ export const portabilityImportService = {
         const byId = await portabilityImportRepository.findManuscriptById(manuscript.id);
 
         if (byId && byId.slug !== manuscript.slug) {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: manuscriptFile.filePath,
             code: "IDENTITY_AMBIGUOUS",
             message: `Manuscript id "${manuscript.id}" resolves to slug "${byId.slug}" but package declares slug "${manuscript.slug}"`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "manuscript",
+            record: manuscript.slug,
+            file: manuscriptFile.filePath,
+            policy: "not-applicable",
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "IDENTITY_MISMATCH"
           });
           continue;
         }
@@ -359,6 +578,15 @@ export const portabilityImportService = {
       importedManuscriptSlugs.add(manuscript.slug);
 
       if (!existing) {
+        decisions.push({
+          kind: "manuscript",
+          record: manuscript.slug,
+          file: manuscriptFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE",
+          reason: "Manuscript slug does not exist; create new record"
+        });
+
         manuscriptOps.push({
           action: "CREATE",
           slug: manuscript.slug,
@@ -373,15 +601,36 @@ export const portabilityImportService = {
         });
       } else if (manuscriptRevisionChanged(revision, existing.latestRevision)) {
         if (conflictMode === "fail") {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: manuscriptFile.filePath,
             code: "PAYLOAD_INVALID",
             message: `Manuscript "${manuscript.slug}" exists with different content; use --conflict=create-revision`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "manuscript",
+            record: manuscript.slug,
+            file: manuscriptFile.filePath,
+            policy: conflictMode,
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "DUPLICATE_SLUG"
           });
           continue;
         }
 
         const nextVersion = (existing.latestRevision?.version ?? 0) + 1;
+        decisions.push({
+          kind: "manuscript",
+          record: manuscript.slug,
+          file: manuscriptFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE_REVISION",
+          reason: "Manuscript slug exists with different content; creating a new revision",
+          conflictClass: "DUPLICATE_SLUG"
+        });
+
         manuscriptOps.push({
           action: "CREATE_REVISION",
           slug: manuscript.slug,
@@ -395,6 +644,15 @@ export const portabilityImportService = {
           }
         });
       } else {
+        decisions.push({
+          kind: "manuscript",
+          record: manuscript.slug,
+          file: manuscriptFile.filePath,
+          policy: conflictMode,
+          outcome: "NO_CHANGE",
+          reason: "Manuscript content already matches package payload"
+        });
+
         manuscriptOps.push({
           action: "NO_CHANGE",
           slug: manuscript.slug,
@@ -418,10 +676,21 @@ export const portabilityImportService = {
         !!(await portabilityImportRepository.findEntityBySlug(sourceSlug));
 
       if (!sourceExists) {
-        errors.push({
+        const error: ImportErrorRecord = {
           file: relFile.filePath,
           code: "DEPENDENCY_MISSING",
           message: `Relationship source entity "${sourceSlug}" not found in package or database`
+        };
+
+        errors.push(error);
+        decisions.push({
+          kind: "relationship",
+          record: key,
+          file: relFile.filePath,
+          policy: "not-applicable",
+          outcome: "ERROR",
+          reason: error.message,
+          conflictClass: "UNRESOLVED_RELATIONSHIP_REFERENCE"
         });
         continue;
       }
@@ -431,10 +700,21 @@ export const portabilityImportService = {
         !!(await portabilityImportRepository.findEntityBySlug(targetSlug));
 
       if (!targetExists) {
-        errors.push({
+        const error: ImportErrorRecord = {
           file: relFile.filePath,
           code: "DEPENDENCY_MISSING",
           message: `Relationship target entity "${targetSlug}" not found in package or database`
+        };
+
+        errors.push(error);
+        decisions.push({
+          kind: "relationship",
+          record: key,
+          file: relFile.filePath,
+          policy: "not-applicable",
+          outcome: "ERROR",
+          reason: error.message,
+          conflictClass: "UNRESOLVED_RELATIONSHIP_REFERENCE"
         });
         continue;
       }
@@ -446,6 +726,15 @@ export const portabilityImportService = {
       );
 
       if (!existing) {
+        decisions.push({
+          kind: "relationship",
+          record: key,
+          file: relFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE",
+          reason: "Relationship identity does not exist; create new record"
+        });
+
         relationshipOps.push({
           action: "CREATE",
           key,
@@ -461,15 +750,36 @@ export const portabilityImportService = {
         });
       } else if (relationshipRevisionChanged(revision, existing.latestRevision)) {
         if (conflictMode === "fail") {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: relFile.filePath,
             code: "PAYLOAD_INVALID",
             message: `Relationship "${key}" exists with different content; use --conflict=create-revision`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "relationship",
+            record: key,
+            file: relFile.filePath,
+            policy: conflictMode,
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "DUPLICATE_SLUG"
           });
           continue;
         }
 
         const nextVersion = (existing.latestRevision?.version ?? 0) + 1;
+        decisions.push({
+          kind: "relationship",
+          record: key,
+          file: relFile.filePath,
+          policy: conflictMode,
+          outcome: "CREATE_REVISION",
+          reason: "Relationship identity exists with different content; creating a new revision",
+          conflictClass: "DUPLICATE_SLUG"
+        });
+
         relationshipOps.push({
           action: "CREATE_REVISION",
           key,
@@ -482,6 +792,15 @@ export const portabilityImportService = {
           }
         });
       } else {
+        decisions.push({
+          kind: "relationship",
+          record: key,
+          file: relFile.filePath,
+          policy: conflictMode,
+          outcome: "NO_CHANGE",
+          reason: "Relationship content already matches package payload"
+        });
+
         relationshipOps.push({
           action: "NO_CHANGE",
           key,
@@ -500,13 +819,33 @@ export const portabilityImportService = {
       const existingRelease = await portabilityImportRepository.findReleaseBySlug(release.slug);
 
       if (existingRelease) {
-        errors.push({
+        const error: ImportErrorRecord = {
           file: releaseFile.filePath,
           code: "RELEASE_CONFLICT",
           message: `Release slug "${release.slug}" already exists with status ${existingRelease.status}`
+        };
+
+        errors.push(error);
+        decisions.push({
+          kind: "release",
+          record: release.slug,
+          file: releaseFile.filePath,
+          policy: "not-applicable",
+          outcome: "ERROR",
+          reason: error.message,
+          conflictClass: "RELEASE_SLUG_COLLISION"
         });
         continue;
       }
+
+      decisions.push({
+        kind: "release",
+        record: release.slug,
+        file: releaseFile.filePath,
+        policy: "not-applicable",
+        outcome: "CREATE",
+        reason: "Release slug does not exist; create new draft release"
+      });
 
       for (const entry of composition.entities) {
         if (!entry.entitySlug) continue;
@@ -572,10 +911,21 @@ export const portabilityImportService = {
         );
 
         if (!existingRelationship?.latestRevision) {
-          errors.push({
+          const error: ImportErrorRecord = {
             file: releaseFile.filePath,
             code: "DEPENDENCY_MISSING",
             message: `Release composition references relationship "${relationshipKey}" not found`
+          };
+
+          errors.push(error);
+          decisions.push({
+            kind: "release",
+            record: release.slug,
+            file: releaseFile.filePath,
+            policy: "not-applicable",
+            outcome: "ERROR",
+            reason: error.message,
+            conflictClass: "UNRESOLVED_RELATIONSHIP_REFERENCE"
           });
           continue;
         }
@@ -1018,29 +1368,121 @@ export const portabilityImportService = {
       }
     }
 
-    if (errors.length > 0) {
-      return failReport(dryRun, errors);
-    }
-
     const contentChanges = planToChanges(plan);
     const releaseCreates = releaseOps.filter((op) => op.action === "CREATE").length;
+    const plannedReleaseChanges = releaseOps
+      .filter((op) => op.action === "CREATE")
+      .map<ImportChangeRecord>((op) => ({ kind: "release", slug: op.slug, action: "CREATE" }));
+
+    if (errors.length > 0) {
+      return failReport(dryRun, errors, {
+        policy: conflictMode,
+        changes: [...contentChanges, ...plannedReleaseChanges],
+        warnings,
+        decisions,
+        rollbackStatus: dryRun ? "not-applicable" : "not-required"
+      });
+    }
 
     // Phase 6: Apply or dry-run
     if (!dryRun) {
-      await portabilityImportRepository.applyImport(plan, actorId);
+      try {
+        await portabilityImportRepository.applyImport(plan, actorId);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown apply failure";
+        const applyError: ImportErrorRecord = {
+          code: "APPLY_ROLLED_BACK",
+          message: `Import apply failed and was rolled back: ${message}`
+        };
+
+        return failReport(dryRun, [applyError], {
+          policy: conflictMode,
+          changes: [...contentChanges, ...plannedReleaseChanges],
+          warnings,
+          decisions: [
+            ...decisions,
+            {
+              kind: "package",
+              record: "apply",
+              policy: conflictMode,
+              outcome: "ERROR",
+              reason: applyError.message,
+              conflictClass: "OTHER"
+            }
+          ],
+          rollbackStatus: "confirmed"
+        });
+      }
     }
 
     return {
       dryRun,
+      execution: buildExecution({
+        dryRun,
+        status: "succeeded",
+        rollbackStatus: dryRun ? "not-applicable" : "not-required"
+      }),
       summary: buildSummaryFromChanges(contentChanges, releaseCreates),
       changes: [
         ...contentChanges,
-        ...releaseOps
-          .filter((op) => op.action === "CREATE")
-          .map<ImportChangeRecord>((op) => ({ kind: "release", slug: op.slug, action: "CREATE" }))
+        ...plannedReleaseChanges
       ],
+      conflicts: buildConflictSummary(decisions),
+      decisions,
       warnings,
       errors: []
     };
+  },
+
+  async runZipImport(input: {
+    inputPath: string;
+    actorEmail: string;
+    dryRun?: boolean;
+    conflictMode?: "fail" | "create-revision";
+    format?: "json" | "markdown";
+  }): Promise<ImportReport> {
+    const dryRun = input.dryRun ?? false;
+
+    const parsed = await portabilityZipPackage.parseArchiveToDirectory(input.inputPath);
+
+    if (!parsed.success) {
+      const parseError: ImportErrorRecord = {
+        code: parsed.error.code,
+        message: parsed.error.message,
+        ...(parsed.error.file ? { file: parsed.error.file } : {})
+      };
+
+      return failReport(dryRun, [
+        parseError
+      ], {
+        policy: input.conflictMode ?? "fail",
+        decisions: [errorToDecision(parseError, input.conflictMode ?? "fail", "zip")]
+      });
+    }
+
+    if (input.format && input.format !== parsed.format) {
+      await parsed.cleanup();
+
+      return failReport(dryRun, [
+        {
+          code: "FORMAT_UNSUPPORTED",
+          message: `Zip package payload format is ${parsed.format}, but --format=${input.format} was requested`
+        }
+      ], {
+        policy: input.conflictMode ?? "fail"
+      });
+    }
+
+    try {
+      return await portabilityImportService.runImport({
+        inputPath: parsed.inputPath,
+        format: parsed.format,
+        actorEmail: input.actorEmail,
+        dryRun,
+        ...(input.conflictMode ? { conflictMode: input.conflictMode } : {})
+      });
+    } finally {
+      await parsed.cleanup();
+    }
   }
 };

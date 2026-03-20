@@ -2,7 +2,7 @@
 
 Book Worm is a pnpm monorepo for release-aware lore publishing and editorial governance workflows.
 
-Current implementation status: Phases 0 through 4 are complete. In Phase 5, Stage 01 and Stage 02 are complete, including continuity triage surfaces (Part 02), suppression persistence, and signal-quality safeguards.
+Current implementation status: Phases 0 through 4 are complete. In Phase 5, Stage 01, Stage 02, and Stage 03 are complete (including the Stage 03 portability operations verification gate). Stage 04 Part 01 planning is complete; code implementation is next.
 
 ## Stack
 
@@ -68,8 +68,8 @@ The dev launcher includes port fallback behavior for API and web processes and p
 
 ### Portability and Operations
 
-- `pnpm portability:export`: export portability package (JSON or Markdown)
-- `pnpm portability:import`: validate/apply portability package (JSON or Markdown)
+- `pnpm portability:export`: export portability package (directory or zip; JSON or Markdown payloads)
+- `pnpm portability:import`: validate/apply portability package (directory or zip; JSON or Markdown payloads)
 - `pnpm db:backup`: backup database via `pg_dump`
 - `pnpm db:restore`: restore database via `pg_restore` (or `psql` for `.sql`)
 
@@ -85,6 +85,7 @@ The dev launcher includes port fallback behavior for API and web processes and p
 - Phase 2: comprehensive entity/manuscript/public codex/search/continuity and portability delivery
 - Phase 3: collaboration comments, proposal workflow enhancements, diff/preview/history tooling
 - Phase 4: review requests, multi-stage approvals, delegation/escalation, notification outbox/inbox, analytics, query hardening, governance portability extensions, and verification gate
+- Phase 5 (in progress): search tuning and continuity intelligence expansion complete; Stage 03 portability maturity is complete through Part 03 (portability operations verification gate)
 
 For plan-level detail, see `docs/build-plans/master-plan-tracker.md`.
 
@@ -119,4 +120,4 @@ Standard quality gate commands:
 - `pnpm type-check`
 - `pnpm test`
 
-The integration suite includes phase coverage from Phase 0 through Phase 5 Stage 02 (Parts 01, 02, and 03) under `tests/`.
+The integration suite includes phase coverage from Phase 0 through Phase 5 Stage 03 Part 02 under `tests/`; Stage 03 Part 03 is a documented verification gate that validates Stage 03 and portability regression suites.

@@ -37,10 +37,13 @@ Harden usability and accessibility in real editorial workflows and close Phase 5
 
 ## Progress Snapshot
 
-- Part 01 is not started.
-- Part 02 is not started.
-- Part 03 is not started.
+- Part 01 is complete (2026-03-20) ✓ — Accessibility and keyboard hardening implemented across P1 admin/review surfaces with deterministic acceptance coverage at `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`.
+- Part 01 validation evidence recorded: `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`, `pnpm lint`, and `pnpm type-check` passed.
+- Residual note: assistive-technology manual verification/sign-off remains human-run.
+- Part 02: Not Started [ ]
+- Part 03: Not Started [ ]
+- Next ordered slice: Part 02 (Admin Usability and Readability Improvements).
 
 ## Status
 
-Status: Not Started [ ]
+Status: In Progress (Part 01 complete; Part 02 next)

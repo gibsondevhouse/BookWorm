@@ -1,5 +1,6 @@
 import { jsonPortabilitySerializer } from "../lib/portability/jsonPortabilitySerializer.js";
 import { markdownPortabilitySerializer } from "../lib/portability/markdownPortabilitySerializer.js";
+import { portabilityZipPackage } from "../lib/portability/portabilityZipPackage.js";
 import { portabilityExportRepository } from "../repositories/portabilityExportRepository.js";
 
 export const portabilityExportService = {
@@ -68,5 +69,85 @@ export const portabilityExportService = {
       governance: snapshot.governance,
       release: snapshot.release
     });
+  },
+
+  async prepareZipExport(input: {
+    scope: "current" | "release";
+    format: "json" | "markdown";
+    releaseSlug?: string;
+    exportedAt?: Date;
+  }): Promise<{
+    manifest: {
+      schemaVersion: 1;
+      format: "json" | "markdown";
+      scope: "current" | "release";
+      exportedAt: string;
+      release?: {
+        id: string;
+        slug: string;
+        name: string;
+        status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+        createdAt: string;
+        activatedAt: string | null;
+      };
+      counts: {
+        entities: number;
+        manuscripts: number;
+        relationships: number;
+        releases: number;
+        reviewRequests?: number;
+        approvalChains?: number;
+        approvalSteps?: number;
+        approvalStepEvents?: number;
+        notificationEvents?: number;
+        notificationPreferences?: number;
+      };
+    };
+    packageManifest: {
+      schemaVersion: 1;
+      container: "bookworm-portability-zip";
+      payload: {
+        format: "json" | "markdown";
+        scope: "current" | "release";
+        exportedAt: string;
+        rootPath: "payload";
+        manifestPath: "payload/manifests/export-manifest.json";
+        counts: {
+          entities: number;
+          manuscripts: number;
+          relationships: number;
+          releases: number;
+          reviewRequests?: number;
+          approvalChains?: number;
+          approvalSteps?: number;
+          approvalStepEvents?: number;
+          notificationEvents?: number;
+          notificationPreferences?: number;
+        };
+      };
+    };
+    archive: Uint8Array;
+  }> {
+    const exportedAt = input.exportedAt ?? new Date();
+    const prepared = await portabilityExportService.prepareExport({
+      scope: input.scope,
+      format: input.format,
+      ...(input.releaseSlug ? { releaseSlug: input.releaseSlug } : {}),
+      exportedAt
+    });
+
+    const archive = portabilityZipPackage.buildArchive({
+      format: input.format,
+      scope: input.scope,
+      exportedAt,
+      manifestCounts: prepared.manifest.counts,
+      files: prepared.files
+    });
+
+    return {
+      manifest: prepared.manifest,
+      packageManifest: archive.packageManifest,
+      archive: archive.archive
+    };
   }
 };

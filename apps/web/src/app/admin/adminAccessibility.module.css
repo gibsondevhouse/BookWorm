@@ -1,0 +1,196 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: 1100px;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.labelGroup {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 220px;
+}
+
+.input,
+.select,
+.button,
+.rowButton,
+.actionButton,
+.checkbox,
+.linkButton,
+.closeButton {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+.input,
+.select {
+  background: var(--surface);
+  padding: 0.55rem 0.75rem;
+}
+
+.button,
+.rowButton,
+.actionButton,
+.linkButton,
+.closeButton {
+  background: #fff;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: #2f5d8a;
+  color: #fff;
+  border-color: #2f5d8a;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  padding: 0.6rem;
+}
+
+.table th {
+  background: #f2ede5;
+}
+
+.rowActive {
+  background: #f8f1e7;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.listItem {
+  display: grid;
+  gap: 0.35rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.dialog {
+  max-width: 720px;
+  width: 100%;
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.decisionFieldset {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.errorSummary {
+  border: 1px solid #8a1f1f;
+  background: #fdf0f0;
+  color: #7f1d1d;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.fieldError {
+  color: #7f1d1d;
+}
+
+.fieldset {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+:where(button, input, select, textarea, a):focus-visible {
+  outline: 3px solid #2f5d8a;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .controlsRow {
+    align-items: stretch;
+  }
+
+  .labelGroup {
+    min-width: 100%;
+  }
+}

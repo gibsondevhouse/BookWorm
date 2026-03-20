@@ -59,9 +59,13 @@ Phase 5 includes the next buildable slices that remain after the completed Phase
 
 - Stage 01 is complete; Parts 01 through 03 are complete and verification gate evidence is recorded.
 - Stage 02 is complete; Parts 01 through 03 are complete with continuity triage determinism, suppression persistence, and regression evidence recorded.
-- Stage 03 is not started.
-- Stage 04 is not started.
+- Stage 03 is complete; Parts 01 through 03 are complete and portability operations verification-gate evidence is recorded.
+- Stage 04 Part 01 is complete (2026-03-20); accessibility and keyboard hardening implemented across P1 admin/review UI surfaces.
+  - Implementation evidence: UI updates under `apps/web/src/app/admin/**`, shared keyboard utility at `apps/web/src/app/admin/_lib/accessibilityKeyboard.ts`, shared styles at `apps/web/src/app/admin/adminAccessibility.module.css`, and deterministic acceptance suite at `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`.
+  - Validation evidence: `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`, `pnpm lint`, and `pnpm type-check` all passed.
+  - Residual note: assistive-technology manual verification/sign-off remains human-run.
+- Stage 04 Parts 02–03 not started. Next ordered slice is Stage 04 Part 02: Admin Usability and Readability Improvements.
 
 ## Status
 
-Status: In Progress [-]
+Status: In Progress (Stage 04 Part 01 complete; Stage 04 Part 02 is next)

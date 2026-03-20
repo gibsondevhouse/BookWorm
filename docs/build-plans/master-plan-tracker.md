@@ -188,15 +188,15 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 5 Stage 03
 
-- [ ] [Stage 03 Overview](./phase-5/stage-03-portability-maturity-and-operator-workflows/stage-03-portability-maturity-and-operator-workflows.md)
-- [ ] Part 01: Zip Package Portability Foundation
-- [ ] Part 02: Import Conflict Resolution and Rollback Reporting
-- [ ] Part 03: Portability Operations Verification Gate
+- [x] [Stage 03 Overview](./phase-5/stage-03-portability-maturity-and-operator-workflows/stage-03-portability-maturity-and-operator-workflows.md)
+- [x] [Part 01: Zip Package Portability Foundation](./phase-5/stage-03-portability-maturity-and-operator-workflows/part-01-zip-package-portability-foundation/part-01-zip-package-portability-foundation.md)
+- [x] [Part 02: Import Conflict Resolution and Rollback Reporting](./phase-5/stage-03-portability-maturity-and-operator-workflows/part-02-import-conflict-resolution-and-rollback-reporting/part-02-import-conflict-resolution-and-rollback-reporting.md)
+- [x] [Part 03: Portability Operations Verification Gate](./phase-5/stage-03-portability-maturity-and-operator-workflows/part-03-portability-operations-verification-gate/part-03-portability-operations-verification-gate.md)
 
 #### Phase 5 Stage 04
 
-- [ ] [Stage 04 Overview](./phase-5/stage-04-ux-accessibility-and-feedback-integration/stage-04-ux-accessibility-and-feedback-integration.md)
-- [ ] Part 01: Accessibility and Keyboard Navigation Hardening
+- [-] [Stage 04 Overview](./phase-5/stage-04-ux-accessibility-and-feedback-integration/stage-04-ux-accessibility-and-feedback-integration.md)
+- [x] [Part 01: Accessibility and Keyboard Navigation Hardening](./phase-5/stage-04-ux-accessibility-and-feedback-integration/part-01-accessibility-and-keyboard-navigation-hardening/part-01-accessibility-and-keyboard-navigation-hardening.md)
 - [ ] Part 02: Admin Usability and Readability Improvements
 - [ ] Part 03: Feedback Integration and Phase 5 Verification Gate
 

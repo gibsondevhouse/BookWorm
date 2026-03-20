@@ -41,6 +41,7 @@ const ensureSafeOutputDirectory = async (outputDirectory: string): Promise<void>
 const parseArgs = (argv: string[]): {
   scope: "current" | "release";
   format: "json" | "markdown";
+  packageFormat: "directory" | "zip";
   output: string;
   releaseSlug?: string;
 } => {
@@ -48,6 +49,7 @@ const parseArgs = (argv: string[]): {
 
   const scope = values.get("scope");
   const format = values.get("format");
+  const packageFormat = values.get("package-format") ?? "directory";
   const output = values.get("output");
   const releaseSlug = values.get("release-slug");
 
@@ -59,8 +61,16 @@ const parseArgs = (argv: string[]): {
     throw new Error("--format must be json or markdown");
   }
 
+  if (packageFormat !== "directory" && packageFormat !== "zip") {
+    throw new Error("--package-format must be directory or zip");
+  }
+
   if (!output) {
     throw new Error("--output is required");
+  }
+
+  if (packageFormat === "zip" && !output.endsWith(".zip")) {
+    throw new Error("--output must end with .zip when --package-format=zip");
   }
 
   if (scope === "release" && !releaseSlug) {
@@ -70,6 +80,7 @@ const parseArgs = (argv: string[]): {
   return {
     scope,
     format,
+    packageFormat,
     output,
     ...(releaseSlug ? { releaseSlug } : {})
   };
@@ -77,6 +88,32 @@ const parseArgs = (argv: string[]): {
 
 export const exportPortability = async (argv: string[] = process.argv.slice(2)): Promise<void> => {
   const parsed = parseArgs(argv);
+
+  if (parsed.packageFormat === "zip") {
+    const outputZipPath = resolve(parsed.output);
+
+    try {
+      await stat(outputZipPath);
+      throw new Error("--output must point to a missing .zip file");
+    } catch (error: unknown) {
+      const code = error && typeof error === "object" && "code" in error ? error.code : null;
+
+      if (code !== "ENOENT") {
+        throw error;
+      }
+    }
+
+    const exportPackage = await portabilityExportService.prepareZipExport(parsed);
+
+    await mkdir(dirname(outputZipPath), { recursive: true });
+    await writeFile(outputZipPath, exportPackage.archive);
+
+    console.log(
+      `Exported zip package to ${outputZipPath} for ${exportPackage.manifest.scope} scope (${exportPackage.manifest.format})`
+    );
+    return;
+  }
+
   const exportPackage = await portabilityExportService.prepareExport(parsed);
   const outputDirectory = resolve(parsed.output);
 

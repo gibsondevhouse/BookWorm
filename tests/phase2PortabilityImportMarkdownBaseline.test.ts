@@ -281,7 +281,15 @@ test("phase2PortabilityImportMarkdownBaseline export to markdown then import pre
         }
       }
     ],
-    relationships: []
+    relationships: [],
+    governance: {
+      reviewRequests: [],
+      approvalChains: [],
+      approvalSteps: [],
+      approvalStepEvents: [],
+      notificationEvents: [],
+      notificationPreferences: []
+    }
   });
 
   const packageDir = await makePackageDir();

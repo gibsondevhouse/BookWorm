@@ -89,3 +89,24 @@ Expected verification result after running `pnpm phase1:verify` with the API and
 - `pnpm db:restore` and `pnpm portability:import` are offline operations: stop the API before running them.
 - After import or restore, restart the API so startup rebuilds the in-memory search index from restored/imported database state.
 - Backup and restore are the authoritative disaster-recovery path; portability packages are for content mobility between environments.
+
+## Phase 5 Stage 03 Part 01
+
+- `pnpm portability:export --package-format=zip --scope <current|release> --format <json|markdown> --output <path>.zip` writes a deterministic zip package with `package-manifest.json` and `payload/**` content.
+- `pnpm portability:import --package-format=zip --input <path>.zip --actor-email <email> [--format <json|markdown>]` validates and imports zip payloads; when `--format` is omitted the package manifest format is used.
+- zip import rejects malformed archives and unsafe paths with actionable codes (`ARCHIVE_INVALID`, `PATH_UNSAFE`, `PACKAGE_LAYOUT_INVALID`, `MANIFEST_INVALID`, `ARCHIVE_TOO_LARGE`, `PAYLOAD_INVALID`).
+
+## Phase 5 Stage 03 Part 02
+
+- `pnpm portability:import` now emits deterministic `conflicts[]` summaries grouped by conflict class, policy, and outcome for both directory and zip package imports.
+- Import reports now include a stable execution envelope across dry-run and apply modes: `execution.mode`, `execution.status`, and `execution.rollback.status` (`not-applicable`, `not-required`, `confirmed`).
+- Apply failures now return `APPLY_ROLLED_BACK` with `execution.rollback.status="confirmed"` and preserve transactional guarantees (no partial writes).
+- Report payloads include per-record `decisions[]` and planned `changes[]` so operators can audit attempted actions and failure causes without direct database inspection.
+- Conflict taxonomy reported by import includes `IDENTITY_MISMATCH`, `DUPLICATE_SLUG`, `RELEASE_SLUG_COLLISION`, `UNRESOLVED_RELATIONSHIP_REFERENCE`, and `SCHEMA_VERSION_INCOMPATIBLE` (with non-mapped failures grouped as `OTHER`).
+
+## Phase 5 Stage 03 Part 03
+
+- Stage 03 closeout is gated by executing the documented verification sequence in `docs/build-plans/phase-5/stage-03-portability-maturity-and-operator-workflows/part-03-portability-operations-verification-gate/part-03-portability-operations-verification-gate.md`.
+- Required gate suites include the Phase 5 Stage 03 Part 01 and Part 02 tests plus portability regressions from Phase 2 (`phase2PortabilityExportBaseline`, `phase2PortabilityImportJsonBaseline`, `phase2PortabilityImportMarkdownBaseline`) and Phase 4 (`phase4AuditRetentionPortabilityExtensionsPart02`).
+- Lint and type-check must pass as part of the gate (`pnpm lint`, `pnpm type-check`).
+- Stage 03 should only be marked complete when gate evidence records pass/fail outcomes for every required command.

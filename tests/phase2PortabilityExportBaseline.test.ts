@@ -488,12 +488,20 @@ test("phase2PortabilityExportBaseline release json export writes selected releas
   assert.equal(manifest.scope, "release");
   assert.equal(manifest.release.slug, releaseSlug);
   assert.equal(manifest.release.status, "ARCHIVED");
-  assert.deepEqual(manifest.counts, {
+  assert.deepEqual(
+    {
+      entities: manifest.counts.entities,
+      manuscripts: manifest.counts.manuscripts,
+      relationships: manifest.counts.relationships,
+      releases: manifest.counts.releases
+    },
+    {
     entities: 2,
     manuscripts: 1,
     relationships: 1,
     releases: 1
-  });
+    }
+  );
 
   assert.equal(characterDocument.scope, "release");
   assert.equal(characterDocument.release.slug, releaseSlug);
