@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireAuthenticatedActor } from "../middleware/requireAuthenticatedActor.js";
 import { reviewRequestApprovalService } from "../services/reviewRequestApprovalService.js";
+import { reviewDecisionAnalyticsService } from "../services/reviewDecisionAnalyticsService.js";
 import { reviewRequestService } from "../services/reviewRequestService.js";
 
 const createReviewRequestBodySchema = z.object({
@@ -79,6 +80,18 @@ const adminQueueQuerySchema = z.object({
   assigneeUserId: z.string().trim().min(1).optional(),
   status: reviewRequestStatusSchema.optional(),
   workflowState: proposalWorkflowStateSchema.optional(),
+  limit: z.coerce.number().int().positive().max(100).optional(),
+  offset: z.coerce.number().int().nonnegative().optional()
+});
+
+const analyticsWindowSchema = z.enum(["24h", "7d", "30d"]);
+const decisionAnalyticsQuerySchema = z.object({
+  window: analyticsWindowSchema.optional()
+});
+const decisionHistoryOutcomeSchema = z.enum(["APPROVED", "REJECTED"]);
+const decisionHistoryQuerySchema = z.object({
+  status: reviewRequestStatusSchema.optional(),
+  outcome: decisionHistoryOutcomeSchema.optional(),
   limit: z.coerce.number().int().positive().max(100).optional(),
   offset: z.coerce.number().int().nonnegative().optional()
 });
@@ -230,7 +243,9 @@ const handleReviewRequestError = (error: unknown, response: Response): void => {
     error.name === "ReviewRequestAssignUnauthorizedError" ||
     error.name === "ReviewRequestQueueUnauthorizedError" ||
     error.name === "ReviewRequestTransitionUnauthorizedError" ||
-    error.name === "ReviewRequestApprovalUnauthorizedError"
+    error.name === "ReviewRequestApprovalUnauthorizedError" ||
+    error.name === "ReviewDecisionAnalyticsUnauthorizedError" ||
+    error.name === "ReviewDecisionHistoryUnauthorizedError"
   ) {
     response.status(403).json({
       error: error.message
@@ -861,6 +876,100 @@ reviewRequestRouter.get("/review-requests/queue/admin", requireReviewRequestActo
       status: result.status,
       limit: result.limit,
       offset: result.offset
+    });
+  } catch (error) {
+    handleReviewRequestError(error, response);
+  }
+});
+
+reviewRequestRouter.get(
+  "/review-requests/analytics/decision-summary",
+  requireReviewRequestActor,
+  async (request, response) => {
+    const parsedQuery = decisionAnalyticsQuerySchema.safeParse(request.query);
+
+    if (!parsedQuery.success) {
+      response.status(400).json({
+        error: {
+          query: parsedQuery.error.flatten()
+        }
+      });
+      return;
+    }
+
+    try {
+      const summary = await reviewDecisionAnalyticsService.getDecisionSummary({
+        actor: {
+          userId: response.locals.actor.userId,
+          role: response.locals.actor.role
+        },
+        ...(parsedQuery.data.window === undefined ? {} : { window: parsedQuery.data.window })
+      });
+
+      response.json({
+        window: {
+          key: summary.window.key,
+          start: summary.window.start.toISOString(),
+          end: summary.window.end.toISOString()
+        },
+        queueDepth: summary.queueDepth,
+        decisionOutcomes: summary.decisionOutcomes,
+        approvalLatencyMs: summary.approvalLatencyMs
+      });
+    } catch (error) {
+      handleReviewRequestError(error, response);
+    }
+  }
+);
+
+reviewRequestRouter.get("/review-requests/history/timeline", requireReviewRequestActor, async (request, response) => {
+  const parsedQuery = decisionHistoryQuerySchema.safeParse(request.query);
+
+  if (!parsedQuery.success) {
+    response.status(400).json({
+      error: {
+        query: parsedQuery.error.flatten()
+      }
+    });
+    return;
+  }
+
+  try {
+    const history = await reviewDecisionAnalyticsService.listDecisionHistory({
+      actor: {
+        userId: response.locals.actor.userId,
+        role: response.locals.actor.role
+      },
+      ...(parsedQuery.data.status === undefined ? {} : { status: parsedQuery.data.status }),
+      ...(parsedQuery.data.outcome === undefined ? {} : { outcome: parsedQuery.data.outcome }),
+      ...(parsedQuery.data.limit === undefined ? {} : { limit: parsedQuery.data.limit }),
+      ...(parsedQuery.data.offset === undefined ? {} : { offset: parsedQuery.data.offset })
+    });
+
+    response.json({
+      items: history.items.map((item) => ({
+        reviewRequestId: item.reviewRequestId,
+        proposalId: item.proposalId,
+        status: item.status,
+        assignedApproverId: item.assignedApproverId,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+        approvalChain:
+          item.approvalChain === null
+            ? null
+            : {
+                id: item.approvalChain.id,
+                status: item.approvalChain.status,
+                finalizedAt: item.approvalChain.finalizedAt?.toISOString() ?? null
+              },
+        timeline: item.timeline.map((event) => ({
+          ...event,
+          occurredAt: event.occurredAt.toISOString()
+        }))
+      })),
+      total: history.total,
+      limit: history.limit,
+      offset: history.offset
     });
   } catch (error) {
     handleReviewRequestError(error, response);

@@ -1,6 +1,7 @@
 import { type NotificationEventStatus, type NotificationEventType, type Prisma, type Role } from "@prisma/client";
 
 import { notificationEventRepository } from "../repositories/notificationEventRepository.js";
+import { notificationPreferenceRepository } from "../repositories/notificationPreferenceRepository.js";
 
 type Actor = {
   userId: string;
@@ -191,6 +192,33 @@ export const notificationEventService = {
       failed: failedCount,
       processedAt: now,
       limit
+    };
+  },
+
+  async listNotificationEventsForUser(input: {
+    actor: Actor;
+    limit?: number;
+    offset?: number;
+  }) {
+    const limit = normalizeLimit(input.limit);
+    const offset = normalizeOffset(input.offset);
+
+    const enabledEventTypes = await notificationPreferenceRepository.findEnabledEventTypesForUser(
+      input.actor.userId
+    );
+
+    const result = await notificationEventRepository.listForUser({
+      userId: input.actor.userId,
+      enabledEventTypes,
+      limit,
+      offset
+    });
+
+    return {
+      events: result.events,
+      total: result.total,
+      limit,
+      offset
     };
   }
 };

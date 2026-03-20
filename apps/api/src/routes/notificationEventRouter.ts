@@ -27,6 +27,7 @@ const processOutboxBodySchema = z.object({
 });
 
 const requireAdminActor = requireAuthenticatedActor(["AUTHOR_ADMIN"]);
+const requireAnyActor = requireAuthenticatedActor(["EDITOR", "AUTHOR_ADMIN"]);
 
 const handleNotificationEventError = (error: unknown): { statusCode: number; message: string } => {
   if (error instanceof Error && error.name === "NotificationEventUnauthorizedError") {
@@ -139,3 +140,59 @@ notificationEventRouter.post("/admin/notification-events/process", requireAdminA
     });
   }
 });
+
+const myNotificationEventsQuerySchema = z.object({
+  limit: z.coerce.number().int().positive().max(100).optional(),
+  offset: z.coerce.number().int().nonnegative().optional()
+});
+
+notificationEventRouter.get(
+  "/notification-events/my",
+  requireAnyActor,
+  async (request, response) => {
+    const parsedQuery = myNotificationEventsQuerySchema.safeParse(request.query);
+
+    if (!parsedQuery.success) {
+      response.status(400).json({
+        error: { query: parsedQuery.error.flatten() }
+      });
+      return;
+    }
+
+    try {
+      const result = await notificationEventService.listNotificationEventsForUser({
+        actor: {
+          userId: response.locals.actor.userId,
+          role: response.locals.actor.role
+        },
+        ...(parsedQuery.data.limit === undefined ? {} : { limit: parsedQuery.data.limit }),
+        ...(parsedQuery.data.offset === undefined ? {} : { offset: parsedQuery.data.offset })
+      });
+
+      response.json({
+        events: result.events.map((event) => ({
+          id: event.id,
+          eventType: event.eventType,
+          eventKey: event.eventKey,
+          status: event.status,
+          reviewRequestId: event.reviewRequestId,
+          approvalChainId: event.approvalChainId,
+          approvalStepId: event.approvalStepId,
+          actorUserId: event.actorUserId,
+          payload: event.payload,
+          deliveredAt: event.deliveredAt?.toISOString() ?? null,
+          createdAt: event.createdAt.toISOString(),
+          updatedAt: event.updatedAt.toISOString()
+        })),
+        total: result.total,
+        limit: result.limit,
+        offset: result.offset
+      });
+    } catch (error) {
+      const handled = handleNotificationEventError(error);
+      response.status(handled.statusCode).json({
+        error: handled.message
+      });
+    }
+  }
+);

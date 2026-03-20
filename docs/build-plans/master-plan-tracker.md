@@ -156,10 +156,10 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 4 Stage 03
 
-- [-] [Stage 03 Overview](./phase-4/stage-03-collaboration-notifications-and-observability/stage-03-collaboration-notifications-and-observability.md) (Part 01 complete; Parts 02 and 03 pending)
+- [x] [Stage 03 Overview](./phase-4/stage-03-collaboration-notifications-and-observability/stage-03-collaboration-notifications-and-observability.md) (All parts complete)
 - [x] [Part 01: Notification Event Outbox](./phase-4/stage-03-collaboration-notifications-and-observability/part-01-notification-event-outbox/part-01-notification-event-outbox.md)
-- [ ] [Part 02: Delivery Preferences and Review Inbox](./phase-4/stage-03-collaboration-notifications-and-observability/part-02-delivery-preferences-and-review-inbox/part-02-delivery-preferences-and-review-inbox.md)
-- [ ] [Part 03: Decision Analytics and History Surfaces](./phase-4/stage-03-collaboration-notifications-and-observability/part-03-decision-analytics-and-history-surfaces/part-03-decision-analytics-and-history-surfaces.md)
+- [x] [Part 02: Delivery Preferences and Review Inbox](./phase-4/stage-03-collaboration-notifications-and-observability/part-02-delivery-preferences-and-review-inbox/part-02-delivery-preferences-and-review-inbox.md)
+- [x] [Part 03: Decision Analytics and History Surfaces](./phase-4/stage-03-collaboration-notifications-and-observability/part-03-decision-analytics-and-history-surfaces/part-03-decision-analytics-and-history-surfaces.md)
 
 #### Phase 4 Stage 04
 

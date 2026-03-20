@@ -167,5 +167,33 @@ export const notificationEventRepository = {
     });
 
     return result.count > 0;
+  },
+
+  async listForUser(input: {
+    userId: string;
+    enabledEventTypes: NotificationEventType[];
+    limit: number;
+    offset: number;
+  }): Promise<{ events: Awaited<ReturnType<typeof prismaClient.notificationEvent.findMany>>; total: number }> {
+    const where: Prisma.NotificationEventWhereInput = {
+      status: "DELIVERED",
+      eventType: { in: input.enabledEventTypes },
+      OR: [
+        { reviewRequest: { assignedApproverId: input.userId } },
+        { approvalStep: { assignedReviewerId: input.userId } }
+      ]
+    };
+
+    const [events, total] = await Promise.all([
+      prismaClient.notificationEvent.findMany({
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: input.limit,
+        skip: input.offset
+      }),
+      prismaClient.notificationEvent.count({ where })
+    ]);
+
+    return { events, total };
   }
 };

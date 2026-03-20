@@ -18,6 +18,7 @@ import { adminReleaseRouter } from "../routes/adminReleaseRouter.js";
 import { adminSceneRouter } from "../routes/adminSceneRouter.js";
 import { healthRouter } from "../routes/healthRouter.js";
 import { notificationEventRouter } from "../routes/notificationEventRouter.js";
+import { notificationPreferenceRouter } from "../routes/notificationPreferenceRouter.js";
 import { proposalRouter } from "../routes/proposalRouter.js";
 import { proposalApplicationRouter } from "../routes/proposalApplicationRouter.js";
 import { proposalPreviewRouter } from "../routes/proposalPreviewRouter.js";
@@ -32,6 +33,7 @@ import { publicFactionRouter } from "../routes/publicFactionRouter.js";
 import { publicLocationRouter } from "../routes/publicLocationRouter.js";
 import { publicRelationshipRouter } from "../routes/publicRelationshipRouter.js";
 import { publicSceneRouter } from "../routes/publicSceneRouter.js";
+import { reviewInboxRouter } from "../routes/reviewInboxRouter.js";
 import { reviewRequestRouter } from "../routes/reviewRequestRouter.js";
 
 export const createApp = (): Express => {
@@ -63,10 +65,12 @@ export const createApp = (): Express => {
   app.use("/admin/scenes", adminSceneRouter);
   app.use(commentRouter);
   app.use(notificationEventRouter);
+  app.use(notificationPreferenceRouter);
   app.use(proposalRouter);
   app.use(proposalApplicationRouter);
   app.use(proposalPreviewRouter);
   app.use(proposalWorkflowRouter);
+  app.use(reviewInboxRouter);
   app.use(reviewRequestRouter);
   app.use("/chapters", publicChapterRouter);
   app.use("/characters", publicCharacterRouter);
