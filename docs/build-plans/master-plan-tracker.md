@@ -17,11 +17,6 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 0 Stage 01
 
-- [x] [Stage 01 Overview](./phase-0/stage-01-foundation-and-bootstrap/stage-01-foundation-and-bootstrap.md)
-- [x] [Part 01: Freeze Implementation Baseline](./phase-0/stage-01-foundation-and-bootstrap/part-01-freeze-implementation-baseline/part-01-freeze-implementation-baseline.md)
-- [x] [Part 02: Scaffold Application Workspace](./phase-0/stage-01-foundation-and-bootstrap/part-02-scaffold-application-workspace/part-02-scaffold-application-workspace.md)
-- [x] [Part 03: Local Runtime Services](./phase-0/stage-01-foundation-and-bootstrap/part-03-local-runtime-services/part-03-local-runtime-services.md)
-
 #### Phase 0 Stage 02
 
 - [x] [Stage 02 Overview](./phase-0/stage-02-core-runtime-and-auth/stage-02-core-runtime-and-auth.md)
@@ -77,7 +72,7 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 2
 
-- [-] [Phase 2 Overview](./phase-2/phase-2.md)
+- [x] [Phase 2 Overview](./phase-2/phase-2.md)
 
 #### Phase 2 Stage 01
 
@@ -104,10 +99,74 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 2 Stage 04
 
-- [-] [Stage 04 Overview](./phase-2/stage-04-portability-and-delivery/stage-04-portability-and-delivery.md)
+- [x] [Stage 04 Overview](./phase-2/stage-04-portability-and-delivery/stage-04-portability-and-delivery.md)
 - [x] [Part 01: Release History and Archive Browsing](./phase-2/stage-04-portability-and-delivery/part-01-release-history-and-archive-browsing/part-01-release-history-and-archive-browsing.md)
 - [x] [Part 02: Import Export and Self-Hosting Baseline](./phase-2/stage-04-portability-and-delivery/part-02-import-export-and-self-hosting-baseline/part-02-import-export-and-self-hosting-baseline.md)
-- [ ] [Part 03: Phase 2 Verification Gate](./phase-2/stage-04-portability-and-delivery/part-03-phase-2-verification-gate/part-03-phase-2-verification-gate.md)
+- [x] [Part 03: Phase 2 Verification Gate](./phase-2/stage-04-portability-and-delivery/part-03-phase-2-verification-gate/part-03-phase-2-verification-gate.md)
+
+### Phase 3
+
+- [x] [Phase 3 Overview](./phase-3/phase-3.md)
+
+#### Phase 3 Stage 01
+
+- [x] [Stage 01 Overview](./phase-3/stage-01-collaboration-and-review-workflows/stage-01-collaboration-and-review-workflows.md)
+- [x] [Part 01: Comment Thread Foundation](./phase-3/stage-01-collaboration-and-review-workflows/part-01-comment-thread-foundation/part-01-comment-thread-foundation.md)
+- [x] [Part 02: Change Proposal System](./phase-3/stage-01-collaboration-and-review-workflows/part-02-change-proposal-system/part-02-change-proposal-system.md)
+- [x] [Part 03: Editorial Review and Application Workflow](./phase-3/stage-01-collaboration-and-review-workflows/part-03-editorial-review-and-application/part-03-editorial-review-and-application.md)
+
+#### Phase 3 Stage 02
+
+- [x] [Stage 02 Overview](./phase-3/stage-02-proposal-workflow-enhancement/stage-02-proposal-workflow-enhancement.md)
+- [x] Part 01: Proposal State Machine and Transitions
+- [x] Part 02: Proposal Filtering and Querying
+- [x] Part 03: Proposal Metadata and Summary Endpoints
+
+#### Phase 3 Stage 03
+
+- [x] [Stage 03 Overview](./phase-3/stage-03-comment-structure-and-feedback-system/stage-03-comment-structure-and-feedback-system.md)
+- [x] Part 01: Comment Types and Feedback Structure
+- [x] Part 02: Comment Status and Lifecycle
+- [x] Part 03: Comment Edit History and Metadata Versioning
+
+#### Phase 3 Stage 04
+
+- [x] [Stage 04 Overview](./phase-3/stage-04-content-comparison-and-proposal-review-tools/stage-04-content-comparison-and-proposal-review-tools.md)
+- [x] Part 01: Unified Diff Engine
+- [x] Part 02: Proposal Preview and Impact Analysis
+- [x] Part 03: Revision Timeline and History Browsing
+
+### Phase 4
+
+- [-] [Phase 4 Overview](./phase-4/phase-4.md)
+
+#### Phase 4 Stage 01
+
+- [x] [Stage 01 Overview](./phase-4/stage-01-review-request-and-assignment-foundation/stage-01-review-request-and-assignment-foundation.md)
+- [x] [Part 01: Review Request Model and API](./phase-4/stage-01-review-request-and-assignment-foundation/part-01-review-request-model-and-api/part-01-review-request-model-and-api.md)
+- [x] [Part 02: Approver Assignment and Queue Views](./phase-4/stage-01-review-request-and-assignment-foundation/part-02-approver-assignment-and-queue-views/part-02-approver-assignment-and-queue-views.md)
+- [x] [Part 03: Review Request Lifecycle and Guards](./phase-4/stage-01-review-request-and-assignment-foundation/part-03-review-request-lifecycle-and-guards/part-03-review-request-lifecycle-and-guards.md)
+
+#### Phase 4 Stage 02
+
+- [x] [Stage 02 Overview](./phase-4/stage-02-approval-chain-and-policy-enforcement/stage-02-approval-chain-and-policy-enforcement.md)
+- [x] [Part 01: Multi-Stage Approval Schema and Transitions](./phase-4/stage-02-approval-chain-and-policy-enforcement/part-01-multi-stage-approval-schema-and-transitions/part-01-multi-stage-approval-schema-and-transitions.md)
+- [x] [Part 02: Delegation and Escalation Workflows](./phase-4/stage-02-approval-chain-and-policy-enforcement/part-02-delegation-and-escalation-workflows/part-02-delegation-and-escalation-workflows.md)
+- [x] [Part 03: Policy-Driven Application Gates](./phase-4/stage-02-approval-chain-and-policy-enforcement/part-03-policy-driven-application-gates/part-03-policy-driven-application-gates.md)
+
+#### Phase 4 Stage 03
+
+- [-] [Stage 03 Overview](./phase-4/stage-03-collaboration-notifications-and-observability/stage-03-collaboration-notifications-and-observability.md) (Part 01 complete; Parts 02 and 03 pending)
+- [x] [Part 01: Notification Event Outbox](./phase-4/stage-03-collaboration-notifications-and-observability/part-01-notification-event-outbox/part-01-notification-event-outbox.md)
+- [ ] [Part 02: Delivery Preferences and Review Inbox](./phase-4/stage-03-collaboration-notifications-and-observability/part-02-delivery-preferences-and-review-inbox/part-02-delivery-preferences-and-review-inbox.md)
+- [ ] [Part 03: Decision Analytics and History Surfaces](./phase-4/stage-03-collaboration-notifications-and-observability/part-03-decision-analytics-and-history-surfaces/part-03-decision-analytics-and-history-surfaces.md)
+
+#### Phase 4 Stage 04
+
+- [ ] [Stage 04 Overview](./phase-4/stage-04-operational-hardening-and-phase-4-verification/stage-04-operational-hardening-and-phase-4-verification.md)
+- [ ] [Part 01: Collaboration Performance and Query Hardening](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-01-collaboration-performance-and-query-hardening/part-01-collaboration-performance-and-query-hardening.md)
+- [ ] [Part 02: Audit Retention and Portability Extensions](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-02-audit-retention-and-portability-extensions/part-02-audit-retention-and-portability-extensions.md)
+- [ ] [Part 03: Phase 4 Verification Gate](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-03-phase-4-verification-gate/part-03-phase-4-verification-gate.md)
 
 ## Update Rules
 

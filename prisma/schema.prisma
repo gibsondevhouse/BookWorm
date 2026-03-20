@@ -71,6 +71,104 @@ enum ContinuityIssueSubjectType {
   RELATIONSHIP_REVISION
 }
 
+enum ProposalChangeType {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ProposalWorkflowState {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  APPLIED
+  ARCHIVED
+}
+
+enum ReviewRequestStatus {
+  OPEN
+  ACKNOWLEDGED
+  IN_REVIEW
+  RESOLVED
+  CANCELED
+}
+
+enum ApprovalChainStatus {
+  ACTIVE
+  APPROVED
+  REJECTED
+}
+
+enum ApprovalStepStatus {
+  PENDING
+  ACKNOWLEDGED
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+enum ApprovalStepEventType {
+  DELEGATED
+  ESCALATED
+}
+
+enum NotificationEventType {
+  REVIEW_REQUEST_CREATED
+  REVIEW_REQUEST_STATUS_CHANGED
+  REVIEW_REQUEST_ASSIGNED
+  APPROVAL_STEP_DECISION_RECORDED
+  APPROVAL_STEP_DELEGATED
+  APPROVAL_STEP_ESCALATED
+}
+
+enum NotificationEventStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  FAILED
+}
+
+enum CommentType {
+  GENERAL
+  QUESTION
+  SUGGESTION
+  CONCERN
+  RESOLVED
+}
+
+enum CommentSeverity {
+  INFO
+  MINOR
+  MAJOR
+}
+
+enum CommentTag {
+  SPELLING
+  FACTUAL
+  CONSISTENCY
+  CLARITY
+  TONE
+}
+
+enum CommentStatus {
+  ACTIVE
+  RESOLVED
+  ARCHIVED
+}
+
+enum RevisionDiffKind {
+  ENTITY
+  MANUSCRIPT
+}
+
 model User {
   id           String           @id @default(cuid())
   email        String           @unique
@@ -84,6 +182,19 @@ model User {
   manuscriptRevisions ManuscriptRevision[]
   relationshipRevisions RelationshipRevision[]
   releases     Release[]
+  comments     Comment[]
+  editedCommentVersions CommentVersion[]
+  proposals    Proposal[] @relation("ProposalProposedBy")
+  decidedProposals Proposal[] @relation("ProposalDecidedBy")
+  appliedProposals Proposal[] @relation("ProposalAppliedBy")
+  createdReviewRequests ReviewRequest[] @relation("ReviewRequestCreatedBy")
+  assignedReviewRequests ReviewRequest[] @relation("ReviewRequestAssignedApprover")
+  assignedApprovalSteps ApprovalStep[] @relation("ApprovalStepAssignedReviewer")
+  acknowledgedApprovalSteps ApprovalStep[] @relation("ApprovalStepAcknowledgedBy")
+  decidedApprovalSteps ApprovalStep[] @relation("ApprovalStepDecidedBy")
+  escalatedApprovalSteps ApprovalStep[] @relation("ApprovalStepEscalatedBy")
+  approvalStepEvents ApprovalStepEvent[] @relation("ApprovalStepEventActor")
+  notificationEvents NotificationEvent[] @relation("NotificationEventActor")
 }
 
 model Session {
@@ -111,28 +222,33 @@ model Entity {
   continuityIssues ContinuityIssue[]
   sourceRelationships Relationship[] @relation("RelationshipSource")
   targetRelationships Relationship[] @relation("RelationshipTarget")
+  comments       Comment[]
+  proposals      Proposal[]
 
   @@index([type])
 }
 
 model EntityRevision {
-  id             String         @id @default(cuid())
-  entityId       String
-  createdById    String
-  version        Int
-  name           String
-  summary        String
-  visibility     Visibility     @default(PRIVATE)
-  payload        Json?
-  createdAt      DateTime       @default(now())
-  entity         Entity         @relation(fields: [entityId], references: [id], onDelete: Cascade)
-  createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
-  releaseEntries ReleaseEntry[]
-  continuityIssues ContinuityIssue[]
+  id                     String         @id @default(cuid())
+  entityId               String
+  createdById            String
+  version                Int
+  name                   String
+  summary                String
+  visibility             Visibility     @default(PRIVATE)
+  payload                Json?
+  appliedFromProposalId  String?
+  createdAt              DateTime       @default(now())
+  entity                 Entity         @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  createdBy              User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  appliedFromProposal    Proposal?      @relation("EntityRevisionFromProposal", fields: [appliedFromProposalId], references: [id], onDelete: SetNull)
+  releaseEntries         ReleaseEntry[]
+  continuityIssues       ContinuityIssue[]
 
   @@unique([entityId, version])
   @@index([entityId, createdAt])
   @@index([visibility])
+  @@index([appliedFromProposalId])
 }
 
 model Release {
@@ -162,28 +278,48 @@ model Manuscript {
   revisions      ManuscriptRevision[]
   releaseEntries ReleaseManuscriptEntry[]
   continuityIssues ContinuityIssue[]
+  comments       Comment[]
+  proposals      Proposal[]
 
   @@index([type])
 }
 
 model ManuscriptRevision {
-  id             String                 @id @default(cuid())
-  manuscriptId   String
-  createdById    String
-  version        Int
-  title          String
-  summary        String
-  visibility     Visibility             @default(PRIVATE)
-  payload        Json?
-  createdAt      DateTime               @default(now())
-  manuscript     Manuscript             @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
-  createdBy      User                   @relation(fields: [createdById], references: [id], onDelete: Restrict)
-  releaseEntries ReleaseManuscriptEntry[]
-  continuityIssues ContinuityIssue[]
+  id                     String                 @id @default(cuid())
+  manuscriptId           String
+  createdById            String
+  version                Int
+  title                  String
+  summary                String
+  visibility             Visibility             @default(PRIVATE)
+  payload                Json?
+  appliedFromProposalId  String?
+  createdAt              DateTime               @default(now())
+  manuscript             Manuscript             @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  createdBy              User                   @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  appliedFromProposal    Proposal?              @relation("ManuscriptRevisionFromProposal", fields: [appliedFromProposalId], references: [id], onDelete: SetNull)
+  releaseEntries         ReleaseManuscriptEntry[]
+  continuityIssues       ContinuityIssue[]
 
   @@unique([manuscriptId, version])
   @@index([manuscriptId, createdAt])
   @@index([visibility])
+  @@index([appliedFromProposalId])
+}
+
+model RevisionDiff {
+  id                  String           @id @default(cuid())
+  kind                RevisionDiffKind
+  fromRevisionId      String
+  toRevisionId        String
+  fromContentIdentity String
+  toContentIdentity   String
+  pairContentIdentity String
+  diff                Json
+  createdAt           DateTime         @default(now())
+
+  @@unique([kind, fromRevisionId, toRevisionId, pairContentIdentity])
+  @@index([kind, fromRevisionId, toRevisionId])
 }
 
 model ReleaseManuscriptEntry {
@@ -238,22 +374,25 @@ model Relationship {
 }
 
 model RelationshipRevision {
-  id                String                    @id @default(cuid())
-  relationshipId    String
-  createdById       String
-  version           Int
-  state             RelationshipRevisionState
-  visibility        Visibility                @default(PRIVATE)
-  metadata          Json?
-  createdAt         DateTime                  @default(now())
-  relationship      Relationship              @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
-  createdBy         User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-  releaseEntries    ReleaseRelationshipEntry[]
-  continuityIssues  ContinuityIssue[]
+  id                     String                    @id @default(cuid())
+  relationshipId         String
+  createdById            String
+  version                Int
+  state                  RelationshipRevisionState
+  visibility             Visibility                @default(PRIVATE)
+  metadata               Json?
+  appliedFromProposalId  String?
+  createdAt              DateTime                  @default(now())
+  relationship           Relationship              @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  createdBy              User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  appliedFromProposal    Proposal?                 @relation("RelationshipRevisionFromProposal", fields: [appliedFromProposalId], references: [id], onDelete: SetNull)
+  releaseEntries         ReleaseRelationshipEntry[]
+  continuityIssues       ContinuityIssue[]
 
   @@unique([relationshipId, version])
   @@index([relationshipId, createdAt])
   @@index([state])
+  @@index([appliedFromProposalId])
 }
 
 model ReleaseRelationshipEntry {
@@ -308,4 +447,245 @@ model ContinuityIssue {
   @@index([ruleCode])
   @@index([subjectType, subjectId])
   @@map("continuity_issues")
+}
+
+model Comment {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  userId          String
+  entityId        String?
+  manuscriptId    String?
+  parentCommentId String?
+  body            String
+  editedAt        DateTime?
+  currentVersion  Int       @default(0)
+  type            CommentType @default(GENERAL)
+  severity        CommentSeverity @default(INFO)
+  tags            CommentTag[] @default([])
+  status          CommentStatus @default(ACTIVE)
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity          Entity?   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  manuscript      Manuscript? @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+  versions        CommentVersion[]
+
+  @@index([entityId])
+  @@index([manuscriptId])
+  @@index([userId])
+  @@index([parentCommentId])
+  @@index([type])
+  @@index([severity])
+  @@index([status])
+}
+
+model CommentVersion {
+  id                String          @id @default(cuid())
+  commentId         String
+  version           Int
+  previousBody      String
+  resultingBody     String
+  previousType      CommentType
+  resultingType     CommentType
+  previousSeverity  CommentSeverity
+  resultingSeverity CommentSeverity
+  previousTags      CommentTag[]
+  resultingTags     CommentTag[]
+  previousStatus    CommentStatus
+  resultingStatus   CommentStatus
+  editedById        String
+  editReason        String
+  createdAt         DateTime        @default(now())
+
+  comment           Comment         @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  editedBy          User            @relation(fields: [editedById], references: [id], onDelete: Restrict)
+
+  @@unique([commentId, version])
+  @@index([commentId, createdAt])
+  @@index([editedById])
+}
+
+model Proposal {
+  id                          String             @id @default(cuid())
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
+  proposedById                String
+  decidedById                 String?
+  appliedById                 String?
+  entityId                    String?
+  manuscriptId                String?
+  changeType                  ProposalChangeType
+  status                      ProposalStatus     @default(PENDING)
+  title                       String
+  summary                     String
+  payload                     Json?
+  decisionNote                String?
+  appliedNote                 String?
+  decidedAt                   DateTime?
+  appliedAt                   DateTime?
+  workflowState               ProposalWorkflowState @default(DRAFT)
+  submittedAt                 DateTime?
+  reviewStartedAt             DateTime?
+  approvedAt                  DateTime?
+  archivedAt                  DateTime?
+  reviewNotes                 String?
+
+  proposedBy                  User               @relation("ProposalProposedBy", fields: [proposedById], references: [id], onDelete: Cascade)
+  decidedBy                   User?              @relation("ProposalDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  appliedBy                   User?              @relation("ProposalAppliedBy", fields: [appliedById], references: [id], onDelete: Restrict)
+  entity                      Entity?            @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  manuscript                  Manuscript?        @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  entityRevisions             EntityRevision[]   @relation("EntityRevisionFromProposal")
+  manuscriptRevisions         ManuscriptRevision[] @relation("ManuscriptRevisionFromProposal")
+  relationshipRevisions       RelationshipRevision[] @relation("RelationshipRevisionFromProposal")
+  reviewRequests              ReviewRequest[]
+
+  @@index([entityId])
+  @@index([manuscriptId])
+  @@index([proposedById])
+  @@index([decidedById])
+  @@index([appliedById])
+  @@index([status, createdAt])
+  @@index([changeType, createdAt])
+  @@index([appliedAt])
+  @@index([workflowState])
+  @@index([workflowState, createdAt])
+  @@map("proposals")
+}
+
+model ReviewRequest {
+  id                 String              @id @default(cuid())
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  proposalId         String
+  createdById        String
+  assignedApproverId String?
+  assignedAt         DateTime?
+  assignmentHistory  Json?
+  lifecycleHistory   Json?
+  status             ReviewRequestStatus @default(OPEN)
+
+  proposal           Proposal            @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  createdBy          User                @relation("ReviewRequestCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  assignedApprover   User?               @relation("ReviewRequestAssignedApprover", fields: [assignedApproverId], references: [id], onDelete: SetNull)
+  approvalChain      ApprovalChain?
+  notificationEvents NotificationEvent[]
+
+  @@index([proposalId])
+  @@index([createdById])
+  @@index([assignedApproverId])
+  @@index([assignedApproverId, status, createdAt])
+  @@index([status, createdAt])
+  @@map("review_requests")
+}
+
+model ApprovalChain {
+  id               String             @id @default(cuid())
+  reviewRequestId  String             @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  status           ApprovalChainStatus @default(ACTIVE)
+  currentStepOrder Int                @default(1)
+  finalizedAt      DateTime?
+
+  reviewRequest    ReviewRequest      @relation(fields: [reviewRequestId], references: [id], onDelete: Cascade)
+  steps            ApprovalStep[]
+  notificationEvents NotificationEvent[]
+
+  @@index([status, createdAt])
+  @@map("approval_chains")
+}
+
+model ApprovalStep {
+  id                 String             @id @default(cuid())
+  chainId            String
+  stepOrder          Int
+  title              String
+  required           Boolean            @default(true)
+  status             ApprovalStepStatus @default(PENDING)
+  assignedReviewerId String?
+  assignedRole       Role?
+  acknowledgedAt     DateTime?
+  acknowledgedById   String?
+  decidedAt          DateTime?
+  decidedById        String?
+  decisionNote       String?
+  escalationLevel    Int                @default(0)
+  escalatedAt        DateTime?
+  escalatedById      String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  chain              ApprovalChain      @relation(fields: [chainId], references: [id], onDelete: Cascade)
+  assignedReviewer   User?              @relation("ApprovalStepAssignedReviewer", fields: [assignedReviewerId], references: [id], onDelete: SetNull)
+  acknowledgedBy     User?              @relation("ApprovalStepAcknowledgedBy", fields: [acknowledgedById], references: [id], onDelete: SetNull)
+  decidedBy          User?              @relation("ApprovalStepDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  escalatedBy        User?              @relation("ApprovalStepEscalatedBy", fields: [escalatedById], references: [id], onDelete: SetNull)
+  events             ApprovalStepEvent[]
+  notificationEvents NotificationEvent[]
+
+  @@unique([chainId, stepOrder])
+  @@index([chainId, status])
+  @@index([assignedReviewerId])
+  @@index([assignedRole])
+  @@index([escalationLevel])
+  @@map("approval_steps")
+}
+
+model ApprovalStepEvent {
+  id                     String                @id @default(cuid())
+  stepId                 String
+  eventType              ApprovalStepEventType
+  reasonCode             String
+  reasonNote             String?
+  actorUserId            String
+  fromAssignedReviewerId String?
+  fromAssignedRole       Role?
+  toAssignedReviewerId   String?
+  toAssignedRole         Role?
+  escalationLevel        Int
+  createdAt              DateTime              @default(now())
+
+  step                   ApprovalStep          @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  actor                  User                  @relation("ApprovalStepEventActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([stepId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([actorUserId])
+  @@map("approval_step_events")
+}
+
+model NotificationEvent {
+  id             String                  @id @default(cuid())
+  eventType      NotificationEventType
+  eventKey       String                  @unique
+  status         NotificationEventStatus @default(PENDING)
+  reviewRequestId String?
+  approvalChainId String?
+  approvalStepId  String?
+  actorUserId     String?
+  payload         Json?
+  attemptCount    Int                    @default(0)
+  nextAttemptAt   DateTime               @default(now())
+  lastAttemptAt   DateTime?
+  deliveredAt     DateTime?
+  lastError       String?
+  processingToken String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  reviewRequest   ReviewRequest?         @relation(fields: [reviewRequestId], references: [id], onDelete: SetNull)
+  approvalChain   ApprovalChain?         @relation(fields: [approvalChainId], references: [id], onDelete: SetNull)
+  approvalStep    ApprovalStep?          @relation(fields: [approvalStepId], references: [id], onDelete: SetNull)
+  actor           User?                  @relation("NotificationEventActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextAttemptAt, createdAt, id])
+  @@index([eventType, createdAt, id])
+  @@index([reviewRequestId, createdAt, id])
+  @@index([approvalChainId])
+  @@index([approvalStepId])
+  @@index([actorUserId])
+  @@map("notification_events")
 }

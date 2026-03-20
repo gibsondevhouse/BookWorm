@@ -67,6 +67,18 @@ export type AdminEntityRevisionRecord = {
   };
 };
 
+export type EntityRevisionByIdRecord = {
+  revisionId: string;
+  entityId: string;
+  entityType: EntityType;
+  entitySlug: string;
+  version: number;
+  name: string;
+  summary: string;
+  visibility: Visibility;
+  payload: Prisma.JsonValue | null;
+};
+
 export const entityRevisionRepository = {
   async saveDraft(input: SaveEntityRevisionInput): Promise<SaveEntityRevisionRecord> {
     return prismaClient.$transaction(async (transaction) => {
@@ -310,5 +322,44 @@ export const entityRevisionRepository = {
         role: revision.createdBy.role
       }
     }));
+  },
+
+  async findByRevisionId(revisionId: string): Promise<EntityRevisionByIdRecord | null> {
+    const revision = await prismaClient.entityRevision.findUnique({
+      where: {
+        id: revisionId
+      },
+      select: {
+        id: true,
+        entityId: true,
+        version: true,
+        name: true,
+        summary: true,
+        visibility: true,
+        payload: true,
+        entity: {
+          select: {
+            slug: true,
+            type: true
+          }
+        }
+      }
+    });
+
+    if (!revision) {
+      return null;
+    }
+
+    return {
+      revisionId: revision.id,
+      entityId: revision.entityId,
+      entityType: revision.entity.type,
+      entitySlug: revision.entity.slug,
+      version: revision.version,
+      name: revision.name,
+      summary: revision.summary,
+      visibility: revision.visibility,
+      payload: revision.payload
+    };
   }
 };

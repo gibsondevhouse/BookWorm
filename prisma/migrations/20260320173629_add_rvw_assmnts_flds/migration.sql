@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "RevisionDiff_kind_fromRevisionId_toRevisionId_pairContentIdenti" RENAME TO "RevisionDiff_kind_fromRevisionId_toRevisionId_pairContentId_key";

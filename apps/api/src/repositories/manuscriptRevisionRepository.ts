@@ -69,6 +69,18 @@ export type ActivePublicManuscriptListResult = {
   items: ActivePublicManuscriptRecord[];
 };
 
+export type ManuscriptRevisionByIdRecord = {
+  manuscriptRevisionId: string;
+  manuscriptId: string;
+  manuscriptType: ManuscriptType;
+  manuscriptSlug: string;
+  version: number;
+  title: string;
+  summary: string;
+  visibility: Visibility;
+  payload: Prisma.JsonValue | null;
+};
+
 export const manuscriptRevisionRepository = {
   async saveRevision(input: SaveManuscriptRevisionInput): Promise<SaveManuscriptRevisionRecord> {
     return prismaClient.$transaction(async (transaction) => {
@@ -408,6 +420,45 @@ export const manuscriptRevisionRepository = {
         version: entry.manuscriptRevision.version,
         payload: entry.manuscriptRevision.payload
       }))
+    };
+  },
+
+  async findByRevisionId(revisionId: string): Promise<ManuscriptRevisionByIdRecord | null> {
+    const revision = await prismaClient.manuscriptRevision.findUnique({
+      where: {
+        id: revisionId
+      },
+      select: {
+        id: true,
+        manuscriptId: true,
+        version: true,
+        title: true,
+        summary: true,
+        visibility: true,
+        payload: true,
+        manuscript: {
+          select: {
+            slug: true,
+            type: true
+          }
+        }
+      }
+    });
+
+    if (!revision) {
+      return null;
+    }
+
+    return {
+      manuscriptRevisionId: revision.id,
+      manuscriptId: revision.manuscriptId,
+      manuscriptType: revision.manuscript.type,
+      manuscriptSlug: revision.manuscript.slug,
+      version: revision.version,
+      title: revision.title,
+      summary: revision.summary,
+      visibility: revision.visibility,
+      payload: revision.payload
     };
   }
 };

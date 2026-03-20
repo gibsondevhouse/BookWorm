@@ -56,8 +56,8 @@ Phase 2 includes the minimum work needed to cross from a validated multi-entity 
 
 ## Status
 
-**In progress** — 2026-03-19
+**Completed** — 2026-03-20
 
-Stage 01 is complete. The repository now supports the full MVP entity set for authenticated admin create, update, and retire flows, with a shared metadata contract covering spoiler tier, tags, visibility-aware public shaping, and timeline anchors for chronology-sensitive entity types.
+Stages 01 through 04 are complete. The repository now covers the MVP-focused Phase 2 scope across full admin CRUD for supported entities and manuscripts, release-bound public codex and reader behavior, continuity and search safeguards, and portability/delivery baselines.
 
-Phase 2 remains open because Stages 02 through 04 are still planned work.
+Completion evidence is recorded in the stage and part artifacts, including the Stage 04 verification gate and the Phase 2 tracker updates.
