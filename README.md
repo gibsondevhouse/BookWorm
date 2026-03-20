@@ -1,14 +1,16 @@
 # Book Worm
 
-Book Worm is an active Phase 2 monorepo for the bounded codex, release, and operator baseline slices implemented in this repository.
+Book Worm is a pnpm monorepo for release-aware lore publishing and editorial governance workflows.
 
-## Stack Baseline
+Current implementation status: Phases 0 through 4 are complete in the build tracker, including collaboration workflows, approval chains, notifications, analytics, and operational hardening.
+
+## Stack
 
 - Monorepo workspace managed with pnpm
-- Next.js frontend under `apps/web`
-- Express API under `apps/api`
-- Initial Prisma schema and migration under `prisma`
-- Direct local runtime for the app layers, with PostgreSQL as the first backing service
+- API: Express + TypeScript in `apps/api`
+- Web: Next.js in `apps/web`
+- Database: PostgreSQL via Prisma (`prisma/schema.prisma`)
+- Integration tests: Node test runner + tsx in `tests/`
 
 ## Repository Layout
 
@@ -24,65 +26,97 @@ storage/
 tests/
 ```
 
+## Prerequisites
+
+- Node.js 22+
+- pnpm 10+
+- PostgreSQL
+
 ## Local Setup
 
 1. Copy `.env.example` to `.env`.
-2. Run `pnpm install`.
-3. Provision PostgreSQL and set `DATABASE_URL`.
-4. Run `pnpm db:generate`.
-5. Run `pnpm db:migrate`.
-6. Run `pnpm auth:bootstrap-admin --email <email> --display-name <name> --password <password>`.
-7. Optionally validate initial content with `pnpm portability:import --format=markdown --input <path> --actor-email <email> --dry-run`.
-8. Apply initial content with `pnpm portability:import --format=markdown --input <path> --actor-email <email>`.
-9. Run `pnpm dev` for local hosting, or use `pnpm build` and package start scripts for a built run.
-10. Verify API health at `/health` and representative public reads.
+2. Install dependencies:
+  - `pnpm install`
+3. Provision PostgreSQL and set `DATABASE_URL` in `.env`.
+4. Generate Prisma client:
+  - `pnpm db:generate`
+5. Run migrations:
+  - `pnpm db:migrate`
+6. Create an initial admin account:
+  - `pnpm auth:bootstrap-admin --email <email> --display-name <name> --password <password>`
+7. Start the app stack:
+  - `pnpm dev`
+
+The dev launcher includes port fallback behavior for API and web processes and prints a startup summary with selected ports.
+
+## Common Commands
+
+- `pnpm dev`: run API + web in parallel
+- `pnpm build`: build all workspace packages
+- `pnpm test`: run integration suites (serial concurrency for deterministic DB-backed tests)
+- `pnpm lint`: run ESLint across the workspace
+- `pnpm type-check`: run TypeScript no-emit validation across the workspace
+- `pnpm format`: run Prettier across the repository
+
+### Database and Bootstrap
+
+- `pnpm db:generate`: Prisma client generation
+- `pnpm db:migrate`: create/apply Prisma development migration
+- `pnpm db:reset`: reset database via Prisma migrations
+- `pnpm db:seed`: deterministic fixture seeding baseline
+- `pnpm auth:bootstrap-admin`: create clean-install `AUTHOR_ADMIN` account
+
+### Portability and Operations
+
+- `pnpm portability:export`: export portability package (JSON or Markdown)
+- `pnpm portability:import`: validate/apply portability package (JSON or Markdown)
+- `pnpm db:backup`: backup database via `pg_dump`
+- `pnpm db:restore`: restore database via `pg_restore` (or `psql` for `.sql`)
+
+### Slice Verification Scripts
+
+- `pnpm phase0:verify`: reseed and verify Phase 0 baseline against a running API
+- `pnpm phase1:verify`: verify Phase 1 baseline against a running API
+
+## Functional Scope Snapshot
+
+- Phase 0: auth/session shell, release spine, first draft-to-release slice
+- Phase 1: expanded entity and relationship authoring, dependency validation and release review
+- Phase 2: comprehensive entity/manuscript/public codex/search/continuity and portability delivery
+- Phase 3: collaboration comments, proposal workflow enhancements, diff/preview/history tooling
+- Phase 4: review requests, multi-stage approvals, delegation/escalation, notification outbox/inbox, analytics, query hardening, governance portability extensions, and verification gate
+
+For plan-level detail, see `docs/build-plans/master-plan-tracker.md`.
+
+## API Surface (High-Level)
+
+The API includes route groups for:
+
+- auth session lifecycle
+- admin draft and CRUD flows across supported content types
+- release composition and activation workflows
+- public read and discovery endpoints
+- proposal, review request, and approval workflows
+- notification events/preferences and review inbox
+- revision diff, revision timeline, and analytics surfaces
+- health/status endpoints
+
+See `apps/api/src/routes/` for concrete endpoint definitions.
 
 ## Operator Notes
 
-- Import and database restore are offline maintenance operations: stop the API before `pnpm portability:import` or `pnpm db:restore`.
-- Restart the API process after import or restore so startup rebuilds the in-memory search index from database state.
-- Database backup and restore are the authoritative disaster-recovery path.
-- Portability export and import are content mobility workflows, not a replacement for operational backup.
-- `pnpm db:seed` remains a deterministic fixture setup flow and is not the default self-host bootstrap path.
+- Treat portability import and database restore as offline maintenance operations.
+- Restart API processes after import/restore so startup jobs can rebuild derived runtime state.
+- Use database backup/restore for disaster recovery.
+- Use portability export/import for content mobility between environments.
+- Deterministic seed data is for baseline/verification workflows, not default production bootstrap.
 
-## Available Commands
+## Testing and Quality Gates
 
-- `pnpm dev` runs the Express API and the Next.js app in parallel.
-- `pnpm build` builds all workspace packages.
-- `pnpm test` runs the repository integration suites, including the current Phase 0, Phase 1, and implemented Phase 2 slice coverage.
-- `pnpm type-check` runs TypeScript validation across the workspace.
-- `pnpm lint` runs ESLint across the workspace.
-- `pnpm db:generate` generates the Prisma client from the schema.
-- `pnpm db:migrate` creates and applies a Prisma development migration.
-- `pnpm auth:bootstrap-admin` creates a clean-install `AUTHOR_ADMIN` user without seeding demo content.
-- `pnpm portability:export` writes a JSON or Markdown portability package for either the current authored state or a selected release snapshot into a missing or empty output directory.
-- `pnpm portability:import` validates and applies a JSON or Markdown portability package.
-- `pnpm db:backup` shells out to `pg_dump` and writes a caller-selected dump path.
-- `pnpm db:restore` shells out to `pg_restore` (or `psql` for `.sql`) and restores a caller-selected dump path.
-- `pnpm db:seed` writes the deterministic Character, Faction, and relationship fixtures used by the current baseline.
-- `pnpm db:reset` resets the database through Prisma migrations.
-- `pnpm phase0:verify` reseeds the deterministic Phase 0 baseline, then runs the end-to-end verification flow against a running API.
+Standard quality gate commands:
 
-## Phase 0 Slice Endpoints
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm test`
 
-These routes prove the draft-to-release data flow through a real server-managed session boundary.
-
-- `POST /auth/session` creates a session and sets the HTTP-only session cookie.
-- `GET /auth/session` returns the current authenticated actor when a valid session exists.
-- `DELETE /auth/session` clears the current session.
-- `POST /admin/characters/drafts` creates or updates a Character draft revision.
-- `POST /admin/factions/drafts` creates or updates a Faction draft revision.
-- `POST /admin/releases` creates a draft release.
-- `POST /admin/releases/:slug/entries` includes a supported entity revision in a release.
-- `POST /admin/releases/:slug/activate` marks a release as active.
-- `GET /characters/:slug` resolves a Character only through the active release.
-- `GET /factions/:slug` resolves a Faction only through the active release.
-
-The seeded Phase 0 credentials are:
-
-- author-admin: `author@example.com` / `phase0-author-password`
-- editor: `editor@example.com` / `phase0-editor-password`
-
-## Current Scope
-
-The repository now includes the Prisma schema, migrations, release-aware API flows, verification scripts, portability export and import for JSON plus Markdown packages, clean-install `AUTHOR_ADMIN` bootstrap, and database backup/restore wrapper scripts with self-hosting operator guidance.
+The integration suite includes phase coverage from Phase 0 through Phase 4 under `tests/`.
