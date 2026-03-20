@@ -138,7 +138,7 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 4
 
-- [-] [Phase 4 Overview](./phase-4/phase-4.md)
+- [x] [Phase 4 Overview](./phase-4/phase-4.md) (All stages complete)
 
 #### Phase 4 Stage 01
 
@@ -163,10 +163,10 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 4 Stage 04
 
-- [ ] [Stage 04 Overview](./phase-4/stage-04-operational-hardening-and-phase-4-verification/stage-04-operational-hardening-and-phase-4-verification.md)
-- [ ] [Part 01: Collaboration Performance and Query Hardening](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-01-collaboration-performance-and-query-hardening/part-01-collaboration-performance-and-query-hardening.md)
-- [ ] [Part 02: Audit Retention and Portability Extensions](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-02-audit-retention-and-portability-extensions/part-02-audit-retention-and-portability-extensions.md)
-- [ ] [Part 03: Phase 4 Verification Gate](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-03-phase-4-verification-gate/part-03-phase-4-verification-gate.md)
+- [x] [Stage 04 Overview](./phase-4/stage-04-operational-hardening-and-phase-4-verification/stage-04-operational-hardening-and-phase-4-verification.md) (All parts complete)
+- [x] [Part 01: Collaboration Performance and Query Hardening](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-01-collaboration-performance-and-query-hardening/part-01-collaboration-performance-and-query-hardening.md)
+- [x] [Part 02: Audit Retention and Portability Extensions](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-02-audit-retention-and-portability-extensions/part-02-audit-retention-and-portability-extensions.md)
+- [x] [Part 03: Phase 4 Verification Gate](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-03-phase-4-verification-gate/part-03-phase-4-verification-gate.md)
 
 ## Update Rules
 

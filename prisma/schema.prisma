@@ -578,7 +578,9 @@ model ReviewRequest {
   @@index([createdById])
   @@index([assignedApproverId])
   @@index([assignedApproverId, status, createdAt])
+  @@index([assignedApproverId, status, createdAt, id])
   @@index([status, createdAt])
+  @@index([status, createdAt, id])
   @@map("review_requests")
 }
 
@@ -596,6 +598,7 @@ model ApprovalChain {
   notificationEvents NotificationEvent[]
 
   @@index([status, createdAt])
+  @@index([status, finalizedAt, createdAt])
   @@map("approval_chains")
 }
 
@@ -630,6 +633,8 @@ model ApprovalStep {
   @@unique([chainId, stepOrder])
   @@index([chainId, status])
   @@index([assignedReviewerId])
+  @@index([assignedReviewerId, status, createdAt])
+  @@index([chainId, status, createdAt, id])
   @@index([assignedRole])
   @@index([escalationLevel])
   @@map("approval_steps")
@@ -655,6 +660,7 @@ model ApprovalStepEvent {
   @@index([stepId, createdAt])
   @@index([eventType, createdAt])
   @@index([actorUserId])
+  @@index([toAssignedReviewerId, eventType, createdAt])
   @@map("approval_step_events")
 }
 

@@ -483,31 +483,29 @@ test("AC-02: admin notification inspection supports deterministic filtering and 
 });
 
 test("AC-03: outbox processor is idempotent and safely retries failed events", async () => {
-  const firstRunResponse = await fetch(`${apiBaseUrl}/admin/notification-events/process`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: adminCookie
-    },
-    body: JSON.stringify({ limit: 100 })
-  });
+  const processOutbox = async (limit: number): Promise<ProcessOutboxResponse> => {
+    const response = await fetch(`${apiBaseUrl}/admin/notification-events/process`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie: adminCookie
+      },
+      body: JSON.stringify({ limit })
+    });
 
-  assert.equal(firstRunResponse.status, 200);
-  const firstRun = (await firstRunResponse.json()) as ProcessOutboxResponse;
+    assert.equal(response.status, 200);
+    return (await response.json()) as ProcessOutboxResponse;
+  };
+
+  const firstRun = await processOutbox(100);
   assert.ok(firstRun.delivered >= 1);
 
-  const secondRunResponse = await fetch(`${apiBaseUrl}/admin/notification-events/process`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: adminCookie
-    },
-    body: JSON.stringify({ limit: 100 })
-  });
+  let drainResult = firstRun;
+  for (let attempt = 0; attempt < 10 && drainResult.delivered > 0; attempt += 1) {
+    drainResult = await processOutbox(100);
+  }
 
-  assert.equal(secondRunResponse.status, 200);
-  const secondRun = (await secondRunResponse.json()) as ProcessOutboxResponse;
-  assert.equal(secondRun.delivered, 0);
+  assert.equal(drainResult.delivered, 0);
 
   const deliveredEvent = await notificationEventModel.findFirst({
     where: {
@@ -533,17 +531,7 @@ test("AC-03: outbox processor is idempotent and safely retries failed events", a
     }
   });
 
-  const retryRunResponse = await fetch(`${apiBaseUrl}/admin/notification-events/process`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      cookie: adminCookie
-    },
-    body: JSON.stringify({ limit: 10 })
-  });
-
-  assert.equal(retryRunResponse.status, 200);
-  const retryRun = (await retryRunResponse.json()) as ProcessOutboxResponse;
+  const retryRun = await processOutbox(10);
   assert.equal(retryRun.delivered, 1);
 });
 

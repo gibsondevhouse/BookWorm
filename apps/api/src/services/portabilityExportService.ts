@@ -44,7 +44,8 @@ export const portabilityExportService = {
         exportedAt,
         entities: snapshot.entities,
         manuscripts: snapshot.manuscripts,
-        relationships: snapshot.relationships
+        relationships: snapshot.relationships,
+        governance: snapshot.governance
       });
     }
 
@@ -64,6 +65,7 @@ export const portabilityExportService = {
       entities: snapshot.entities,
       manuscripts: snapshot.manuscripts,
       relationships: snapshot.relationships,
+      governance: snapshot.governance,
       release: snapshot.release
     });
   }

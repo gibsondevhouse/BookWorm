@@ -8,6 +8,7 @@ import {
 
 import {
   type ReviewDecisionHistoryRecord,
+  type ReviewDecisionSummaryRecord,
   reviewDecisionAnalyticsRepository
 } from "../repositories/reviewDecisionAnalyticsRepository.js";
 
@@ -313,7 +314,7 @@ const buildTimeline = (record: ReviewDecisionHistoryRecord) => {
 };
 
 const calculateLatencyAggregates = (
-  records: ReviewDecisionHistoryRecord[],
+  records: Array<ReviewDecisionSummaryRecord | ReviewDecisionHistoryRecord>,
   windowStart: Date,
   windowEnd: Date
 ): {
@@ -415,7 +416,7 @@ export const reviewDecisionAnalyticsService = {
     assertCanReadAnalytics(input.actor);
 
     const window = resolveWindow(input.window);
-    const records = await reviewDecisionAnalyticsRepository.listForWindow({
+    const records = await reviewDecisionAnalyticsRepository.listSummaryForWindow({
       windowStart: window.start,
       windowEnd: window.end
     });

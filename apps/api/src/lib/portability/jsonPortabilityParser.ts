@@ -11,6 +11,12 @@ export type ParsedManifest = {
     manuscripts: number;
     relationships: number;
     releases: number;
+    reviewRequests?: number;
+    approvalChains?: number;
+    approvalSteps?: number;
+    approvalStepEvents?: number;
+    notificationEvents?: number;
+    notificationPreferences?: number;
   };
 };
 
@@ -101,6 +107,112 @@ export type ParsedReleaseFile = {
   };
 };
 
+export type ParsedReviewRequestFile = {
+  filePath: string;
+  reviewRequest: {
+    id: string;
+    proposalId: string;
+    createdById: string;
+    assignedApproverId: string | null;
+    assignedAt: string | null;
+    assignmentHistory: unknown;
+    lifecycleHistory: unknown;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ParsedApprovalChainFile = {
+  filePath: string;
+  approvalChain: {
+    id: string;
+    reviewRequestId: string;
+    status: string;
+    currentStepOrder: number;
+    finalizedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ParsedApprovalStepFile = {
+  filePath: string;
+  approvalStep: {
+    id: string;
+    chainId: string;
+    stepOrder: number;
+    title: string;
+    required: boolean;
+    status: string;
+    assignedReviewerId: string | null;
+    assignedRole: string | null;
+    acknowledgedAt: string | null;
+    acknowledgedById: string | null;
+    decidedAt: string | null;
+    decidedById: string | null;
+    decisionNote: string | null;
+    escalationLevel: number;
+    escalatedAt: string | null;
+    escalatedById: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ParsedApprovalStepEventFile = {
+  filePath: string;
+  approvalStepEvent: {
+    id: string;
+    stepId: string;
+    eventType: string;
+    reasonCode: string;
+    reasonNote: string | null;
+    actorUserId: string;
+    fromAssignedReviewerId: string | null;
+    fromAssignedRole: string | null;
+    toAssignedReviewerId: string | null;
+    toAssignedRole: string | null;
+    escalationLevel: number;
+    createdAt: string;
+  };
+};
+
+export type ParsedNotificationEventFile = {
+  filePath: string;
+  notificationEvent: {
+    id: string;
+    eventType: string;
+    eventKey: string;
+    status: string;
+    reviewRequestId: string | null;
+    approvalChainId: string | null;
+    approvalStepId: string | null;
+    actorUserId: string | null;
+    payload: unknown;
+    attemptCount: number;
+    nextAttemptAt: string;
+    lastAttemptAt: string | null;
+    deliveredAt: string | null;
+    lastError: string | null;
+    processingToken: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ParsedNotificationPreferenceFile = {
+  filePath: string;
+  notificationPreference: {
+    id: string;
+    userId: string;
+    eventType: string;
+    enabled: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
 export type ParseFailure = {
   file: string;
   code: string;
@@ -114,6 +226,14 @@ export type ParsedImportPackage = {
   manuscripts: ParsedManuscriptFile[];
   relationships: ParsedRelationshipFile[];
   releases: ParsedReleaseFile[];
+  governance: {
+    reviewRequests: ParsedReviewRequestFile[];
+    approvalChains: ParsedApprovalChainFile[];
+    approvalSteps: ParsedApprovalStepFile[];
+    approvalStepEvents: ParsedApprovalStepEventFile[];
+    notificationEvents: ParsedNotificationEventFile[];
+    notificationPreferences: ParsedNotificationPreferenceFile[];
+  };
 };
 
 export type ParseResult =
@@ -373,6 +493,211 @@ const validateReleaseFile = (raw: unknown, filePath: string): ParsedReleaseFile 
   };
 };
 
+const validateReviewRequestFile = (raw: unknown, filePath: string): ParsedReviewRequestFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const reviewRequest = raw["reviewRequest"];
+
+  if (!isRecord(reviewRequest)) throw new Error("Missing or invalid reviewRequest field");
+  if (typeof reviewRequest["id"] !== "string" || reviewRequest["id"].trim().length === 0) {
+    throw new Error("reviewRequest.id must be a non-empty string");
+  }
+  if (typeof reviewRequest["proposalId"] !== "string" || reviewRequest["proposalId"].trim().length === 0) {
+    throw new Error("reviewRequest.proposalId must be a non-empty string");
+  }
+  if (typeof reviewRequest["createdById"] !== "string" || reviewRequest["createdById"].trim().length === 0) {
+    throw new Error("reviewRequest.createdById must be a non-empty string");
+  }
+  if (typeof reviewRequest["status"] !== "string" || reviewRequest["status"].trim().length === 0) {
+    throw new Error("reviewRequest.status must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    reviewRequest: {
+      id: reviewRequest["id"],
+      proposalId: reviewRequest["proposalId"],
+      createdById: reviewRequest["createdById"],
+      assignedApproverId: typeof reviewRequest["assignedApproverId"] === "string" ? reviewRequest["assignedApproverId"] : null,
+      assignedAt: typeof reviewRequest["assignedAt"] === "string" ? reviewRequest["assignedAt"] : null,
+      assignmentHistory: reviewRequest["assignmentHistory"] !== undefined ? reviewRequest["assignmentHistory"] : null,
+      lifecycleHistory: reviewRequest["lifecycleHistory"] !== undefined ? reviewRequest["lifecycleHistory"] : null,
+      status: reviewRequest["status"],
+      createdAt: typeof reviewRequest["createdAt"] === "string" ? reviewRequest["createdAt"] : new Date().toISOString(),
+      updatedAt: typeof reviewRequest["updatedAt"] === "string" ? reviewRequest["updatedAt"] : new Date().toISOString()
+    }
+  };
+};
+
+const validateApprovalChainFile = (raw: unknown, filePath: string): ParsedApprovalChainFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const approvalChain = raw["approvalChain"];
+
+  if (!isRecord(approvalChain)) throw new Error("Missing or invalid approvalChain field");
+  if (typeof approvalChain["id"] !== "string" || approvalChain["id"].trim().length === 0) {
+    throw new Error("approvalChain.id must be a non-empty string");
+  }
+  if (typeof approvalChain["reviewRequestId"] !== "string" || approvalChain["reviewRequestId"].trim().length === 0) {
+    throw new Error("approvalChain.reviewRequestId must be a non-empty string");
+  }
+  if (typeof approvalChain["status"] !== "string" || approvalChain["status"].trim().length === 0) {
+    throw new Error("approvalChain.status must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    approvalChain: {
+      id: approvalChain["id"],
+      reviewRequestId: approvalChain["reviewRequestId"],
+      status: approvalChain["status"],
+      currentStepOrder: typeof approvalChain["currentStepOrder"] === "number" ? approvalChain["currentStepOrder"] : 1,
+      finalizedAt: typeof approvalChain["finalizedAt"] === "string" ? approvalChain["finalizedAt"] : null,
+      createdAt: typeof approvalChain["createdAt"] === "string" ? approvalChain["createdAt"] : new Date().toISOString(),
+      updatedAt: typeof approvalChain["updatedAt"] === "string" ? approvalChain["updatedAt"] : new Date().toISOString()
+    }
+  };
+};
+
+const validateApprovalStepFile = (raw: unknown, filePath: string): ParsedApprovalStepFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const approvalStep = raw["approvalStep"];
+
+  if (!isRecord(approvalStep)) throw new Error("Missing or invalid approvalStep field");
+  if (typeof approvalStep["id"] !== "string" || approvalStep["id"].trim().length === 0) {
+    throw new Error("approvalStep.id must be a non-empty string");
+  }
+  if (typeof approvalStep["chainId"] !== "string" || approvalStep["chainId"].trim().length === 0) {
+    throw new Error("approvalStep.chainId must be a non-empty string");
+  }
+  if (typeof approvalStep["status"] !== "string" || approvalStep["status"].trim().length === 0) {
+    throw new Error("approvalStep.status must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    approvalStep: {
+      id: approvalStep["id"],
+      chainId: approvalStep["chainId"],
+      stepOrder: typeof approvalStep["stepOrder"] === "number" ? approvalStep["stepOrder"] : 1,
+      title: typeof approvalStep["title"] === "string" ? approvalStep["title"] : "",
+      required: typeof approvalStep["required"] === "boolean" ? approvalStep["required"] : true,
+      status: approvalStep["status"],
+      assignedReviewerId: typeof approvalStep["assignedReviewerId"] === "string" ? approvalStep["assignedReviewerId"] : null,
+      assignedRole: typeof approvalStep["assignedRole"] === "string" ? approvalStep["assignedRole"] : null,
+      acknowledgedAt: typeof approvalStep["acknowledgedAt"] === "string" ? approvalStep["acknowledgedAt"] : null,
+      acknowledgedById: typeof approvalStep["acknowledgedById"] === "string" ? approvalStep["acknowledgedById"] : null,
+      decidedAt: typeof approvalStep["decidedAt"] === "string" ? approvalStep["decidedAt"] : null,
+      decidedById: typeof approvalStep["decidedById"] === "string" ? approvalStep["decidedById"] : null,
+      decisionNote: typeof approvalStep["decisionNote"] === "string" ? approvalStep["decisionNote"] : null,
+      escalationLevel: typeof approvalStep["escalationLevel"] === "number" ? approvalStep["escalationLevel"] : 0,
+      escalatedAt: typeof approvalStep["escalatedAt"] === "string" ? approvalStep["escalatedAt"] : null,
+      escalatedById: typeof approvalStep["escalatedById"] === "string" ? approvalStep["escalatedById"] : null,
+      createdAt: typeof approvalStep["createdAt"] === "string" ? approvalStep["createdAt"] : new Date().toISOString(),
+      updatedAt: typeof approvalStep["updatedAt"] === "string" ? approvalStep["updatedAt"] : new Date().toISOString()
+    }
+  };
+};
+
+const validateApprovalStepEventFile = (raw: unknown, filePath: string): ParsedApprovalStepEventFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const approvalStepEvent = raw["approvalStepEvent"];
+
+  if (!isRecord(approvalStepEvent)) throw new Error("Missing or invalid approvalStepEvent field");
+  if (typeof approvalStepEvent["id"] !== "string" || approvalStepEvent["id"].trim().length === 0) {
+    throw new Error("approvalStepEvent.id must be a non-empty string");
+  }
+  if (typeof approvalStepEvent["stepId"] !== "string" || approvalStepEvent["stepId"].trim().length === 0) {
+    throw new Error("approvalStepEvent.stepId must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    approvalStepEvent: {
+      id: approvalStepEvent["id"],
+      stepId: approvalStepEvent["stepId"],
+      eventType: typeof approvalStepEvent["eventType"] === "string" ? approvalStepEvent["eventType"] : "",
+      reasonCode: typeof approvalStepEvent["reasonCode"] === "string" ? approvalStepEvent["reasonCode"] : "",
+      reasonNote: typeof approvalStepEvent["reasonNote"] === "string" ? approvalStepEvent["reasonNote"] : null,
+      actorUserId: typeof approvalStepEvent["actorUserId"] === "string" ? approvalStepEvent["actorUserId"] : "",
+      fromAssignedReviewerId: typeof approvalStepEvent["fromAssignedReviewerId"] === "string" ? approvalStepEvent["fromAssignedReviewerId"] : null,
+      fromAssignedRole: typeof approvalStepEvent["fromAssignedRole"] === "string" ? approvalStepEvent["fromAssignedRole"] : null,
+      toAssignedReviewerId: typeof approvalStepEvent["toAssignedReviewerId"] === "string" ? approvalStepEvent["toAssignedReviewerId"] : null,
+      toAssignedRole: typeof approvalStepEvent["toAssignedRole"] === "string" ? approvalStepEvent["toAssignedRole"] : null,
+      escalationLevel: typeof approvalStepEvent["escalationLevel"] === "number" ? approvalStepEvent["escalationLevel"] : 0,
+      createdAt: typeof approvalStepEvent["createdAt"] === "string" ? approvalStepEvent["createdAt"] : new Date().toISOString()
+    }
+  };
+};
+
+const validateNotificationEventFile = (raw: unknown, filePath: string): ParsedNotificationEventFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const notificationEvent = raw["notificationEvent"];
+
+  if (!isRecord(notificationEvent)) throw new Error("Missing or invalid notificationEvent field");
+  if (typeof notificationEvent["id"] !== "string" || notificationEvent["id"].trim().length === 0) {
+    throw new Error("notificationEvent.id must be a non-empty string");
+  }
+  if (typeof notificationEvent["eventKey"] !== "string" || notificationEvent["eventKey"].trim().length === 0) {
+    throw new Error("notificationEvent.eventKey must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    notificationEvent: {
+      id: notificationEvent["id"],
+      eventType: typeof notificationEvent["eventType"] === "string" ? notificationEvent["eventType"] : "",
+      eventKey: notificationEvent["eventKey"],
+      status: typeof notificationEvent["status"] === "string" ? notificationEvent["status"] : "",
+      reviewRequestId: typeof notificationEvent["reviewRequestId"] === "string" ? notificationEvent["reviewRequestId"] : null,
+      approvalChainId: typeof notificationEvent["approvalChainId"] === "string" ? notificationEvent["approvalChainId"] : null,
+      approvalStepId: typeof notificationEvent["approvalStepId"] === "string" ? notificationEvent["approvalStepId"] : null,
+      actorUserId: typeof notificationEvent["actorUserId"] === "string" ? notificationEvent["actorUserId"] : null,
+      payload: notificationEvent["payload"] !== undefined ? notificationEvent["payload"] : null,
+      attemptCount: typeof notificationEvent["attemptCount"] === "number" ? notificationEvent["attemptCount"] : 0,
+      nextAttemptAt: typeof notificationEvent["nextAttemptAt"] === "string" ? notificationEvent["nextAttemptAt"] : new Date().toISOString(),
+      lastAttemptAt: typeof notificationEvent["lastAttemptAt"] === "string" ? notificationEvent["lastAttemptAt"] : null,
+      deliveredAt: typeof notificationEvent["deliveredAt"] === "string" ? notificationEvent["deliveredAt"] : null,
+      lastError: typeof notificationEvent["lastError"] === "string" ? notificationEvent["lastError"] : null,
+      processingToken: typeof notificationEvent["processingToken"] === "string" ? notificationEvent["processingToken"] : null,
+      createdAt: typeof notificationEvent["createdAt"] === "string" ? notificationEvent["createdAt"] : new Date().toISOString(),
+      updatedAt: typeof notificationEvent["updatedAt"] === "string" ? notificationEvent["updatedAt"] : new Date().toISOString()
+    }
+  };
+};
+
+const validateNotificationPreferenceFile = (
+  raw: unknown,
+  filePath: string
+): ParsedNotificationPreferenceFile => {
+  if (!isRecord(raw)) throw new Error("Expected object");
+
+  const notificationPreference = raw["notificationPreference"];
+
+  if (!isRecord(notificationPreference)) throw new Error("Missing or invalid notificationPreference field");
+  if (typeof notificationPreference["id"] !== "string" || notificationPreference["id"].trim().length === 0) {
+    throw new Error("notificationPreference.id must be a non-empty string");
+  }
+  if (typeof notificationPreference["userId"] !== "string" || notificationPreference["userId"].trim().length === 0) {
+    throw new Error("notificationPreference.userId must be a non-empty string");
+  }
+
+  return {
+    filePath,
+    notificationPreference: {
+      id: notificationPreference["id"],
+      userId: notificationPreference["userId"],
+      eventType: typeof notificationPreference["eventType"] === "string" ? notificationPreference["eventType"] : "",
+      enabled: typeof notificationPreference["enabled"] === "boolean" ? notificationPreference["enabled"] : true,
+      createdAt: typeof notificationPreference["createdAt"] === "string" ? notificationPreference["createdAt"] : new Date().toISOString(),
+      updatedAt: typeof notificationPreference["updatedAt"] === "string" ? notificationPreference["updatedAt"] : new Date().toISOString()
+    }
+  };
+};
+
 export const jsonPortabilityParser = {
   async parseDirectory(inputPath: string): Promise<ParseResult> {
     const rootDir = resolve(inputPath);
@@ -485,6 +810,12 @@ export const jsonPortabilityParser = {
     const manuscripts: ParsedManuscriptFile[] = [];
     const relationships: ParsedRelationshipFile[] = [];
     const releases: ParsedReleaseFile[] = [];
+    const reviewRequests: ParsedReviewRequestFile[] = [];
+    const approvalChains: ParsedApprovalChainFile[] = [];
+    const approvalSteps: ParsedApprovalStepFile[] = [];
+    const approvalStepEvents: ParsedApprovalStepEventFile[] = [];
+    const notificationEvents: ParsedNotificationEventFile[] = [];
+    const notificationPreferences: ParsedNotificationPreferenceFile[] = [];
 
     const entityScan = await scanJsonFilesUnder(rootDir, "entities");
 
@@ -590,6 +921,167 @@ export const jsonPortabilityParser = {
       }
     }
 
+    const reviewRequestScan = await scanJsonFilesUnder(rootDir, "governance/review-requests");
+    if (reviewRequestScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: reviewRequestScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in review request files"
+          }
+        ]
+      };
+    }
+    for (const filePath of reviewRequestScan.files) {
+      try {
+        reviewRequests.push(validateReviewRequestFile(await readJsonFile(rootDir, filePath), filePath));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid review request file: ${message}`
+        });
+      }
+    }
+
+    const approvalChainScan = await scanJsonFilesUnder(rootDir, "governance/approval-chains");
+    if (approvalChainScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: approvalChainScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in approval chain files"
+          }
+        ]
+      };
+    }
+    for (const filePath of approvalChainScan.files) {
+      try {
+        approvalChains.push(validateApprovalChainFile(await readJsonFile(rootDir, filePath), filePath));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid approval chain file: ${message}`
+        });
+      }
+    }
+
+    const approvalStepScan = await scanJsonFilesUnder(rootDir, "governance/approval-steps");
+    if (approvalStepScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: approvalStepScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in approval step files"
+          }
+        ]
+      };
+    }
+    for (const filePath of approvalStepScan.files) {
+      try {
+        approvalSteps.push(validateApprovalStepFile(await readJsonFile(rootDir, filePath), filePath));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid approval step file: ${message}`
+        });
+      }
+    }
+
+    const approvalStepEventScan = await scanJsonFilesUnder(rootDir, "governance/approval-step-events");
+    if (approvalStepEventScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: approvalStepEventScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in approval step event files"
+          }
+        ]
+      };
+    }
+    for (const filePath of approvalStepEventScan.files) {
+      try {
+        approvalStepEvents.push(validateApprovalStepEventFile(await readJsonFile(rootDir, filePath), filePath));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid approval step event file: ${message}`
+        });
+      }
+    }
+
+    const notificationEventScan = await scanJsonFilesUnder(rootDir, "governance/notification-events");
+    if (notificationEventScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: notificationEventScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in notification event files"
+          }
+        ]
+      };
+    }
+    for (const filePath of notificationEventScan.files) {
+      try {
+        notificationEvents.push(validateNotificationEventFile(await readJsonFile(rootDir, filePath), filePath));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid notification event file: ${message}`
+        });
+      }
+    }
+
+    const notificationPreferenceScan = await scanJsonFilesUnder(
+      rootDir,
+      "governance/notification-preferences"
+    );
+    if (notificationPreferenceScan.pathUnsafe) {
+      return {
+        success: false,
+        errors: [
+          {
+            file: notificationPreferenceScan.pathUnsafe,
+            code: "PATH_UNSAFE",
+            message: "Path traversal detected in notification preference files"
+          }
+        ]
+      };
+    }
+    for (const filePath of notificationPreferenceScan.files) {
+      try {
+        notificationPreferences.push(
+          validateNotificationPreferenceFile(await readJsonFile(rootDir, filePath), filePath)
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown parse error";
+        errors.push({
+          file: filePath,
+          code: "PAYLOAD_INVALID",
+          message: `Invalid notification preference file: ${message}`
+        });
+      }
+    }
+
     if (errors.length > 0) {
       return { success: false, errors };
     }
@@ -602,7 +1094,15 @@ export const jsonPortabilityParser = {
         entities,
         manuscripts,
         relationships,
-        releases
+        releases,
+        governance: {
+          reviewRequests,
+          approvalChains,
+          approvalSteps,
+          approvalStepEvents,
+          notificationEvents,
+          notificationPreferences
+        }
       }
     };
   }

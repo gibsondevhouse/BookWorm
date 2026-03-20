@@ -1,8 +1,15 @@
 import type {
+  ApprovalChainStatus,
+  ApprovalStepEventType,
+  ApprovalStepStatus,
   EntityType,
   ManuscriptType,
+  NotificationEventStatus,
+  NotificationEventType,
   Prisma,
   ReleaseStatus,
+  ReviewRequestStatus,
+  Role,
   RelationshipRevisionState,
   Visibility
 } from "@prisma/client";
@@ -85,8 +92,102 @@ export const portabilityExportRepository = {
         createdAt: Date;
       };
     }>;
+    governance: {
+      reviewRequests: Array<{
+        id: string;
+        proposalId: string;
+        createdById: string;
+        assignedApproverId: string | null;
+        assignedAt: Date | null;
+        assignmentHistory: Prisma.JsonValue | null;
+        lifecycleHistory: Prisma.JsonValue | null;
+        status: ReviewRequestStatus;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalChains: Array<{
+        id: string;
+        reviewRequestId: string;
+        status: ApprovalChainStatus;
+        currentStepOrder: number;
+        finalizedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalSteps: Array<{
+        id: string;
+        chainId: string;
+        stepOrder: number;
+        title: string;
+        required: boolean;
+        status: ApprovalStepStatus;
+        assignedReviewerId: string | null;
+        assignedRole: Role | null;
+        acknowledgedAt: Date | null;
+        acknowledgedById: string | null;
+        decidedAt: Date | null;
+        decidedById: string | null;
+        decisionNote: string | null;
+        escalationLevel: number;
+        escalatedAt: Date | null;
+        escalatedById: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalStepEvents: Array<{
+        id: string;
+        stepId: string;
+        eventType: ApprovalStepEventType;
+        reasonCode: string;
+        reasonNote: string | null;
+        actorUserId: string;
+        fromAssignedReviewerId: string | null;
+        fromAssignedRole: Role | null;
+        toAssignedReviewerId: string | null;
+        toAssignedRole: Role | null;
+        escalationLevel: number;
+        createdAt: Date;
+      }>;
+      notificationEvents: Array<{
+        id: string;
+        eventType: NotificationEventType;
+        eventKey: string;
+        status: NotificationEventStatus;
+        reviewRequestId: string | null;
+        approvalChainId: string | null;
+        approvalStepId: string | null;
+        actorUserId: string | null;
+        payload: Prisma.JsonValue | null;
+        attemptCount: number;
+        nextAttemptAt: Date;
+        lastAttemptAt: Date | null;
+        deliveredAt: Date | null;
+        lastError: string | null;
+        processingToken: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      notificationPreferences: Array<{
+        id: string;
+        userId: string;
+        eventType: NotificationEventType;
+        enabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    };
   }> {
-    const [entities, manuscripts, relationships] = await prismaClient.$transaction([
+    const [
+      entities,
+      manuscripts,
+      relationships,
+      reviewRequests,
+      approvalChains,
+      approvalSteps,
+      approvalStepEvents,
+      notificationEvents,
+      notificationPreferences
+    ] = await prismaClient.$transaction([
       prismaClient.entity.findMany({
         where: {
           revisions: {
@@ -180,6 +281,106 @@ export const portabilityExportRepository = {
             }
           }
         }
+      }),
+      prismaClient.reviewRequest.findMany({
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          proposalId: true,
+          createdById: true,
+          assignedApproverId: true,
+          assignedAt: true,
+          assignmentHistory: true,
+          lifecycleHistory: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }),
+      prismaClient.approvalChain.findMany({
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          reviewRequestId: true,
+          status: true,
+          currentStepOrder: true,
+          finalizedAt: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }),
+      prismaClient.approvalStep.findMany({
+        orderBy: [{ chainId: "asc" }, { stepOrder: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          chainId: true,
+          stepOrder: true,
+          title: true,
+          required: true,
+          status: true,
+          assignedReviewerId: true,
+          assignedRole: true,
+          acknowledgedAt: true,
+          acknowledgedById: true,
+          decidedAt: true,
+          decidedById: true,
+          decisionNote: true,
+          escalationLevel: true,
+          escalatedAt: true,
+          escalatedById: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }),
+      prismaClient.approvalStepEvent.findMany({
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          stepId: true,
+          eventType: true,
+          reasonCode: true,
+          reasonNote: true,
+          actorUserId: true,
+          fromAssignedReviewerId: true,
+          fromAssignedRole: true,
+          toAssignedReviewerId: true,
+          toAssignedRole: true,
+          escalationLevel: true,
+          createdAt: true
+        }
+      }),
+      prismaClient.notificationEvent.findMany({
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          eventType: true,
+          eventKey: true,
+          status: true,
+          reviewRequestId: true,
+          approvalChainId: true,
+          approvalStepId: true,
+          actorUserId: true,
+          payload: true,
+          attemptCount: true,
+          nextAttemptAt: true,
+          lastAttemptAt: true,
+          deliveredAt: true,
+          lastError: true,
+          processingToken: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }),
+      prismaClient.notificationPreference.findMany({
+        orderBy: [{ userId: "asc" }, { eventType: "asc" }],
+        select: {
+          id: true,
+          userId: true,
+          eventType: true,
+          enabled: true,
+          createdAt: true,
+          updatedAt: true
+        }
       })
     ]);
 
@@ -235,7 +436,15 @@ export const portabilityExportRepository = {
               ]
             : [];
         })
-        .sort(compareRelationships)
+        .sort(compareRelationships),
+      governance: {
+        reviewRequests,
+        approvalChains,
+        approvalSteps,
+        approvalStepEvents,
+        notificationEvents,
+        notificationPreferences
+      }
     };
   },
 
@@ -304,6 +513,90 @@ export const portabilityExportRepository = {
         createdAt: Date;
       };
     }>;
+    governance: {
+      reviewRequests: Array<{
+        id: string;
+        proposalId: string;
+        createdById: string;
+        assignedApproverId: string | null;
+        assignedAt: Date | null;
+        assignmentHistory: Prisma.JsonValue | null;
+        lifecycleHistory: Prisma.JsonValue | null;
+        status: ReviewRequestStatus;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalChains: Array<{
+        id: string;
+        reviewRequestId: string;
+        status: ApprovalChainStatus;
+        currentStepOrder: number;
+        finalizedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalSteps: Array<{
+        id: string;
+        chainId: string;
+        stepOrder: number;
+        title: string;
+        required: boolean;
+        status: ApprovalStepStatus;
+        assignedReviewerId: string | null;
+        assignedRole: Role | null;
+        acknowledgedAt: Date | null;
+        acknowledgedById: string | null;
+        decidedAt: Date | null;
+        decidedById: string | null;
+        decisionNote: string | null;
+        escalationLevel: number;
+        escalatedAt: Date | null;
+        escalatedById: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalStepEvents: Array<{
+        id: string;
+        stepId: string;
+        eventType: ApprovalStepEventType;
+        reasonCode: string;
+        reasonNote: string | null;
+        actorUserId: string;
+        fromAssignedReviewerId: string | null;
+        fromAssignedRole: Role | null;
+        toAssignedReviewerId: string | null;
+        toAssignedRole: Role | null;
+        escalationLevel: number;
+        createdAt: Date;
+      }>;
+      notificationEvents: Array<{
+        id: string;
+        eventType: NotificationEventType;
+        eventKey: string;
+        status: NotificationEventStatus;
+        reviewRequestId: string | null;
+        approvalChainId: string | null;
+        approvalStepId: string | null;
+        actorUserId: string | null;
+        payload: Prisma.JsonValue | null;
+        attemptCount: number;
+        nextAttemptAt: Date;
+        lastAttemptAt: Date | null;
+        deliveredAt: Date | null;
+        lastError: string | null;
+        processingToken: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      notificationPreferences: Array<{
+        id: string;
+        userId: string;
+        eventType: NotificationEventType;
+        enabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    };
   } | null> {
     const release = await prismaClient.release.findUnique({
       where: {
@@ -446,7 +739,109 @@ export const portabilityExportRepository = {
           targetEntity: entry.relationship.targetEntity,
           revision: entry.relationshipRevision
         }))
-        .sort(compareRelationships)
+        .sort(compareRelationships),
+      governance: {
+        reviewRequests: await prismaClient.reviewRequest.findMany({
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            proposalId: true,
+            createdById: true,
+            assignedApproverId: true,
+            assignedAt: true,
+            assignmentHistory: true,
+            lifecycleHistory: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        approvalChains: await prismaClient.approvalChain.findMany({
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            reviewRequestId: true,
+            status: true,
+            currentStepOrder: true,
+            finalizedAt: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        approvalSteps: await prismaClient.approvalStep.findMany({
+          orderBy: [{ chainId: "asc" }, { stepOrder: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            chainId: true,
+            stepOrder: true,
+            title: true,
+            required: true,
+            status: true,
+            assignedReviewerId: true,
+            assignedRole: true,
+            acknowledgedAt: true,
+            acknowledgedById: true,
+            decidedAt: true,
+            decidedById: true,
+            decisionNote: true,
+            escalationLevel: true,
+            escalatedAt: true,
+            escalatedById: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        approvalStepEvents: await prismaClient.approvalStepEvent.findMany({
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            stepId: true,
+            eventType: true,
+            reasonCode: true,
+            reasonNote: true,
+            actorUserId: true,
+            fromAssignedReviewerId: true,
+            fromAssignedRole: true,
+            toAssignedReviewerId: true,
+            toAssignedRole: true,
+            escalationLevel: true,
+            createdAt: true
+          }
+        }),
+        notificationEvents: await prismaClient.notificationEvent.findMany({
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            eventType: true,
+            eventKey: true,
+            status: true,
+            reviewRequestId: true,
+            approvalChainId: true,
+            approvalStepId: true,
+            actorUserId: true,
+            payload: true,
+            attemptCount: true,
+            nextAttemptAt: true,
+            lastAttemptAt: true,
+            deliveredAt: true,
+            lastError: true,
+            processingToken: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }),
+        notificationPreferences: await prismaClient.notificationPreference.findMany({
+          orderBy: [{ userId: "asc" }, { eventType: "asc" }],
+          select: {
+            id: true,
+            userId: true,
+            eventType: true,
+            enabled: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        })
+      }
     };
   }
 };

@@ -1,8 +1,15 @@
 import type {
+  ApprovalChainStatus,
+  ApprovalStepEventType,
+  ApprovalStepStatus,
   EntityType,
   ManuscriptType,
+  NotificationEventStatus,
+  NotificationEventType,
   Prisma,
   ReleaseStatus,
+  ReviewRequestStatus,
+  Role,
   RelationshipRevisionState,
   Visibility
 } from "@prisma/client";
@@ -33,6 +40,12 @@ type ExportPackage = {
       manuscripts: number;
       relationships: number;
       releases: number;
+      reviewRequests: number;
+      approvalChains: number;
+      approvalSteps: number;
+      approvalStepEvents: number;
+      notificationEvents: number;
+      notificationPreferences: number;
     };
   };
   files: ExportFile[];
@@ -118,6 +131,90 @@ export const jsonPortabilitySerializer = {
         createdAt: Date;
       };
     }>;
+    governance: {
+      reviewRequests: Array<{
+        id: string;
+        proposalId: string;
+        createdById: string;
+        assignedApproverId: string | null;
+        assignedAt: Date | null;
+        assignmentHistory: Prisma.JsonValue | null;
+        lifecycleHistory: Prisma.JsonValue | null;
+        status: ReviewRequestStatus;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalChains: Array<{
+        id: string;
+        reviewRequestId: string;
+        status: ApprovalChainStatus;
+        currentStepOrder: number;
+        finalizedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalSteps: Array<{
+        id: string;
+        chainId: string;
+        stepOrder: number;
+        title: string;
+        required: boolean;
+        status: ApprovalStepStatus;
+        assignedReviewerId: string | null;
+        assignedRole: Role | null;
+        acknowledgedAt: Date | null;
+        acknowledgedById: string | null;
+        decidedAt: Date | null;
+        decidedById: string | null;
+        decisionNote: string | null;
+        escalationLevel: number;
+        escalatedAt: Date | null;
+        escalatedById: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      approvalStepEvents: Array<{
+        id: string;
+        stepId: string;
+        eventType: ApprovalStepEventType;
+        reasonCode: string;
+        reasonNote: string | null;
+        actorUserId: string;
+        fromAssignedReviewerId: string | null;
+        fromAssignedRole: Role | null;
+        toAssignedReviewerId: string | null;
+        toAssignedRole: Role | null;
+        escalationLevel: number;
+        createdAt: Date;
+      }>;
+      notificationEvents: Array<{
+        id: string;
+        eventType: NotificationEventType;
+        eventKey: string;
+        status: NotificationEventStatus;
+        reviewRequestId: string | null;
+        approvalChainId: string | null;
+        approvalStepId: string | null;
+        actorUserId: string | null;
+        payload: Prisma.JsonValue | null;
+        attemptCount: number;
+        nextAttemptAt: Date;
+        lastAttemptAt: Date | null;
+        deliveredAt: Date | null;
+        lastError: string | null;
+        processingToken: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      notificationPreferences: Array<{
+        id: string;
+        userId: string;
+        eventType: NotificationEventType;
+        enabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    };
     release?: {
       id: string;
       slug: string;
@@ -223,6 +320,136 @@ export const jsonPortabilitySerializer = {
       });
     }
 
+    for (const reviewRequest of input.governance.reviewRequests) {
+      files.push({
+        path: `governance/review-requests/${reviewRequest.id}.json`,
+        content: stringifyDocument({
+          reviewRequest: {
+            id: reviewRequest.id,
+            proposalId: reviewRequest.proposalId,
+            createdById: reviewRequest.createdById,
+            assignedApproverId: reviewRequest.assignedApproverId,
+            assignedAt: reviewRequest.assignedAt?.toISOString() ?? null,
+            assignmentHistory: reviewRequest.assignmentHistory,
+            lifecycleHistory: reviewRequest.lifecycleHistory,
+            status: reviewRequest.status,
+            createdAt: reviewRequest.createdAt.toISOString(),
+            updatedAt: reviewRequest.updatedAt.toISOString()
+          }
+        })
+      });
+    }
+
+    for (const approvalChain of input.governance.approvalChains) {
+      files.push({
+        path: `governance/approval-chains/${approvalChain.id}.json`,
+        content: stringifyDocument({
+          approvalChain: {
+            id: approvalChain.id,
+            reviewRequestId: approvalChain.reviewRequestId,
+            status: approvalChain.status,
+            currentStepOrder: approvalChain.currentStepOrder,
+            finalizedAt: approvalChain.finalizedAt?.toISOString() ?? null,
+            createdAt: approvalChain.createdAt.toISOString(),
+            updatedAt: approvalChain.updatedAt.toISOString()
+          }
+        })
+      });
+    }
+
+    for (const approvalStep of input.governance.approvalSteps) {
+      files.push({
+        path: `governance/approval-steps/${approvalStep.id}.json`,
+        content: stringifyDocument({
+          approvalStep: {
+            id: approvalStep.id,
+            chainId: approvalStep.chainId,
+            stepOrder: approvalStep.stepOrder,
+            title: approvalStep.title,
+            required: approvalStep.required,
+            status: approvalStep.status,
+            assignedReviewerId: approvalStep.assignedReviewerId,
+            assignedRole: approvalStep.assignedRole,
+            acknowledgedAt: approvalStep.acknowledgedAt?.toISOString() ?? null,
+            acknowledgedById: approvalStep.acknowledgedById,
+            decidedAt: approvalStep.decidedAt?.toISOString() ?? null,
+            decidedById: approvalStep.decidedById,
+            decisionNote: approvalStep.decisionNote,
+            escalationLevel: approvalStep.escalationLevel,
+            escalatedAt: approvalStep.escalatedAt?.toISOString() ?? null,
+            escalatedById: approvalStep.escalatedById,
+            createdAt: approvalStep.createdAt.toISOString(),
+            updatedAt: approvalStep.updatedAt.toISOString()
+          }
+        })
+      });
+    }
+
+    for (const approvalStepEvent of input.governance.approvalStepEvents) {
+      files.push({
+        path: `governance/approval-step-events/${approvalStepEvent.id}.json`,
+        content: stringifyDocument({
+          approvalStepEvent: {
+            id: approvalStepEvent.id,
+            stepId: approvalStepEvent.stepId,
+            eventType: approvalStepEvent.eventType,
+            reasonCode: approvalStepEvent.reasonCode,
+            reasonNote: approvalStepEvent.reasonNote,
+            actorUserId: approvalStepEvent.actorUserId,
+            fromAssignedReviewerId: approvalStepEvent.fromAssignedReviewerId,
+            fromAssignedRole: approvalStepEvent.fromAssignedRole,
+            toAssignedReviewerId: approvalStepEvent.toAssignedReviewerId,
+            toAssignedRole: approvalStepEvent.toAssignedRole,
+            escalationLevel: approvalStepEvent.escalationLevel,
+            createdAt: approvalStepEvent.createdAt.toISOString()
+          }
+        })
+      });
+    }
+
+    for (const notificationEvent of input.governance.notificationEvents) {
+      files.push({
+        path: `governance/notification-events/${notificationEvent.id}.json`,
+        content: stringifyDocument({
+          notificationEvent: {
+            id: notificationEvent.id,
+            eventType: notificationEvent.eventType,
+            eventKey: notificationEvent.eventKey,
+            status: notificationEvent.status,
+            reviewRequestId: notificationEvent.reviewRequestId,
+            approvalChainId: notificationEvent.approvalChainId,
+            approvalStepId: notificationEvent.approvalStepId,
+            actorUserId: notificationEvent.actorUserId,
+            payload: notificationEvent.payload,
+            attemptCount: notificationEvent.attemptCount,
+            nextAttemptAt: notificationEvent.nextAttemptAt.toISOString(),
+            lastAttemptAt: notificationEvent.lastAttemptAt?.toISOString() ?? null,
+            deliveredAt: notificationEvent.deliveredAt?.toISOString() ?? null,
+            lastError: notificationEvent.lastError,
+            processingToken: notificationEvent.processingToken,
+            createdAt: notificationEvent.createdAt.toISOString(),
+            updatedAt: notificationEvent.updatedAt.toISOString()
+          }
+        })
+      });
+    }
+
+    for (const notificationPreference of input.governance.notificationPreferences) {
+      files.push({
+        path: `governance/notification-preferences/${notificationPreference.id}.json`,
+        content: stringifyDocument({
+          notificationPreference: {
+            id: notificationPreference.id,
+            userId: notificationPreference.userId,
+            eventType: notificationPreference.eventType,
+            enabled: notificationPreference.enabled,
+            createdAt: notificationPreference.createdAt.toISOString(),
+            updatedAt: notificationPreference.updatedAt.toISOString()
+          }
+        })
+      });
+    }
+
     if (input.release) {
       files.push({
         path: `releases/${input.release.slug}.json`,
@@ -278,7 +505,13 @@ export const jsonPortabilitySerializer = {
         entities: input.entities.length,
         manuscripts: input.manuscripts.length,
         relationships: input.relationships.length,
-        releases: input.release ? 1 : 0
+        releases: input.release ? 1 : 0,
+        reviewRequests: input.governance.reviewRequests.length,
+        approvalChains: input.governance.approvalChains.length,
+        approvalSteps: input.governance.approvalSteps.length,
+        approvalStepEvents: input.governance.approvalStepEvents.length,
+        notificationEvents: input.governance.notificationEvents.length,
+        notificationPreferences: input.governance.notificationPreferences.length
       }
     };
 

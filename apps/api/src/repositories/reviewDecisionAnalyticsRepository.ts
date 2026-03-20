@@ -59,6 +59,21 @@ type ReviewDecisionHistoryRecord = Prisma.ReviewRequestGetPayload<{
   select: typeof reviewDecisionHistorySelect;
 }>;
 
+const reviewDecisionSummarySelect = Prisma.validator<Prisma.ReviewRequestSelect>()({
+  createdAt: true,
+  status: true,
+  approvalChain: {
+    select: {
+      status: true,
+      finalizedAt: true
+    }
+  }
+});
+
+type ReviewDecisionSummaryRecord = Prisma.ReviewRequestGetPayload<{
+  select: typeof reviewDecisionSummarySelect;
+}>;
+
 const buildHistoryWhere = (input: {
   status?: ReviewRequestStatus;
   outcome?: ApprovalChainStatus;
@@ -81,10 +96,10 @@ const buildHistoryWhere = (input: {
 };
 
 export const reviewDecisionAnalyticsRepository = {
-  async listForWindow(input: {
+  async listSummaryForWindow(input: {
     windowStart: Date;
     windowEnd: Date;
-  }): Promise<ReviewDecisionHistoryRecord[]> {
+  }): Promise<ReviewDecisionSummaryRecord[]> {
     return prismaClient.reviewRequest.findMany({
       where: {
         createdAt: {
@@ -93,7 +108,7 @@ export const reviewDecisionAnalyticsRepository = {
         }
       },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      select: reviewDecisionHistorySelect
+      select: reviewDecisionSummarySelect
     });
   },
 
@@ -127,5 +142,6 @@ export const reviewDecisionAnalyticsRepository = {
 };
 
 export type {
-  ReviewDecisionHistoryRecord
+  ReviewDecisionHistoryRecord,
+  ReviewDecisionSummaryRecord
 };
