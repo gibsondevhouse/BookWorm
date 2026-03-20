@@ -2,7 +2,7 @@
 
 Book Worm is a pnpm monorepo for release-aware lore publishing and editorial governance workflows.
 
-Current implementation status: Phases 0 through 4 are complete in the build tracker, including collaboration workflows, approval chains, notifications, analytics, and operational hardening.
+Current implementation status: Phases 0 through 4 are complete. In Phase 5, Stage 01 and Stage 02 are complete, including continuity triage surfaces (Part 02), suppression persistence, and signal-quality safeguards.
 
 ## Stack
 
@@ -119,4 +119,4 @@ Standard quality gate commands:
 - `pnpm type-check`
 - `pnpm test`
 
-The integration suite includes phase coverage from Phase 0 through Phase 4 under `tests/`.
+The integration suite includes phase coverage from Phase 0 through Phase 5 Stage 02 (Parts 01, 02, and 03) under `tests/`.

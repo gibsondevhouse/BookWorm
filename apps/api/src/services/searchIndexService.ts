@@ -3,6 +3,7 @@ import type { EntityType } from "@prisma/client";
 
 import { prismaClient } from "../db/prismaClient.js";
 import { entityMetadataContract } from "../lib/entityMetadataContract.js";
+import { expandSearchQuery } from "../lib/searchQueryExpansion.js";
 import { InMemorySearchAdapter } from "../lib/searchAdapters/inMemorySearchAdapter.js";
 import type { SearchIndexBuilder } from "../lib/searchIndexBuilder.js";
 import type {
@@ -187,7 +188,20 @@ export const searchIndexService: SearchIndexBuilder & {
       return { resolvedReleaseSlug: null, total: 0, hits: [] };
     }
 
-    return adapter.search({ ...query, releaseSlug: resolvedReleaseSlug });
+    const expansion = expandSearchQuery(query);
+
+    return adapter.search({
+      ...query,
+      ...(expansion.normalizedQuery ? { q: expansion.normalizedQuery } : {}),
+      ...(expansion.expandedTerms.length > 0
+        ? { expandedTerms: expansion.expandedTerms }
+        : {}),
+      ...(expansion.typoTerms.length > 0 ? { typoTerms: expansion.typoTerms } : {}),
+      ...(expansion.expansionSources.length > 0
+        ? { expansionSources: expansion.expansionSources }
+        : {}),
+      releaseSlug: resolvedReleaseSlug
+    });
   },
 
   async rebuildIndex(): Promise<void> {

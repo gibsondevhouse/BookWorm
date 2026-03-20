@@ -168,6 +168,38 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 - [x] [Part 02: Audit Retention and Portability Extensions](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-02-audit-retention-and-portability-extensions/part-02-audit-retention-and-portability-extensions.md)
 - [x] [Part 03: Phase 4 Verification Gate](./phase-4/stage-04-operational-hardening-and-phase-4-verification/part-03-phase-4-verification-gate/part-03-phase-4-verification-gate.md)
 
+### Phase 5
+
+- [-] [Phase 5 Overview](./phase-5/phase-5.md)
+
+#### Phase 5 Stage 01
+
+- [x] [Stage 01 Overview](./phase-5/stage-01-search-tuning-and-query-quality/stage-01-search-tuning-and-query-quality.md)
+- [x] [Part 01: Query Expansion and Ranking Baseline](./phase-5/stage-01-search-tuning-and-query-quality/part-01-query-expansion-and-ranking-baseline/part-01-query-expansion-and-ranking-baseline.md)
+- [x] [Part 02: Typo Tolerance and Alias Recall Stabilization](./phase-5/stage-01-search-tuning-and-query-quality/part-02-typo-tolerance-and-alias-recall-stabilization/part-02-typo-tolerance-and-alias-recall-stabilization.md)
+- [x] [Part 03: Search Tuning Verification Gate](./phase-5/stage-01-search-tuning-and-query-quality/part-03-search-tuning-verification-gate/part-03-search-tuning-verification-gate.md)
+
+#### Phase 5 Stage 02
+
+- [x] [Stage 02 Overview](./phase-5/stage-02-continuity-intelligence-expansion/stage-02-continuity-intelligence-expansion.md)
+- [x] [Part 01: Continuity Rule Pack Expansion](./phase-5/stage-02-continuity-intelligence-expansion/part-01-continuity-rule-pack-expansion/part-01-continuity-rule-pack-expansion.md)
+- [x] [Part 02: Continuity Dashboard and Triage Surfaces](./phase-5/stage-02-continuity-intelligence-expansion/part-02-continuity-dashboard-and-triage-surfaces/part-02-continuity-dashboard-and-triage-surfaces.md)
+- [x] [Part 03: Continuity Signal Quality and Suppression Controls](./phase-5/stage-02-continuity-intelligence-expansion/part-03-continuity-signal-quality-and-suppression-controls/part-03-continuity-signal-quality-and-suppression-controls.md)
+
+#### Phase 5 Stage 03
+
+- [ ] [Stage 03 Overview](./phase-5/stage-03-portability-maturity-and-operator-workflows/stage-03-portability-maturity-and-operator-workflows.md)
+- [ ] Part 01: Zip Package Portability Foundation
+- [ ] Part 02: Import Conflict Resolution and Rollback Reporting
+- [ ] Part 03: Portability Operations Verification Gate
+
+#### Phase 5 Stage 04
+
+- [ ] [Stage 04 Overview](./phase-5/stage-04-ux-accessibility-and-feedback-integration/stage-04-ux-accessibility-and-feedback-integration.md)
+- [ ] Part 01: Accessibility and Keyboard Navigation Hardening
+- [ ] Part 02: Admin Usability and Readability Improvements
+- [ ] Part 03: Feedback Integration and Phase 5 Verification Gate
+
 ## Update Rules
 
 - Update this tracker when a part starts, completes, or becomes blocked.

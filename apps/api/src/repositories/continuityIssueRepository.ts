@@ -30,6 +30,15 @@ type ListIssuesInput = {
   severity?: ContinuityIssueSeverity;
   ruleCode?: string;
   subjectType?: ContinuityIssueSubjectType;
+  sort:
+    | "detectedAt.desc"
+    | "detectedAt.asc"
+    | "severity.desc"
+    | "severity.asc"
+    | "status.asc"
+    | "status.desc"
+    | "ruleCode.asc"
+    | "ruleCode.desc";
   limit: number;
   offset: number;
 };
@@ -91,9 +100,20 @@ const buildIssueData = (
   ...(issue.relationshipRevisionId === undefined ? {} : { relationshipRevisionId: issue.relationshipRevisionId })
 });
 
+const sortOrderBy: Record<ListIssuesInput["sort"], Prisma.ContinuityIssueOrderByWithRelationInput[]> = {
+  "detectedAt.desc": [{ detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "detectedAt.asc": [{ detectedAt: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+  "severity.desc": [{ severity: "desc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "severity.asc": [{ severity: "asc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "status.asc": [{ status: "asc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "status.desc": [{ status: "desc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "ruleCode.asc": [{ ruleCode: "asc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+  "ruleCode.desc": [{ ruleCode: "desc" }, { detectedAt: "desc" }, { createdAt: "desc" }, { id: "asc" }]
+};
+
 export const continuityIssueRepository = {
   async getReleaseContinuityContext(releaseSlug: string) {
-    const [release, activeRelease, timelineEraEntities] = await prismaClient.$transaction([
+    const [release, activeRelease, timelineEraEntities, allReleasesForComparison] = await prismaClient.$transaction([
       prismaClient.release.findUnique({
         where: { slug: releaseSlug },
         select: {
@@ -114,7 +134,7 @@ export const continuityIssueRepository = {
           },
           relationshipEntries: {
             select: {
-              relationship: { select: { id: true } },
+              relationship: { select: { id: true, sourceEntityId: true, targetEntityId: true } },
               relationshipRevision: { select: { id: true, metadata: true, visibility: true } }
             }
           }
@@ -135,6 +155,16 @@ export const continuityIssueRepository = {
       prismaClient.entity.findMany({
         where: { type: "TIMELINE_ERA", retiredAt: null },
         select: { id: true, slug: true }
+      }),
+      prismaClient.release.findMany({
+        select: {
+          entries: {
+            select: {
+              entityId: true,
+              revision: { select: { payload: true } }
+            }
+          }
+        }
       })
     ]);
 
@@ -145,7 +175,8 @@ export const continuityIssueRepository = {
     return {
       release,
       activeRelease,
-      timelineEraEntities
+      timelineEraEntities,
+      allReleasesForComparison
     };
   },
 
@@ -166,12 +197,14 @@ export const continuityIssueRepository = {
         const data = buildIssueData(issue, detectedAt);
 
         if (existing) {
+          const nextStatus = existing.status === "DISMISSED" ? "DISMISSED" : "OPEN";
+
           await transaction.continuityIssue.update({
             where: { id: existing.id },
             data: {
               ...data,
-              status: "OPEN",
-              resolvedAt: null
+              status: nextStatus,
+              resolvedAt: nextStatus === "OPEN" ? null : existing.resolvedAt
             },
             select: issueSelect
           });
@@ -216,6 +249,19 @@ export const continuityIssueRepository = {
     });
   },
 
+  async listIssuesForRelease(releaseId: string) {
+    return prismaClient.continuityIssue.findMany({
+      where: { releaseId },
+      select: {
+        id: true,
+        ruleCode: true,
+        severity: true,
+        status: true,
+        fingerprint: true
+      }
+    });
+  },
+
   async listIssues(input: ListIssuesInput) {
     const release = await prismaClient.release.findUnique({
       where: { slug: input.releaseSlug },
@@ -234,20 +280,61 @@ export const continuityIssueRepository = {
       ...(input.subjectType === undefined ? {} : { subjectType: input.subjectType })
     } satisfies Prisma.ContinuityIssueWhereInput;
 
-    const [items, total] = await prismaClient.$transaction([
+    const [items, total, allReleaseIssues] = await prismaClient.$transaction([
       prismaClient.continuityIssue.findMany({
         where,
-        orderBy: [{ detectedAt: "desc" }, { createdAt: "desc" }],
+        orderBy: sortOrderBy[input.sort],
         skip: input.offset,
         take: input.limit,
         select: issueSelect
       }),
-      prismaClient.continuityIssue.count({ where })
+      prismaClient.continuityIssue.count({ where }),
+      prismaClient.continuityIssue.findMany({
+        where: { releaseId: release.id },
+        select: { severity: true, status: true }
+      })
     ]);
+
+    const summary = {
+      blockingOpenCount: 0,
+      warningOpenCount: 0,
+      acknowledgedCount: 0,
+      resolvedCount: 0,
+      dismissedCount: 0,
+      severityDistribution: {
+        BLOCKING: 0,
+        WARNING: 0
+      }
+    };
+
+    for (const issue of allReleaseIssues) {
+      summary.severityDistribution[issue.severity] += 1;
+
+      if (issue.status === "ACKNOWLEDGED") {
+        summary.acknowledgedCount += 1;
+      }
+      if (issue.status === "RESOLVED") {
+        summary.resolvedCount += 1;
+      }
+      if (issue.status === "DISMISSED") {
+        summary.dismissedCount += 1;
+      }
+
+      if (issue.status !== "OPEN" && issue.status !== "ACKNOWLEDGED") {
+        continue;
+      }
+
+      if (issue.severity === "BLOCKING") {
+        summary.blockingOpenCount += 1;
+      } else {
+        summary.warningOpenCount += 1;
+      }
+    }
 
     return {
       releaseSlug: release.slug,
       total,
+      summary,
       issues: items
     };
   },

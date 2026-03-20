@@ -1,29 +1,38 @@
 # Continuity Engine Specification
 
-The continuity engine validates narrative consistency across entities, chapters and releases. It contains a set of rules, each with inputs, severity and remediation options.
+The continuity engine validates narrative consistency across entities, manuscripts, relationships, and releases. It runs deterministic rules and persists issues by stable fingerprint.
 
-## Rule Categories and Examples
+## Current Implemented Rule Pack (Phase 2 Baseline + Phase 5 Stage 02 Part 01)
 
-1. **Required Field Rule** — Ensures that mandatory fields (e.g. event date, character birth year) are populated. Severity: error. Fix by adding the missing field.
-2. **Chronological Order Rule** — Checks that event dates respect the timeline; an event cannot occur before its precondition event. Severity: error. Fix by adjusting dates or adding justification.
-3. **Reveal Timing Rule** — Ensures that a secret is not referenced or known by characters before its reveal event. Severity: warning (may be overridden). Fix by moving reveal or adjusting references.
-4. **Duplicate Slug Rule** — Detects identical slugs within the same entity type. Severity: error. Fix by choosing a unique slug.
-5. **Travel Time Plausibility (Beta)** — Verifies that travel between locations is possible within the time between scenes. Requires distance matrix and travel speed. Severity: warning. Fix by adjusting timelines or clarifying travel methods.
-6. **Age Consistency (Beta)** — Ensures that characters’ ages at events are consistent with birth years and lifespan. Severity: error. Fix by adjusting dates or birth years.
-7. **Inheritance/Succession Rule (Beta)** — Checks that title changes occur after appropriate events. Severity: warning. Fix by adjusting event ordering or adding inheritance events.
-8. **Magic System Constraint (Beta)** — Validates that magic usage obeys defined rules (costs, limits). Severity: warning. Fix by rewriting scenes or adjusting magic rules.
+1. `REQ_META_CHRONOLOGY_ANCHOR` (BLOCKING)
+2. `DATE_ORDER_SORT_KEY_REGRESSION` (BLOCKING)
+3. `REQ_META_SPOILER_TIER_PUBLIC` (BLOCKING)
+4. `REVEAL_TIMING_DEPENDENCY_PRESENT` (BLOCKING)
+5. `DUPLICATE_ENTITY_SLUG_IN_RELEASE` (BLOCKING)
+6. `DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE` (BLOCKING)
+7. `ENTITY_KNOWLEDGE_STATE_REGRESSION` (WARNING)
+8. `MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY` (WARNING)
+9. `RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE` (WARNING)
+
+Summary response currently reports `ruleCount: 9`.
 
 ## Rule Execution
-- Rules run when an entity or chapter is saved and when a release is compiled. Failures block publishing for errors; warnings allow publishing but display issues in the continuity dashboard.
-- Rules can be configured with thresholds or disabled entirely by authors with justification. Each override must include notes and is tracked.
-- Each issue includes: involved entity IDs, a description, rule ID, severity, status (open, resolved, ignored) and a link to the offending record.
+
+- Rules run against a release context through continuity run endpoints.
+- Issues are persisted by deterministic fingerprint; reruns with unchanged state resolve to the same issue identities.
+- Blocking behavior is based on issue severity and status:
+  - `BLOCKING` + `OPEN` or `ACKNOWLEDGED` counts toward release activation blockers.
+  - `WARNING` issues do not block activation.
+- Current lifecycle statuses are `OPEN`, `ACKNOWLEDGED`, `RESOLVED`, and `DISMISSED`.
+- Reruns preserve `DISMISSED` for matching fingerprints (issues are not auto-reopened), and low-value dismissed warning patterns are suppression-filtered from rerun emission noise.
 
 ## Continuity Dashboard
-- Lists all open issues, filtered by severity and status.
-- Allows authors to assign issues to editors for resolution.
-- Provides actions to mark issues as resolved (after editing), ignored (with justification) or reopened.
-- Summarises unresolved issues by release and rule category.
 
-## Future Extensions
-- Additional rules can be added post‑v1 for complex logic (e.g. genealogical consistency, conflicting allegiances, cross‑book continuity). The engine must be extensible.
-- Rule definitions should live in code but be configurable via YAML/JSON to adjust thresholds (e.g. travel speed) without code changes.
+- Baseline supports run execution, issue listing, and status transitions for continuity issues.
+- Stage 02 Part 03 suppression determinism is implemented.
+- Stage 02 Part 02 triage/aggregation API enhancements remain planned.
+
+## Future Extensions (Planned, Not Yet Implemented)
+
+- Additional domain rules (for example genealogical consistency or allegiance conflict checks).
+- Configuration-driven rule parameters where appropriate, without breaking deterministic baseline behavior.

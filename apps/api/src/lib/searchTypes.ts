@@ -41,6 +41,9 @@ export type SearchDocument = EntitySearchDocument | ManuscriptSearchDocument;
 
 export type SearchQuery = {
   q?: string;
+  expandedTerms?: string[];
+  typoTerms?: string[];
+  expansionSources?: ("ALIAS" | "SYNONYM")[];
   releaseSlug?: string;
   documentType?: "ENTITY" | "MANUSCRIPT";
   entityType?: EntityType;

@@ -76,8 +76,20 @@ const continuityIssueListQuerySchema = z.object({
   severity: z.enum(["BLOCKING", "WARNING"]).optional(),
   ruleCode: z.string().min(1).optional(),
   subjectType: z.enum(["RELEASE", "ENTITY_REVISION", "MANUSCRIPT_REVISION", "RELATIONSHIP_REVISION"]).optional(),
-  limit: z.coerce.number().int().min(1).max(200).optional(),
-  offset: z.coerce.number().int().min(0).optional()
+  limit: z.coerce.number().int().min(1).optional(),
+  offset: z.coerce.number().int().min(0).optional(),
+  sort: z
+    .enum([
+      "detectedAt.desc",
+      "detectedAt.asc",
+      "severity.desc",
+      "severity.asc",
+      "status.asc",
+      "status.desc",
+      "ruleCode.asc",
+      "ruleCode.desc"
+    ])
+    .optional()
 });
 
 const continuityIssueStatusSchema = z.object({
@@ -350,8 +362,9 @@ adminReleaseRouter.get("/:slug/continuity/issues", async (request, response) => 
     const issues = await continuityIssueService.listIssues({
       actor: response.locals.actor,
       releaseSlug: request.params.slug,
-      limit: parsedQuery.data.limit ?? 50,
+      limit: Math.min(parsedQuery.data.limit ?? 50, 200),
       offset: parsedQuery.data.offset ?? 0,
+      sort: parsedQuery.data.sort ?? "detectedAt.desc",
       ...(parsedQuery.data.status === undefined ? {} : { status: parsedQuery.data.status }),
       ...(parsedQuery.data.severity === undefined ? {} : { severity: parsedQuery.data.severity }),
       ...(parsedQuery.data.ruleCode === undefined ? {} : { ruleCode: parsedQuery.data.ruleCode }),

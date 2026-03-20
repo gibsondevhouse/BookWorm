@@ -192,7 +192,7 @@ Routes are extension points on `adminReleaseRouter` to keep release-readiness be
 	"releaseSlug": "spring-arc",
 	"source": "MANUAL",
 	"summary": {
-		"ruleCount": 6,
+		"ruleCount": 9,
 		"issueCount": 4,
 		"blockingOpenCount": 2,
 		"warningOpenCount": 2
@@ -211,6 +211,8 @@ Routes are extension points on `adminReleaseRouter` to keep release-readiness be
 	]
 }
 ```
+
+Note: this baseline route contract was introduced in Phase 2 with six rules; current runtime includes three additional Phase 5 Stage 02 Part 01 warning rules, so `summary.ruleCount` is now 9.
 
 ### 4.2 List Issues
 

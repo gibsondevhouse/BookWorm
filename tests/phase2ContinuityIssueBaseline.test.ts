@@ -338,7 +338,7 @@ test("manual run creates expected baseline issues", async () => {
 
   assert.equal(result.releaseSlug, slugs.targetRelease);
   assert.equal(result.source, "MANUAL");
-  assert.equal(result.summary.ruleCount, 6);
+  assert.equal(result.summary.ruleCount, 9);
   assert.equal(result.summary.issueCount, 4);
   assert.equal(result.summary.blockingOpenCount, 4);
   assert.equal(result.summary.warningOpenCount, 0);

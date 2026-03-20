@@ -1,6 +1,114 @@
 import type { SearchAdapter } from "../searchAdapter.js";
 import type { SearchDocument, SearchQuery, SearchResult } from "../searchTypes.js";
 
+type MatchBucket = "EXACT" | "EXPANDED" | "TYPO" | "METADATA";
+
+type RankedDocument = {
+  doc: SearchDocument;
+  bucket: MatchBucket;
+  score: number;
+};
+
+function normalize(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function getPrimaryText(doc: SearchDocument): string {
+  return doc.documentType === "ENTITY" ? doc.name : doc.title;
+}
+
+function getBodyText(doc: SearchDocument): string {
+  return doc.documentType === "ENTITY"
+    ? `${doc.name} ${doc.summary}`
+    : `${doc.title} ${doc.summary}`;
+}
+
+function rankDocument(doc: SearchDocument, query: SearchQuery): RankedDocument | null {
+  if (query.q === undefined || query.q.trim().length === 0) {
+    return {
+      doc,
+      bucket: "EXACT",
+      score: 1.0
+    };
+  }
+
+  const q = normalize(query.q);
+  const expandedTerms = (query.expandedTerms ?? []).map(normalize);
+  const typoTerms = (query.typoTerms ?? []).map(normalize);
+  const primary = normalize(getPrimaryText(doc));
+  const body = normalize(getBodyText(doc));
+  const tags = doc.tags.map(normalize);
+  const timelineEra = doc.documentType === "ENTITY" ? normalize(doc.timelineEraSlug ?? "") : "";
+
+  if (primary === q) {
+    return {
+      doc,
+      bucket: "EXACT",
+      score: 1.0
+    };
+  }
+
+  if (body.includes(q)) {
+    return {
+      doc,
+      bucket: "EXACT",
+      score: 0.95
+    };
+  }
+
+  for (const term of expandedTerms) {
+    if (primary.includes(term) || body.includes(term)) {
+      return {
+        doc,
+        bucket: "EXPANDED",
+        score: 0.8
+      };
+    }
+  }
+
+  for (const term of typoTerms) {
+    if (primary.includes(term) || body.includes(term)) {
+      return {
+        doc,
+        bucket: "TYPO",
+        score: 0.7
+      };
+    }
+  }
+
+  for (const term of expandedTerms) {
+    if (tags.includes(term) || (timelineEra && timelineEra === term)) {
+      return {
+        doc,
+        bucket: "METADATA",
+        score: 0.65
+      };
+    }
+  }
+
+  return null;
+}
+
+function compareRankedDocuments(a: RankedDocument, b: RankedDocument): number {
+  if (a.score !== b.score) {
+    return b.score - a.score;
+  }
+
+  const aPrimary = normalize(getPrimaryText(a.doc));
+  const bPrimary = normalize(getPrimaryText(b.doc));
+  const primaryCompare = aPrimary.localeCompare(bPrimary);
+  if (primaryCompare !== 0) {
+    return primaryCompare;
+  }
+
+  const typeCompare = a.doc.documentType.localeCompare(b.doc.documentType);
+  if (typeCompare !== 0) {
+    return typeCompare;
+  }
+
+  return a.doc.id.localeCompare(b.doc.id);
+}
+
 export class InMemorySearchAdapter implements SearchAdapter {
   private readonly store = new Map<string, SearchDocument>();
 
@@ -86,25 +194,18 @@ export class InMemorySearchAdapter implements SearchAdapter {
       );
     }
 
-    // 9. q: case-insensitive substring match
-    if (query.q !== undefined && query.q.trim().length > 0) {
-      const q = query.q.toLowerCase().trim();
-      filtered = filtered.filter((doc) => {
-        const haystack =
-          doc.documentType === "ENTITY"
-            ? `${doc.name} ${doc.summary}`
-            : `${doc.title} ${doc.summary}`;
-        return haystack.toLowerCase().includes(q);
-      });
-    }
+    const ranked = filtered
+      .map((doc) => rankDocument(doc, query))
+      .filter((item): item is RankedDocument => item !== null)
+      .sort(compareRankedDocuments);
 
-    const total = filtered.length;
+    const total = ranked.length;
     const safeOffset = Math.max(0, query.offset);
-    const hits = filtered.slice(safeOffset, safeOffset + query.limit).map((doc) => ({
-      id: doc.id,
-      documentType: doc.documentType,
-      score: 1.0,
-      document: doc
+    const hits = ranked.slice(safeOffset, safeOffset + query.limit).map((item) => ({
+      id: item.doc.id,
+      documentType: item.doc.documentType,
+      score: item.score,
+      document: item.doc
     }));
 
     return { resolvedReleaseSlug: query.releaseSlug, total, hits };

@@ -19,6 +19,20 @@ const allowedRoles: Role[] = ["AUTHOR_ADMIN"];
 const chronologyTypes = new Set<EntityType>(["EVENT", "REVEAL", "TIMELINE_ERA"]);
 const spoilerTypes = new Set<EntityType>(["SECRET", "REVEAL", "EVENT"]);
 const spoilerValues = new Set(["NONE", "MINOR", "MAJOR"]);
+const lowValueSuppressibleWarningRules = new Set<string>([
+  "ENTITY_KNOWLEDGE_STATE_REGRESSION",
+  "MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY",
+  "RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE"
+]);
+type ContinuityIssueListSort =
+  | "detectedAt.desc"
+  | "detectedAt.asc"
+  | "severity.desc"
+  | "severity.asc"
+  | "status.asc"
+  | "status.desc"
+  | "ruleCode.asc"
+  | "ruleCode.desc";
 const transitionMap = {
   OPEN: new Set<ContinuityIssueStatus>(["ACKNOWLEDGED", "RESOLVED", "DISMISSED"]),
   ACKNOWLEDGED: new Set<ContinuityIssueStatus>(["OPEN", "RESOLVED", "DISMISSED"]),
@@ -62,6 +76,8 @@ const toResponseIssue = (issue: {
   details: string;
   detectedAt?: Date;
   resolvedAt?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }) => ({
   id: issue.id,
   ruleCode: issue.ruleCode,
@@ -72,7 +88,9 @@ const toResponseIssue = (issue: {
   title: issue.title,
   details: issue.details,
   ...(issue.detectedAt === undefined ? {} : { detectedAt: issue.detectedAt.toISOString() }),
-  ...(issue.resolvedAt === undefined ? {} : { resolvedAt: issue.resolvedAt?.toISOString() ?? null })
+  ...(issue.resolvedAt === undefined ? {} : { resolvedAt: issue.resolvedAt?.toISOString() ?? null }),
+  ...(issue.createdAt === undefined ? {} : { createdAt: issue.createdAt.toISOString() }),
+  ...(issue.updatedAt === undefined ? {} : { updatedAt: issue.updatedAt.toISOString() })
 });
 
 const buildChronologyDetails = (problems: string[]): string =>
@@ -92,7 +110,7 @@ export const continuityIssueService = {
         return [entry.entityId, activeMetadata.timelineAnchor?.sortKey ?? null] as const;
       })
     );
-    const issues: Array<{
+    const generatedIssues: Array<{
       ruleCode: string;
       severity: ContinuityIssueSeverity;
       subjectType: ContinuityIssueSubjectType;
@@ -105,7 +123,9 @@ export const continuityIssueService = {
       entityRevisionId?: string;
       manuscriptId?: string;
       manuscriptRevisionId?: string;
-    }> = [];
+      relationshipId?: string;
+        relationshipRevisionId?: string;
+      }> = [];
 
     for (const entry of context.release.entries) {
       const payloadRecord = readPayloadRecord(entry.revision.payload);
@@ -136,7 +156,7 @@ export const continuityIssueService = {
         }
 
         if (problems.length > 0) {
-          issues.push({
+          generatedIssues.push({
             ruleCode: "REQ_META_CHRONOLOGY_ANCHOR",
             severity: "BLOCKING",
             subjectType: "ENTITY_REVISION",
@@ -154,7 +174,7 @@ export const continuityIssueService = {
         const activeSortKey = activeSortKeyByEntityId.get(entry.entity.id) ?? null;
 
         if (currentSortKey && activeSortKey && currentSortKey < activeSortKey) {
-          issues.push({
+          generatedIssues.push({
             ruleCode: "DATE_ORDER_SORT_KEY_REGRESSION",
             severity: "BLOCKING",
             subjectType: "ENTITY_REVISION",
@@ -173,7 +193,7 @@ export const continuityIssueService = {
         const spoilerTier = readExplicitSpoilerTier(entry.revision.payload);
 
         if (spoilerTier === null || !spoilerValues.has(spoilerTier)) {
-          issues.push({
+          generatedIssues.push({
             ruleCode: "REQ_META_SPOILER_TIER_PUBLIC",
             severity: "BLOCKING",
             subjectType: "ENTITY_REVISION",
@@ -197,7 +217,7 @@ export const continuityIssueService = {
         const missingEntitySlugs = entityDependencySlugs.filter((slug) => !includedEntitySlugs.has(slug));
 
         if (entityDependencySlugs.length === 0 || missingEntitySlugs.length > 0) {
-          issues.push({
+          generatedIssues.push({
             ruleCode: "REVEAL_TIMING_DEPENDENCY_PRESENT",
             severity: "BLOCKING",
             subjectType: "ENTITY_REVISION",
@@ -227,7 +247,7 @@ export const continuityIssueService = {
         continue;
       }
 
-      issues.push({
+      generatedIssues.push({
         ruleCode: "REQ_META_SPOILER_TIER_PUBLIC",
         severity: "BLOCKING",
         subjectType: "MANUSCRIPT_REVISION",
@@ -256,7 +276,7 @@ export const continuityIssueService = {
         continue;
       }
 
-      issues.push({
+      generatedIssues.push({
         ruleCode: "DUPLICATE_ENTITY_SLUG_IN_RELEASE",
         severity: "BLOCKING",
         subjectType: "RELEASE",
@@ -273,7 +293,7 @@ export const continuityIssueService = {
         continue;
       }
 
-      issues.push({
+      generatedIssues.push({
         ruleCode: "DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE",
         severity: "BLOCKING",
         subjectType: "RELEASE",
@@ -284,6 +304,214 @@ export const continuityIssueService = {
         metadata: { manuscriptSlug, count }
       });
     }
+
+    // Stage 02 Expansion Rules
+
+    // ENTITY_KNOWLEDGE_STATE_REGRESSION: Compare entity spoiler tier in current release against max tier in prior releases
+    const tierOrder = ["NONE", "MINOR", "MAJOR"];
+  const tierRank = new Map(tierOrder.map((tier, index) => [tier, index]));
+
+    const priorMaxTierByEntityId = new Map<string, string>();
+    for (const release of context.allReleasesForComparison) {
+      for (const entry of release.entries) {
+        const currentMax = priorMaxTierByEntityId.get(entry.entityId) ?? null;
+        const tier = readExplicitSpoilerTier(entry.revision.payload);
+
+        if (tier && tierRank.has(tier)) {
+          const currentRank = currentMax ? tierRank.get(currentMax) ?? -1 : -1;
+          const newRank = tierRank.get(tier) ?? -1;
+          if (newRank > currentRank) {
+            priorMaxTierByEntityId.set(entry.entityId, tier);
+          }
+        }
+      }
+    }
+
+    for (const entry of context.release.entries) {
+      if (!spoilerTypes.has(entry.entity.type)) {
+        continue;
+      }
+
+      const currentTier = readExplicitSpoilerTier(entry.revision.payload);
+      if (currentTier === null) {
+        continue;
+      }
+
+      const priorMaxTier = priorMaxTierByEntityId.get(entry.entity.id) ?? null;
+      if (priorMaxTier === null) {
+        continue;
+      }
+
+      const currentRank = tierRank.get(currentTier) ?? -1;
+      const priorRank = tierRank.get(priorMaxTier) ?? -1;
+
+      if (currentRank < priorRank) {
+        generatedIssues.push({
+          ruleCode: "ENTITY_KNOWLEDGE_STATE_REGRESSION",
+          severity: "WARNING",
+          subjectType: "ENTITY_REVISION",
+          subjectId: entry.revision.id,
+          title: "Entity knowledge state regressed relative to prior release",
+          details: `Entity ${entry.entity.slug} had spoiler tier ${priorMaxTier} in prior release but appears with tier ${currentTier} in current release`,
+          fingerprint: fingerprint("ENTITY_KNOWLEDGE_STATE_REGRESSION", entry.revision.id, currentTier, priorMaxTier),
+          metadata: { entitySlug: entry.entity.slug, entityType: entry.entity.type, currentTier, priorMaxTier },
+          entityId: entry.entity.id,
+          entityRevisionId: entry.revision.id
+        });
+      }
+    }
+
+    // MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY: Validate manuscript chapter sequence continuity
+    for (const entry of context.release.manuscriptEntries) {
+      const payloadRecord = readPayloadRecord(entry.manuscriptRevision.payload);
+      const chapters = Array.isArray(payloadRecord.chapters) ? payloadRecord.chapters : [];
+
+      const chapterNumbers: number[] = [];
+      const anomalies: Array<{ type: string; position: number | string }> = [];
+
+      for (const chapter of chapters) {
+        if (isRecord(chapter) && typeof chapter.sequenceNumber === "number") {
+          chapterNumbers.push(chapter.sequenceNumber);
+        }
+      }
+
+      if (chapterNumbers.length === 0) {
+        continue;
+      }
+
+      // Check for missing sequence numbers in range
+      const minSeq = Math.min(...chapterNumbers);
+      const maxSeq = Math.max(...chapterNumbers);
+      const expectedSet = new Set(Array.from({ length: maxSeq - minSeq + 1 }, (_, i) => minSeq + i));
+      const actualSet = new Set(chapterNumbers);
+
+      for (const expected of expectedSet) {
+        if (!actualSet.has(expected)) {
+          anomalies.push({ type: "MISSING", position: expected });
+        }
+      }
+
+      // Check for duplicate sequence numbers
+      const seen = new Set<number>();
+      for (const num of chapterNumbers) {
+        if (seen.has(num)) {
+          anomalies.push({ type: "DUPLICATE", position: num });
+        }
+        seen.add(num);
+      }
+
+      if (anomalies.length > 0) {
+        for (const anomaly of anomalies) {
+          generatedIssues.push({
+            ruleCode: "MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY",
+            severity: "WARNING",
+            subjectType: "MANUSCRIPT_REVISION",
+            subjectId: entry.manuscriptRevision.id,
+            title: "Manuscript chapters exhibit sequence anomalies",
+            details: `${anomaly.type === "MISSING" ? "Missing sequence number" : "Duplicate sequence number"} at position ${anomaly.position} in manuscript ${entry.manuscript.slug}`,
+            fingerprint: fingerprint("MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY", entry.manuscriptRevision.id, anomaly.type, String(anomaly.position)),
+            metadata: { manuscriptSlug: entry.manuscript.slug, anomalyType: anomaly.type, position: anomaly.position },
+            manuscriptId: entry.manuscript.id,
+            manuscriptRevisionId: entry.manuscriptRevision.id
+          });
+        }
+      }
+    }
+
+    // RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE: Cross-check relationship reveal state against related entity visibility
+    const entityIdToTierInCurrentRelease = new Map<string, string | null>();
+    for (const entry of context.release.entries) {
+      if (spoilerTypes.has(entry.entity.type)) {
+        const tier = readExplicitSpoilerTier(entry.revision.payload);
+        entityIdToTierInCurrentRelease.set(entry.entity.id, tier);
+      }
+    }
+
+    for (const entry of context.release.relationshipEntries) {
+      const revisionMetadata = isRecord(entry.relationshipRevision.metadata) ? entry.relationshipRevision.metadata : {};
+      const relationshipTier = typeof revisionMetadata.tier === "string" ? revisionMetadata.tier : "NONE";
+
+      const sourceEntityTier = entityIdToTierInCurrentRelease.get(entry.relationship.sourceEntityId);
+      const targetEntityTier = entityIdToTierInCurrentRelease.get(entry.relationship.targetEntityId);
+
+      // If relationship is unrevealed/restricted but related entities are public with lower tiers, flag it
+      if (relationshipTier === "RESTRICTED" || relationshipTier === "UNREVEALED") {
+        if (sourceEntityTier !== null && sourceEntityTier !== undefined) {
+          if (sourceEntityTier === "NONE") {
+            generatedIssues.push({
+              ruleCode: "RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE",
+              severity: "WARNING",
+              subjectType: "RELATIONSHIP_REVISION",
+              subjectId: entry.relationshipRevision.id,
+              title: "Relationship reveal state is inconsistent with related entity visibility",
+              details: `Relationship is marked as ${relationshipTier} but source entity is publicly visible with tier NONE`,
+              fingerprint: fingerprint(
+                "RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE",
+                String(entry.relationship.id),
+                entry.relationship.sourceEntityId,
+                relationshipTier,
+                sourceEntityTier
+              ),
+              metadata: {
+                relationshipId: entry.relationship.id,
+                sourceEntityId: entry.relationship.sourceEntityId,
+                targetEntityId: entry.relationship.targetEntityId,
+                relationshipTier,
+                entityTier: sourceEntityTier,
+                entityRole: "source"
+              },
+              relationshipId: entry.relationship.id,
+              relationshipRevisionId: entry.relationshipRevision.id
+            });
+          }
+        }
+
+        if (targetEntityTier !== null && targetEntityTier !== undefined) {
+          if (targetEntityTier === "NONE") {
+            generatedIssues.push({
+              ruleCode: "RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE",
+              severity: "WARNING",
+              subjectType: "RELATIONSHIP_REVISION",
+              subjectId: entry.relationshipRevision.id,
+              title: "Relationship reveal state is inconsistent with related entity visibility",
+              details: `Relationship is marked as ${relationshipTier} but target entity is publicly visible with tier NONE`,
+              fingerprint: fingerprint(
+                "RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE",
+                String(entry.relationship.id),
+                entry.relationship.targetEntityId,
+                relationshipTier,
+                targetEntityTier
+              ),
+              metadata: {
+                relationshipId: entry.relationship.id,
+                sourceEntityId: entry.relationship.sourceEntityId,
+                targetEntityId: entry.relationship.targetEntityId,
+                relationshipTier,
+                entityTier: targetEntityTier,
+                entityRole: "target"
+              },
+              relationshipId: entry.relationship.id,
+              relationshipRevisionId: entry.relationshipRevision.id
+            });
+          }
+        }
+      }
+    }
+
+    const existingIssues = await continuityIssueRepository.listIssuesForRelease(context.release.id);
+    const suppressedLowValueFingerprints = new Set(
+      existingIssues
+        .filter(
+          (issue) =>
+            issue.status === "DISMISSED" &&
+            issue.severity === "WARNING" &&
+            lowValueSuppressibleWarningRules.has(issue.ruleCode)
+        )
+        .map((issue) => issue.fingerprint)
+    );
+    const issues = generatedIssues.filter(
+      (issue) => !(issue.severity === "WARNING" && suppressedLowValueFingerprints.has(issue.fingerprint))
+    );
 
     const persistedIssues = await continuityIssueRepository.persistRun({
       releaseId: context.release.id,
@@ -296,7 +524,7 @@ export const continuityIssueService = {
       releaseSlug: context.release.slug,
       source,
       summary: {
-        ruleCount: 6,
+        ruleCount: 9,
         issueCount: persistedIssues.length,
         blockingOpenCount: blockingOpenIssues.length,
         warningOpenCount
@@ -312,6 +540,9 @@ export const continuityIssueService = {
     severity?: ContinuityIssueSeverity;
     ruleCode?: string;
     subjectType?: ContinuityIssueSubjectType;
+    relationshipId?: string;
+    relationshipRevisionId?: string;
+    sort: ContinuityIssueListSort;
     limit: number;
     offset: number;
   }) {
@@ -324,6 +555,7 @@ export const continuityIssueService = {
       total: result.total,
       limit: input.limit,
       offset: input.offset,
+      summary: result.summary,
       issues: result.issues.map((issue) => toResponseIssue(issue))
     };
   },
