@@ -6,9 +6,9 @@
 > `docs/build-system/book-worm-build-system/ui-vision.md`, and the Phase 6 plan has been
 > rebaselined around that document.
 >
-> `Stage-02-Slice-01` is complete and is the only shipped Stage 02 implementation slice.
-> No additional Phase 6 implementation should proceed until `Stage-02-Slice-02` is documented,
-> approved, and used to lock verification closeout plus the Stage 03 handoff.
+> `Stage-02-Slice-01` and `Stage-02-Slice-02` are both complete.
+> `Stage-02-Slice-03` (root-shell verification closeout and Stage 03 handoff lock) is the remaining open item before Stage 02 can close.
+> No additional Phase 6 implementation should proceed until Slice-03 is executed and the Stage 03 handoff is locked.
 
 This tracker is the top-level checklist for compartmentalized build planning. Each phase owns its own directory. Each stage and part has a dedicated markdown document that defines scope, outputs, blockers, and exit criteria.
 
@@ -220,7 +220,7 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 6 Stage 02
 
-- [-] [Stage 02 Overview](./phase-6/stage-02-joint-styling-foundation/stage-02-joint-styling-foundation.md) (`Stage-02-Slice-01` complete: checklist, audit, and root-shell alignment shipped; closeout remains open because Stage 03 handoff is not yet locked and the deferred admin focus-style expectation still sits in `adminAccessibility.module.css`)
+- [-] [Stage 02 Overview](./phase-6/stage-02-joint-styling-foundation/stage-02-joint-styling-foundation.md) (`Stage-02-Slice-01` complete: checklist, audit, and root-shell alignment shipped; `Stage-02-Slice-02` complete: Sidebar Codex Navigation Refactor shipped — `AppSidebar.tsx` restructured with collapsible Codex group (Story / World / Lore), Collections removed, Recent Threads heading updated, lint/type-check exit 0; `Stage-02-Slice-03` is the remaining open item — root-shell verification closeout and Stage 03 handoff lock)
 
 #### Phase 6 Stage 03
 

@@ -3,13 +3,35 @@
 import Link from "next/link";
 import { useState } from "react";
 
-const navigationLinks = [
-  { href: "/", label: "Chat" },
-  { href: "/admin/entities", label: "Codex" },
-  { href: "/admin/review-inbox", label: "Review Inbox" }
-];
-
-const collectionItems = ["Projects", "Artifacts"];
+const codexGroups = [
+  {
+    label: "Story",
+    items: [
+      { label: "Characters", type: "CHARACTER" },
+      { label: "Factions", type: "FACTION" },
+      { label: "Events", type: "EVENT" },
+    ],
+  },
+  {
+    label: "World",
+    items: [
+      { label: "Locations", type: "LOCATION" },
+      { label: "Creatures", type: "CREATURE" },
+      { label: "Timeline Eras", type: "TIMELINE_ERA" },
+    ],
+  },
+  {
+    label: "Lore",
+    items: [
+      { label: "Belief Systems", type: "BELIEF_SYSTEM" },
+      { label: "Languages", type: "LANGUAGE" },
+      { label: "Political Bodies", type: "POLITICAL_BODY" },
+      { label: "Secrets", type: "SECRET" },
+      { label: "Reveals", type: "REVEAL" },
+      { label: "Artifacts", type: "ARTIFACT" },
+    ],
+  },
+] as const;
 
 const recentItems = [
   "Character Development Guide",
@@ -21,6 +43,7 @@ const recentItems = [
 
 export function AppSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCodexOpen, setIsCodexOpen] = useState(false);
 
   return (
     <aside className="shell-panel sidebar-shell flex min-h-[18rem] flex-col overflow-y-auto rounded-[2rem] lg:h-full">
@@ -119,38 +142,70 @@ export function AppSidebar() {
                 Navigate
               </div>
               <div className="mt-2 space-y-1.5">
-                {navigationLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+                {/* Chat */}
+                <Link
+                  href="/"
+                  className="sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
+                >
+                  Chat
+                </Link>
 
-            <div className="sidebar-card rounded-[1.5rem] p-3">
-              <div className="px-1 py-1 text-[0.68rem] uppercase tracking-[0.3em] text-text-muted">
-                Collections
-              </div>
-              <div className="mt-2 space-y-1 border-l border-border pl-3">
-                {collectionItems.map((item) => (
-                  <div
-                    key={item}
-                    className="sidebar-link cursor-default rounded-xl px-3 py-2 text-sm text-text-muted"
+                {/* Codex collapsible group */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCodexOpen(!isCodexOpen)}
+                    aria-expanded={isCodexOpen}
+                    className="sidebar-link flex w-full items-center justify-between rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
                   >
-                    {item}
-                  </div>
-                ))}
+                    <span>Codex</span>
+                    <svg
+                      className={`h-4 w-4 transition-transform ${isCodexOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isCodexOpen && (
+                    <div className="mt-1 space-y-3 pl-3">
+                      {codexGroups.map((group) => (
+                        <div key={group.label} className="sidebar-card rounded-xl p-2">
+                          <div className="px-2 py-1 text-[0.62rem] uppercase tracking-[0.28em] text-text-muted">
+                            {group.label}
+                          </div>
+                          <div className="mt-1 space-y-0.5">
+                            {group.items.map((item) => (
+                              <Link
+                                key={item.type}
+                                href={`/admin/entities?type=${item.type}`}
+                                className="sidebar-link block rounded-xl px-3 py-2 text-sm text-text-muted"
+                              >
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Review Inbox */}
+                <Link
+                  href="/admin/review-inbox"
+                  className="sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
+                >
+                  Review Inbox
+                </Link>
               </div>
             </div>
           </nav>
 
           <div className="relative flex min-h-0 flex-1 flex-col px-3 py-3">
             <div className="px-4 py-2 text-[0.68rem] uppercase tracking-[0.3em] text-text-muted">
-              Recents
+              Recent Threads
             </div>
             <div className="mt-2 flex-1 space-y-1 overflow-y-auto">
               {recentItems.map((item) => (
