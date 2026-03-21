@@ -1,6 +1,6 @@
 # Stage 01 Unblock Checklist Template
 
-Legacy note: retained for prior-scope audit traceability after Stage 01 was re-scoped to landing-page refactor delivery.
+Legacy note: retained for prior-scope audit traceability from the original Stage 01 unblock workflow. Any wording that implies Stage 01 delivered a broader landing-page refactor should be read as legacy planning context only; the authoritative Stage 01 outcome is the shipped root-shell baseline later handed to the vision-first rollout plan.
 
 Use this template to record Stage 01 manual verification outcomes for the four P1 surfaces.
 

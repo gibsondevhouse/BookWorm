@@ -1,45 +1,47 @@
-# Stage 03: Global Styling Implementation
+# Stage 03: High-Impact Surface Alignment
 
 ## Purpose
 
-Implement the approved Stage 02 styling foundation across global app layers and shared UI shells so experience consistency is established before adding broader UX/UI surfaces.
+Apply the Stage 02 visual system to the next audited screens with the highest workflow impact after the root shell: the entity list, the entity edit flow, the review inbox, and the shared admin surface primitives they depend on.
 
 ## Work To Be Done
 
-- apply approved styling primitives to global shell files and shared style modules
-- remove contradictory or duplicated style patterns where safe
-- verify style updates preserve current behavior and accessibility contracts
+- align `apps/web/src/app/admin/adminAccessibility.module.css` with the approved Phase 6 token and surface language, including the deferred global focus-indicator styling expectation that remained out of scope in `Stage-02-Slice-01`
+- apply the visual system to `EntitiesClient.tsx`, `EditEntityPageClient.tsx`, and `ReviewInboxClient.tsx`
+- preserve the accessibility and keyboard-navigation behaviors already encoded in those screens while replacing utilitarian styling
+- resolve token and visual mismatches between the root shell and the admin modules
 
 ## Deliverables
 
-- global styling implementation changes across approved target files
-- change log linking each implementation group back to Stage 02 decisions
-- verification record showing no regression in baseline quality gates
+- vision-aligned shared admin surface primitives
+- updated entity list, entity edit, and review inbox screens
+- verification log covering visual regressions, responsiveness, and keyboard/focus behavior
 
 ## Dependencies
 
-- Stage 02 styling foundation approved
-- Stage 01 landing-page refactor outcomes incorporated into accessibility/usability constraints
-- existing baseline quality and regression commands remain available
+- Stage 02 root-shell alignment complete
+- Stage 02 audit findings and defer list locked
+- the known out-of-scope failure from `phase5AccessibilityKeyboardNavigationPart01` is carried forward and points to `apps/web/src/app/admin/adminAccessibility.module.css`, not the root-shell files
+- existing UI behavior and type-safety checks remain the regression floor
 
 ## Exit Criteria
 
-- global styling primitives are applied consistently on agreed app shells
-- style drift hot spots identified in Stage 02 are addressed or explicitly deferred
-- baseline lint/type-check and targeted regressions pass after styling rollout
-- Stage 04 receives a stable styling baseline for new UI/UX surface additions
+- the entity list, entity edit flow, and review inbox no longer rely on the old flat parchment/white utilitarian presentation
+- shared admin surfaces use the same palette, typography hierarchy, and panel treatment established in Stage 02
+- accessibility-critical interactions still behave correctly after the visual refactor
+- Stage 04 receives a stable system for remaining rollout and closeout work
 
 ## Status Snapshot
 
 - Status: Not started [ ]
-- Entry gate: Stage 02 decision lock
-- Risk note: avoid mixing net-new surface work into this stage; keep focus on global style consistency
+- Entry gate: Stage 02 Slice-01 and Slice-02 complete
+- Primary targets: entity list, edit entity, review inbox, and `adminAccessibility.module.css`; resolve the deferred admin focus-style expectation early in Stage 03 rather than reopening Stage 02 scope
 
 ## Next-Slice Sequencing
 
-1. Stage-03-Slice-01: implement global shell and shared-module style updates
-2. Stage-03-Slice-02: verify and remediate regressions from global styling rollout
-3. Stage-03-Slice-03: produce Stage 04-ready styling baseline summary
+1. Stage-03-Slice-01: shared admin surface primitives and entity-list alignment
+2. Stage-03-Slice-02: entity edit and review inbox alignment
+3. Stage-03-Slice-03: verification, regression cleanup, and Stage 04 handoff
 
 ## Status
 

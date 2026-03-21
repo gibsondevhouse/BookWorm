@@ -2,7 +2,7 @@
 
 Book Worm is a solo-author fiction writing studio. Bring your OpenRouter API key and write your novel with an AI that knows your characters, keeps your world consistent, and helps you track every canon decision.
 
-Current implementation status: Phases 0 through 4 are complete. Phase 5 is complete through Stage 04 closeout. Phase 6 Stage 01 has shipped the current frontend baseline: a stable two-column chat-style landing shell in `apps/web/src/app`; broader product-facing landing-page refactor work remains rebaselined for later Phase 6 execution.
+Current implementation status: Phases 0 through 4 are complete. Phase 5 is complete through Stage 04 closeout. Phase 6 Stage 01 is closed as the shipped frontend baseline: a stable two-column chat-style root shell in `apps/web/src/app`. Active Phase 6 work now centers on Stage 02 closeout against the UI vision and the Stage 03 rollout across the next audited high-impact surfaces.
 
 ## Stack
 
@@ -95,7 +95,7 @@ The dev launcher includes port fallback behavior for API and web processes and p
 - Phase 3: collaboration comments, proposal workflow enhancements, diff/preview/history tooling
 - Phase 4: review requests, multi-stage approvals, delegation/escalation, notification outbox/inbox, analytics, query hardening, governance portability extensions, and verification gate
 - Phase 5: search tuning, continuity intelligence, portability maturity, and UX/accessibility closeout complete
-- Phase 6: Stage 01 landing-page stabilization shipped as a two-column chat-style shell; broader product-facing landing-page refactor scope remains pending a later Phase 6 slice
+- Phase 6: Stage 01 closed as the shipped root-shell baseline; Stage 02 finalizes the vision-first closeout and handoff, and Stage 03 rolls that visual system across the next audited high-impact surfaces
 
 For plan-level detail, see `docs/build-plans/master-plan-tracker.md`.
 

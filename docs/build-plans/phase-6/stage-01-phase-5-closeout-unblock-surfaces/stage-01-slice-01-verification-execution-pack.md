@@ -1,6 +1,6 @@
 # Stage 01 Slice 01: Verification Execution Pack
 
-Legacy note: retained as historical evidence from the original Stage 01 scope before Stage 01 was re-scoped to landing-page refactor delivery.
+Legacy note: retained as historical evidence from the original Stage 01 unblock workflow. The earlier planning assumption that Stage 01 would deliver a broader landing-page refactor is now a stale claim; the canonical Stage 01 disposition is the shipped root-shell baseline documented elsewhere in Phase 6.
 
 ## Scope and Intent
 

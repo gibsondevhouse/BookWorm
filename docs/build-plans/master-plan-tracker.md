@@ -1,12 +1,14 @@
 # Book Worm Build Plan Tracker
 
-> **⚠️ DEVELOPMENT LOCK — Vision Realignment Required**
+> **⚠️ DEVELOPMENT LOCK — Narrowed After Vision Realignment**
 >
-> All active Phase 6 development is frozen pending a full vision correction.
-> BookWorm is a **solo-author** AI-powered fiction writing tool — not a team editorial
-> governance platform. No implementation work on in-progress or future phases should
-> proceed until the revised product vision is formally documented and Phase 6 scope
-> is updated to reflect it. The solo-author + OpenRouter AI framing is canonical.
+> The Phase 6 vision correction is now documented against the UX/UI source of truth in
+> `docs/build-system/book-worm-build-system/ui-vision.md`, and the Phase 6 plan has been
+> rebaselined around that document.
+>
+> `Stage-02-Slice-01` is complete and is the only shipped Stage 02 implementation slice.
+> No additional Phase 6 implementation should proceed until `Stage-02-Slice-02` is documented,
+> approved, and used to lock verification closeout plus the Stage 03 handoff.
 
 This tracker is the top-level checklist for compartmentalized build planning. Each phase owns its own directory. Each stage and part has a dedicated markdown document that defines scope, outputs, blockers, and exit criteria.
 
@@ -210,23 +212,23 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 6
 
-- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage 01 landing-page stabilization has shipped in the root app shell; the broader product-facing landing-page refactor contract has been rebaselined and remains pending)
+- [-] [Phase 6 Overview](./phase-6/phase-6.md) (vision-first rebaseline complete; `Stage-02-Slice-01` shipped the root-shell visual alignment, and Stage 02 remains active pending verification closeout plus the Stage 03 handoff lock)
 
 #### Phase 6 Stage 01
 
-- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (landing-page stabilization shipped across the root layout, sidebar, and chat shell; Stage 02 handoff and any future product-facing refactor remain open)
+- [x] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (shipped root-shell baseline recorded and closed; follow-on UX/UI work moves into Stage 02 vision alignment)
 
 #### Phase 6 Stage 02
 
-- [ ] [Stage 02 Overview](./phase-6/stage-02-joint-styling-foundation/stage-02-joint-styling-foundation.md)
+- [-] [Stage 02 Overview](./phase-6/stage-02-joint-styling-foundation/stage-02-joint-styling-foundation.md) (`Stage-02-Slice-01` complete: checklist, audit, and root-shell alignment shipped; closeout remains open because Stage 03 handoff is not yet locked and the deferred admin focus-style expectation still sits in `adminAccessibility.module.css`)
 
 #### Phase 6 Stage 03
 
-- [ ] [Stage 03 Overview](./phase-6/stage-03-global-styling-implementation/stage-03-global-styling-implementation.md)
+- [ ] [Stage 03 Overview](./phase-6/stage-03-global-styling-implementation/stage-03-global-styling-implementation.md) (next: apply the approved visual system to the entity list, entity edit flow, review inbox, and shared admin surfaces)
 
 #### Phase 6 Stage 04
 
-- [ ] [Stage 04 Overview](./phase-6/stage-04-ui-ux-surface-expansion/stage-04-ui-ux-surface-expansion.md)
+- [ ] [Stage 04 Overview](./phase-6/stage-04-ui-ux-surface-expansion/stage-04-ui-ux-surface-expansion.md) (remaining rollout, verification, and polish for lower-frequency surfaces after the high-impact screens are aligned)
 
 ## Update Rules
 

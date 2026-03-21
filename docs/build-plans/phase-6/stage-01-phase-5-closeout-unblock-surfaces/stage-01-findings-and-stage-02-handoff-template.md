@@ -1,6 +1,6 @@
 # Stage 01 Findings and Stage 02 Handoff Template
 
-Legacy note: retained for prior-scope audit traceability after Stage 01 was re-scoped to landing-page refactor delivery.
+Legacy note: retained for prior-scope audit traceability from the original Stage 01 unblock workflow. References to a broader landing-page refactor reflect superseded planning context, not delivered Stage 01 work; the canonical Stage 01 record is the shipped root-shell baseline and handoff into the vision-first follow-on stages.
 
 Use this template to classify findings and provide deterministic inputs to Stage 02 styling foundation decisions.
 

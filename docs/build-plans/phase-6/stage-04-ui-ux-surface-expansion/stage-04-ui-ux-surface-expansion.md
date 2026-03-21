@@ -1,45 +1,46 @@
-# Stage 04: UI/UX Surface Expansion
+# Stage 04: Remaining Rollout, Verification, and Polish
 
 ## Purpose
 
-Add and refine UI/UX surfaces that expose existing backend-ready capabilities with stronger discoverability, clarity, and workflow efficiency after global styling consistency is established.
+Extend the approved Phase 6 visual system to the remaining already-implemented surfaces, then close the phase with performance, accessibility, and tracker-alignment verification. This stage is for follow-through and polish, not for redefining the design direction.
 
 ## Work To Be Done
 
-- prioritize backend-ready capability surfaces that currently lack sufficient frontend UX coverage
-- implement bounded UI/UX surface additions and interaction improvements
-- verify additions against accessibility, workflow safety, and regression constraints from prior phases
+- apply the approved visual system to lower-frequency or deferred web surfaces that remain outside the Stage 02 and Stage 03 boundaries
+- unify empty states, badges, dialogs, forms, tables, and supporting navigation details across the remaining route tree
+- add restrained atmosphere and motion where it strengthens the vision without introducing asset or performance risk
+- run final regression, accessibility, and documentation closeout for the phase
 
 ## Deliverables
 
-- prioritized surface-expansion plan with dependency ordering
-- implemented UI/UX surface additions tied to existing backend capabilities
-- verification and sign-off records for Stage 04 additions
+- remaining-surface rollout plan and disposition log
+- implemented polish and consistency updates on deferred screens
+- Phase 6 verification and tracker closeout record
 
 ## Dependencies
 
-- Stage 03 global styling baseline complete
-- existing backend capability families from prior phases available (search, continuity, portability, collaboration/admin workflows)
-- test harness and quality gates from prior phases remain green during rollout
+- Stage 03 high-impact surface alignment complete
+- no outstanding foundational design disputes from Stages 02 or 03
+- baseline quality gates remain available and green throughout closeout
 
 ## Exit Criteria
 
-- prioritized backend-ready surfaces have corresponding usable frontend paths
-- UI/UX additions align with Stage 02/03 styling contract and accessibility expectations
-- regressions across prior phase contracts are absent or explicitly dispositioned
-- phase-level closeout summary distinguishes executed outcomes from deferred follow-up work
+- the remaining implemented UI surfaces follow the same approved token and surface language
+- deferred visual inconsistencies are either resolved or explicitly logged with rationale
+- accessibility, responsiveness, and performance checks are completed for the final rollout
+- Phase 6 closeout documentation clearly distinguishes shipped work from deferred follow-up
 
 ## Status Snapshot
 
 - Status: Not started [ ]
-- Entry gate: Stage 03 global styling complete
-- Sequencing note: this stage is the expansion stage, not the style-foundation stage
+- Entry gate: Stage 03 complete
+- Sequencing note: Stage 04 is the cleanup and closeout stage, not the first implementation stage
 
 ## Next-Slice Sequencing
 
-1. Stage-04-Slice-01: rank backend-ready surfaces by testability and workflow impact
-2. Stage-04-Slice-02: implement highest-priority UI/UX surfaces
-3. Stage-04-Slice-03: run verification, closeout, and tracker alignment updates
+1. Stage-04-Slice-01: remaining-surface rollout plan and defer-list lock
+2. Stage-04-Slice-02: polish implementation on deferred surfaces
+3. Stage-04-Slice-03: final verification, closeout, and tracker alignment
 
 ## Status
 
