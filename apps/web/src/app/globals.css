@@ -1,35 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@source "../**/*.{js,ts,jsx,tsx,mdx}";
+
+@theme {
+  --color-primary: #945f2d;
+  --color-primary-dark: #7f4f24;
+  --color-paper: #f3efe6;
+  --color-paper-light: #f8f4ea;
+  --color-text: #1f1a17;
+  --color-text-muted: #6f655d;
+  --color-border: rgba(31, 26, 23, 0.12);
+  --color-subtle: rgba(148, 95, 45, 0.08);
+  --color-sidebar-bg: rgb(228, 220, 206);
+}
 
 :root {
   color-scheme: light;
-  --background: #f3efe6;
-  --surface: rgba(255, 252, 245, 0.92);
-  --ink: #1f1a17;
-  --muted: #6f655d;
-  --accent: #945f2d;
-  --border: rgba(31, 26, 23, 0.12);
 }
 
-@layer base {
-  html,
-  body {
-    @apply h-full m-0;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  body {
-    @apply bg-gradient-to-b from-[#f8f4ea] to-[#efe8dc] text-ink font-serif;
-    background-image:
-      radial-gradient(circle at top, rgba(148, 95, 45, 0.18), transparent 36%),
-      linear-gradient(180deg, #f8f4ea 0%, #efe8dc 100%);
-  }
+html {
+  height: 100%;
+}
 
-  a {
-    @apply text-inherit;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #f8f4ea;
+  color: #1f1a17;
+  font-family: Georgia, "Times New Roman", serif;
+  background-image:
+    radial-gradient(circle at top, rgba(148, 95, 45, 0.18), transparent 36%),
+    linear-gradient(180deg, #f8f4ea 0%, #efe8dc 100%);
+}
 
-  * {
-    @apply box-border;
-  }
+a {
+  color: inherit;
 }

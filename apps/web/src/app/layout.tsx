@@ -16,12 +16,12 @@ type LayoutProps = {
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en">
-      <body className="h-screen m-0 p-0 overflow-hidden">
-        <div className="flex h-screen overflow-hidden">
-          <div className="w-[220px] flex-shrink-0 overflow-hidden">
+      <body>
+        <div className="flex h-screen w-screen">
+          <div className="w-64 flex-shrink-0">
             <AppSidebar />
           </div>
-          <main className="flex-1 overflow-hidden min-h-0">
+          <main className="flex-1 overflow-hidden">
             {children}
           </main>
         </div>

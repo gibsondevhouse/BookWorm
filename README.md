@@ -2,13 +2,13 @@
 
 Book Worm is a solo-author fiction writing studio. Bring your OpenRouter API key and write your novel with an AI that knows your characters, keeps your world consistent, and helps you track every canon decision.
 
-Current implementation status: Phases 0 through 4 are complete. In Phase 5, Stage 01, Stage 02, and Stage 03 are complete (including the Stage 03 portability operations verification gate). Stage 04 Part 01 planning is complete; code implementation is next.
+Current implementation status: Phases 0 through 4 are complete. Phase 5 is complete through Stage 04 closeout. Phase 6 Stage 01 has shipped the current frontend baseline: a stable two-column chat-style landing shell in `apps/web/src/app`; broader product-facing landing-page refactor work remains rebaselined for later Phase 6 execution.
 
 ## Stack
 
 - Monorepo workspace managed with pnpm
 - API: Express + TypeScript in `apps/api`
-- Web: Next.js in `apps/web`
+- Web: Next.js + Tailwind CSS v4 in `apps/web`
 - Database: PostgreSQL via Prisma (`prisma/schema.prisma`)
 - Integration tests: Node test runner + tsx in `tests/`
 
@@ -94,7 +94,8 @@ The dev launcher includes port fallback behavior for API and web processes and p
 - Phase 2: comprehensive entity/manuscript/public codex/search/continuity and portability delivery
 - Phase 3: collaboration comments, proposal workflow enhancements, diff/preview/history tooling
 - Phase 4: review requests, multi-stage approvals, delegation/escalation, notification outbox/inbox, analytics, query hardening, governance portability extensions, and verification gate
-- Phase 5 (in progress): search tuning and continuity intelligence expansion complete; Stage 03 portability maturity is complete through Part 03 (portability operations verification gate)
+- Phase 5: search tuning, continuity intelligence, portability maturity, and UX/accessibility closeout complete
+- Phase 6: Stage 01 landing-page stabilization shipped as a two-column chat-style shell; broader product-facing landing-page refactor scope remains pending a later Phase 6 slice
 
 For plan-level detail, see `docs/build-plans/master-plan-tracker.md`.
 

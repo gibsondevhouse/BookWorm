@@ -210,11 +210,11 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 6
 
-- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage-01-Slice-02 landing-page refactor implementation complete; verification and handoff sequencing remain open)
+- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage 01 landing-page stabilization has shipped in the root app shell; the broader product-facing landing-page refactor contract has been rebaselined and remains pending)
 
 #### Phase 6 Stage 01
 
-- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (full landing-page refactor contract implemented in Stage-01-Slice-02; verification and handoff sequencing remain open)
+- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (landing-page stabilization shipped across the root layout, sidebar, and chat shell; Stage 02 handoff and any future product-facing refactor remain open)
 
 #### Phase 6 Stage 02
 

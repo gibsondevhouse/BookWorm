@@ -1,28 +1,29 @@
-# Stage 01: Product-Facing Landing Page Refactor
+# Stage 01: Landing-Page Stabilization and Refactor Rebaseline
 
 ## Purpose
 
-Deliver a full refactor target for the web landing page so BookWorm starts with a product-facing experience rather than an internal tracker/dashboard orientation.
+Record the actual shipped Stage 01 frontend milestone: a stable two-column chat-style landing shell that replaces the previous planning assumption of a completed product-facing landing-page refactor.
 
-Stage 01 governs the landing page contract for information architecture, value framing, CTA routing, and responsive accessibility baseline. Phase 5 deferred-risk artifacts are treated as historical context, not the primary execution target for this stage.
+Stage 01 now governs stabilization of the root app shell, the handoff into Stage 02 styling decisions, and the explicit rebaseline of any broader product-facing landing-page refactor into future approved work. Phase 5 deferred-risk artifacts remain historical context, not the active implementation target.
 
-## Slice-02 Implementation Delivered
+## Stabilization Implementation Delivered
 
-- full landing-page refactor implemented in `apps/web/src/app/page.tsx` and `apps/web/src/app/page.module.css`
-- internal tracker/dashboard framing replaced with product-value narrative blocks and explicit CTA paths
-- section-level requirements and CTA route mappings executed in the root route surface
-- acceptance checks and validation command set recorded in Stage-01-Slice-02 contract
+- root layout stabilized as a two-column shell in `apps/web/src/app/layout.tsx`
+- persistent navigation/sidebar baseline implemented in `apps/web/src/app/AppSidebar.tsx`
+- chat-style landing surface implemented in `apps/web/src/app/page.tsx`
+- shared theme tokens and global styling baseline implemented in `apps/web/src/app/globals.css`
+- Tailwind CSS v4 PostCSS setup is present in `apps/web/postcss.config.ts`
 
 ## Remaining Work
 
-- execute Stage-01-Slice-03 post-implementation verification and disposition
-- lock Stage 02 handoff inputs from implemented landing-page typography, spacing, and emphasis patterns
+- lock Stage 02 handoff inputs from the shipped shell layout, sidebar structure, typography, spacing, and state patterns
+- decide when, or whether, a broader product-facing landing-page refactor re-enters active Phase 6 scope as a separate approved slice
 
 ## Deliverables
 
-- approved Stage-01-Slice-02 execution plan for the landing-page full refactor
-- section and CTA contract for the landing page, mapped to currently available routes
-- Stage 02 handoff inputs identifying style-system decisions exposed by the landing-page refactor
+- Stage 01 documentation that matches the shipped stabilization milestone
+- Stage-01-Slice-02 contract rewritten around the implemented shell baseline
+- Stage 02 handoff inputs identifying style-system decisions exposed by `layout.tsx`, `AppSidebar.tsx`, `page.tsx`, and `globals.css`
 
 ### Slice 01 Execution Pack Artifacts
 
@@ -34,24 +35,24 @@ Legacy artifact set from prior Stage 01 scope. Retained for audit traceability.
 
 ## Dependencies
 
-- current landing-page implementation in `apps/web/src/app/page.tsx` and `apps/web/src/app/page.module.css`
-- route availability in `apps/web/src/app` for product-facing CTA destinations
+- current landing-shell implementation in `apps/web/src/app/layout.tsx`, `apps/web/src/app/AppSidebar.tsx`, and `apps/web/src/app/page.tsx`
+- global styling and Tailwind CSS v4 setup in `apps/web/src/app/globals.css` and `apps/web/postcss.config.ts`
 - Phase 5 Stage 04 Part 03 closeout artifacts as contextual input only:
   - `docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/acceptance-and-sign-off-checklist.md`
   - `docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/ac-01-feedback-consolidation.md`
 
 ## Exit Criteria
 
-- landing page IA and section contract is approved for implementation without unresolved scope ambiguity
-- dashboard/tracker language is removed from Stage 01 active scope and replaced with product-facing landing-page framing
-- CTA mappings reference existing app routes only and include rationale per path
-- acceptance criteria and validation commands for the approved execution slice are explicit and runnable
+- Stage 01 docs describe the shipped landing-shell stabilization rather than a non-existent marketing/CTA implementation
+- implementation references point to `layout.tsx`, `AppSidebar.tsx`, `page.tsx`, `globals.css`, and relevant Tailwind setup only
+- Stage 02 handoff inputs are explicit about the current shell primitives and the deferred status of any broader landing-page refactor
+- acceptance criteria and validation commands for the stabilization baseline are explicit and runnable
 
 ## Status Snapshot
 
-- Status: In Progress [-] (landing-page refactor contract executed in Stage-01-Slice-02; verification and Stage 02 handoff sequencing remain open)
-- Risk posture: Medium (final landing-page IA/copy/CTA contract must be locked before Stage 02 styling decisions)
-- Primary unlock: establish a product-facing entry surface that Stage 02 can style systematically instead of inheriting tracker-era framing
+- Status: In Progress [-] (landing-page stabilization is shipped; Stage 02 handoff sequencing and future refactor disposition remain open)
+- Risk posture: Medium (the current shell is stable, but broader product-facing IA/copy work is still undefined and must not be treated as complete)
+- Primary unlock: give Stage 02 a real shell, sidebar, and token baseline to style systematically
 
 ## Slice 01 Execution Evidence (Completed)
 
@@ -73,7 +74,7 @@ This completed evidence is retained as historical context from the original Stag
 Scope continuity note:
 
 - Slice-01 completion defined a verification-pack contract for the prior scope.
-- Stage 01 active execution scope is now landing-page refactor delivery via Stage-01-Slice-02.
+- Stage 01 active execution scope is now landing-page stabilization reality via Stage-01-Slice-02.
 
 ## Completed First Planning Slice
 
@@ -97,24 +98,24 @@ Slice ID: Stage-01-Slice-01
 
 ## Archived Prior-Scope Notes
 
-- Stage-01-Slice-04 remains archived as a prior-scope closeout carry-forward item and is not the active next ordered slice for landing-page refactor execution.
+- Stage-01-Slice-04 remains archived as a prior-scope closeout carry-forward item and is not the active next ordered slice for landing-shell stabilization follow-through.
 - If this archived item is reactivated, it must be planned explicitly as a separate dependency thread and must not replace Stage-01-Slice-02 as the active Stage 01 target.
 
 ## Next-Slice Sequencing
 
 1. Stage-01-Slice-01 [x]: verification execution pack approved and validated
-2. Stage-01-Slice-02 [x]: full landing-page refactor execution contract implemented in root route and local page styles
-3. Stage-01-Slice-03 [ ]: post-implementation verification, disposition, and Stage 02 handoff lock
-4. Stage-01-Slice-04 [ ]: follow-on Stage 01 remediation only if Slice-03 verification identifies blocking findings
+2. Stage-01-Slice-02 [x]: landing-page stabilization documented against the shipped root shell implementation
+3. Stage-01-Slice-03 [ ]: post-stabilization verification, disposition, and Stage 02 handoff lock
+4. Stage-01-Slice-04 [ ]: follow-on Stage 01 remediation only if Slice-03 verification identifies blocking findings or a broader refactor is re-approved
 
 ## Approved Next Ordered Slice
 
 Slice ID: Stage-01-Slice-03
 
-- name: Post-Implementation Verification and Stage 02 Handoff Lock
+- name: Post-Stabilization Verification and Stage 02 Handoff Lock
 - status: Not Started [ ]
 - execution document: `stage-01-slice-02-product-facing-landing-page-full-refactor-contract.md`
 
 ## Status
 
-Status: In Progress [-] (Stage 01 landing-page refactor scope is active; Slice-02 delivery is complete and verification/handoff slices remain open)
+Status: In Progress [-] (Stage 01 stabilization scope is the active documented baseline; Slice-02 rebaseline is complete and verification/handoff slices remain open)

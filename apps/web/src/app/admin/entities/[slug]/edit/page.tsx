@@ -1,11 +1,12 @@
 import { EditEntityPageClient } from "./EditEntityPageClient";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default function Page({ params }: PageProps) {
-  return <EditEntityPageClient slug={params.slug} />;
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params;
+  return <EditEntityPageClient slug={slug} />;
 }

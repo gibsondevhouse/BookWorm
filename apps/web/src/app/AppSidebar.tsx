@@ -7,17 +7,17 @@ export function AppSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <aside className="flex flex-col h-full overflow-y-auto bg-[rgba(228,220,206,0.98)] border-r border-border">
+    <aside className="flex h-full flex-col overflow-y-auto border-r border-border bg-sidebar-bg">
       {/* Brand & Collapse Button */}
-      <div className="px-5 py-6 border-b border-border flex-shrink-0 flex items-center justify-between">
-        <div className="text-lg font-bold tracking-wider text-ink">BookWorm</div>
+      <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-6">
+        <div className="text-lg font-bold tracking-wider text-text">BookWorm</div>
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 hover:bg-subtle rounded transition-colors"
+          className="rounded p-1 hover:bg-subtle"
           aria-label="Toggle sidebar"
         >
           <svg
-            className="w-5 h-5 text-muted"
+            className="h-5 w-5 text-text-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -35,9 +35,9 @@ export function AppSidebar() {
       {!isCollapsed && (
         <>
           {/* Top Section: New Chat, Search, Settings */}
-          <div className="px-4 py-4 flex-shrink-0 space-y-3">
+          <div className="shrink-0 space-y-3 px-4 py-4">
             <button
-              className="w-full px-4 py-2 bg-accent text-white font-serif font-bold rounded-lg hover:bg-[#7f4f24] transition-colors text-sm"
+              className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-dark"
               aria-label="New chat"
             >
               + New Chat
@@ -46,11 +46,11 @@ export function AppSidebar() {
               <input
                 type="text"
                 placeholder="Search…"
-                className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white text-ink placeholder-muted focus:outline-none focus:border-accent transition-colors"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text placeholder-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                 aria-label="Search chats"
               />
               <svg
-                className="absolute right-3 top-2.5 w-4 h-4 text-muted pointer-events-none"
+                className="pointer-events-none absolute right-3 top-2.5 h-4 w-4 text-text-muted"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -65,7 +65,7 @@ export function AppSidebar() {
             </div>
             <Link
               href="/settings"
-              className="block px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors text-center"
+              className="block rounded-lg px-4 py-2 text-center text-sm text-text-muted hover:bg-subtle hover:text-text"
             >
               Settings
             </Link>
@@ -73,36 +73,36 @@ export function AppSidebar() {
 
           {/* Main Navigation */}
           <nav
-            className="px-3 py-3 flex-shrink-0 space-y-1"
+            className="shrink-0 space-y-1 px-3 py-3"
             aria-label="Main navigation"
           >
             <Link
               href="/"
-              className="block px-4 py-2.5 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors"
+              className="block rounded-lg px-4 py-2.5 text-sm text-text-muted hover:bg-subtle hover:text-text"
             >
               Chat
             </Link>
             <Link
               href="/admin/entities"
-              className="block px-4 py-2.5 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors"
+              className="block rounded-lg px-4 py-2.5 text-sm text-text-muted hover:bg-subtle hover:text-text"
             >
               Codex
             </Link>
             <Link
               href="/admin/review-inbox"
-              className="block px-4 py-2.5 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors"
+              className="block rounded-lg px-4 py-2.5 text-sm text-text-muted hover:bg-subtle hover:text-text"
             >
               Review Inbox
             </Link>
             <div className="pt-2">
-              <div className="px-4 py-1 text-xs font-semibold text-muted uppercase tracking-wide">
+              <div className="px-4 py-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Collections
               </div>
               <div className="mt-2 space-y-1 pl-2 border-l border-border">
-                <div className="px-4 py-2 text-sm text-muted hover:text-ink cursor-default">
+                <div className="cursor-default px-4 py-2 text-sm text-text-muted hover:text-text">
                   Projects
                 </div>
-                <div className="px-4 py-2 text-sm text-muted hover:text-ink cursor-default">
+                <div className="cursor-default px-4 py-2 text-sm text-text-muted hover:text-text">
                   Artifacts
                 </div>
               </div>
@@ -111,37 +111,37 @@ export function AppSidebar() {
 
           {/* Recents Section */}
           <div className="flex-1 overflow-y-auto px-3 py-3 min-h-0">
-            <div className="px-4 py-2 text-xs font-semibold text-muted uppercase tracking-wide flex-shrink-0">
+            <div className="shrink-0 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
               Recents
             </div>
             <div className="mt-2 space-y-1">
-              <div className="px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors cursor-default truncate">
+              <div className="cursor-default truncate rounded-lg px-4 py-2 text-sm text-text-muted hover:bg-subtle hover:text-text">
                 Character Development Guide
               </div>
-              <div className="px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors cursor-default truncate">
+              <div className="cursor-default truncate rounded-lg px-4 py-2 text-sm text-text-muted hover:bg-subtle hover:text-text">
                 World Building Notes
               </div>
-              <div className="px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors cursor-default truncate">
+              <div className="cursor-default truncate rounded-lg px-4 py-2 text-sm text-text-muted hover:bg-subtle hover:text-text">
                 Plot Outline for Act II
               </div>
-              <div className="px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors cursor-default truncate">
+              <div className="cursor-default truncate rounded-lg px-4 py-2 text-sm text-text-muted hover:bg-subtle hover:text-text">
                 Dialogue Refinement Session
               </div>
-              <div className="px-4 py-2 text-sm text-muted hover:text-ink hover:bg-subtle rounded-lg transition-colors cursor-default truncate">
+              <div className="cursor-default truncate rounded-lg px-4 py-2 text-sm text-text-muted hover:bg-subtle hover:text-text">
                 Chapter 5 First Draft
               </div>
             </div>
           </div>
 
           {/* User Profile Section (Bottom) */}
-          <div className="px-4 py-4 border-t border-border flex-shrink-0">
+          <div className="shrink-0 border-t border-border px-4 py-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-sm font-bold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                 A
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-ink truncate">Author</div>
-                <div className="text-xs text-muted truncate">author@example.com</div>
+                <div className="text-sm font-semibold text-text truncate">Author</div>
+                <div className="truncate text-xs text-text-muted">author@example.com</div>
               </div>
             </div>
           </div>
@@ -150,10 +150,10 @@ export function AppSidebar() {
 
       {isCollapsed && (
         <div className="flex flex-col items-center py-4 space-y-4">
-          <button className="p-2 bg-accent text-white rounded-lg hover:bg-[#7f4f24] transition-colors">
+          <button className="rounded-lg bg-primary p-2 text-white hover:bg-primary-dark">
             +
           </button>
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-sm font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
             A
           </div>
         </div>

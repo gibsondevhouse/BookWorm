@@ -1,11 +1,12 @@
 import { ProposalReviewClient } from "./ProposalReviewClient";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     proposalId: string;
-  };
+  }>;
 };
 
-export default function Page({ params }: PageProps) {
-  return <ProposalReviewClient proposalId={params.proposalId} />;
+export default async function Page({ params }: PageProps) {
+  const { proposalId } = await params;
+  return <ProposalReviewClient proposalId={proposalId} />;
 }

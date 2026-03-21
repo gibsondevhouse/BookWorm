@@ -2,31 +2,31 @@
 
 export default function Page() {
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-gradient-to-b from-[#f8f4ea] to-[#efe8dc]">
+    <div className="flex h-full w-full flex-col bg-paper">
       {/* Message List / Empty State */}
       <ol
-        className="flex-1 overflow-y-auto list-none m-0 p-6 flex flex-col gap-4 min-h-0"
+        className="flex-1 overflow-y-auto list-none m-0 p-6 flex flex-col gap-4"
         aria-label="Chat messages"
       >
         <li className="flex-1 flex flex-col items-center justify-center text-center">
           {/* Greeting */}
           <div className="mb-8">
-            <h1 className="text-4xl font-serif font-normal text-muted italic mb-6">
+            <h1 className="mb-6 text-5xl font-serif text-text-muted">
               What are you writing today?
             </h1>
 
             {/* Quick Action Chips */}
             <div className="flex flex-wrap gap-3 justify-center">
-              <button className="px-4 py-2 bg-white border border-border rounded-full text-sm text-ink hover:bg-subtle transition-colors cursor-default">
+              <button className="rounded-full border border-border bg-white px-4 py-2 text-sm text-text hover:bg-subtle">
                 Brainstorm
               </button>
-              <button className="px-4 py-2 bg-white border border-border rounded-full text-sm text-ink hover:bg-subtle transition-colors cursor-default">
+              <button className="rounded-full border border-border bg-white px-4 py-2 text-sm text-text hover:bg-subtle">
                 Draft
               </button>
-              <button className="px-4 py-2 bg-white border border-border rounded-full text-sm text-ink hover:bg-subtle transition-colors cursor-default">
+              <button className="rounded-full border border-border bg-white px-4 py-2 text-sm text-text hover:bg-subtle">
                 Edit
               </button>
-              <button className="px-4 py-2 bg-white border border-border rounded-full text-sm text-ink hover:bg-subtle transition-colors cursor-default">
+              <button className="rounded-full border border-border bg-white px-4 py-2 text-sm text-text hover:bg-subtle">
                 Research
               </button>
             </div>
@@ -35,16 +35,15 @@ export default function Page() {
       </ol>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-surface flex-shrink-0 px-6 py-4">
-        <div className="flex gap-3 items-flex-end">
+      <div className="shrink-0 border-t border-border bg-paper px-6 py-4">
+        <div className="flex gap-3 items-end">
           {/* Model/Settings Selector */}
           <button
-            className="p-2 hover:bg-subtle rounded-lg transition-colors flex-shrink-0"
+            className="shrink-0 rounded-lg p-2 hover:bg-subtle"
             aria-label="Model settings"
-            title="Model settings"
           >
             <svg
-              className="w-5 h-5 text-muted"
+              className="h-5 w-5 text-text-muted"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
@@ -58,8 +57,8 @@ export default function Page() {
 
           {/* Textarea */}
           <textarea
-            className="flex-1 resize-none border border-border rounded-2xl px-4 py-3 font-serif text-base text-ink bg-white outline-none focus:border-accent focus:ring-2 focus:ring-[rgba(148,95,45,0.15)] focus:ring-offset-0 transition-all"
-            placeholder="Ask your AI writing partner…"
+            className="flex-1 resize-none rounded-2xl border border-border bg-white px-4 py-3 font-serif text-base text-text outline-none focus:border-primary focus:ring-1 focus:ring-subtle"
+            placeholder="Ask your AI…"
             rows={1}
             aria-label="Message input"
           />
@@ -67,7 +66,7 @@ export default function Page() {
           {/* Send Button */}
           <button
             type="button"
-            className="px-6 py-3 rounded-2xl bg-accent text-white font-serif font-bold text-sm hover:bg-[#7f4f24] transition-colors cursor-pointer flex-shrink-0 whitespace-nowrap"
+            className="shrink-0 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-dark"
             aria-label="Send message"
           >
             Send
