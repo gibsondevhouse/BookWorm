@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { productionStage } from "./productionStage";
 import styles from "./page.module.css";
 
@@ -58,6 +59,32 @@ export default async function Page() {
             </p>
           </section>
         </div>
+
+        <section className={styles.panel}>
+          <h2 className={styles.panelTitle}>Phase 6 Stage 01 — Review Surfaces</h2>
+          <div className={styles.surfaceGrid}>
+            <Link href="/admin/review-inbox" className={styles.surfaceLink}>
+              <span className={styles.surfaceSeq}>01</span>
+              <span className={styles.surfaceName}>Review Inbox</span>
+              <span className={styles.surfaceMeta}>Queue intake &amp; throughput gate</span>
+            </Link>
+            <Link href="/admin/review" className={styles.surfaceLink}>
+              <span className={styles.surfaceSeq}>02</span>
+              <span className={styles.surfaceName}>Proposal Review Dialog</span>
+              <span className={styles.surfaceMeta}>Approval / rejection decision gate</span>
+            </Link>
+            <Link href="/admin/entities" className={styles.surfaceLink}>
+              <span className={styles.surfaceSeq}>03</span>
+              <span className={styles.surfaceName}>Admin Entity List</span>
+              <span className={styles.surfaceMeta}>Editorial discovery &amp; routing gate</span>
+            </Link>
+            <Link href="/admin/entities" className={styles.surfaceLink}>
+              <span className={styles.surfaceSeq}>04</span>
+              <span className={styles.surfaceName}>Edit Entity Dialog</span>
+              <span className={styles.surfaceMeta}>Authoring &amp; save-quality gate — open any entity</span>
+            </Link>
+          </div>
+        </section>
       </div>
     </main>
   );
