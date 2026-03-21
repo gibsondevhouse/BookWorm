@@ -202,11 +202,11 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 6
 
-- [-] [Phase 6 Overview](./phase-6/phase-6.md) (planning underway)
+- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage-01-Slice-01 complete)
 
 #### Phase 6 Stage 01
 
-- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (planning underway; first planning slice approved)
+- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (Stage-01-Slice-01 complete; deferred-risk execution remains open; next ordered slice: Stage-01-Slice-02)
 
 #### Phase 6 Stage 02
 

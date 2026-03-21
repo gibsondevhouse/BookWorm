@@ -55,11 +55,11 @@ At the end of Phase 6, the project should have:
 ## Progress Snapshot
 
 - Planning kickoff complete (2026-03-20): phase structure and stage intents approved.
-- Stage 01: Planning underway [-] (first approved planning slice defined).
+- Stage 01: In progress [-] (Stage-01-Slice-01 execution pack complete; deferred-risk execution evidence and required carry-forward closure remain open, Slice-02 next).
 - Stage 02: Not started [ ] (awaits Stage 01 unblock outputs).
 - Stage 03: Not started [ ] (awaits Stage 02 style foundation decisions).
 - Stage 04: Not started [ ] (awaits Stage 03 global styling baseline).
 
 ## Status
 
-Status: In Progress [-] (planning underway; no Phase 6 implementation execution recorded yet)
+Status: In Progress [-] (initial Stage 01 execution evidence is recorded; deferred-risk closure remains open until Stage 01 Slice-02/Slice-03 complete and required Slice-04 carry-forward closure is complete)

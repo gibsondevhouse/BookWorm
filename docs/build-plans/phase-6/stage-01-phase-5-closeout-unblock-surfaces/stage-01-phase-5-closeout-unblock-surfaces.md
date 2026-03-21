@@ -17,6 +17,12 @@ Convert Phase 5 closeout deferred-risk verification inputs into explicit recorde
 - findings log with disposition (`fix-now`, `defer`, `no-action`) and ownership
 - carry-forward summary consumed by Stage 02 styling foundation work
 
+### Slice 01 Execution Pack Artifacts
+
+- `stage-01-slice-01-verification-execution-pack.md`
+- `stage-01-unblock-checklist-template.md`
+- `stage-01-findings-and-stage-02-handoff-template.md`
+
 ## Dependencies
 
 - Phase 5 Stage 04 Part 03 closeout artifacts, especially:
@@ -33,14 +39,35 @@ Convert Phase 5 closeout deferred-risk verification inputs into explicit recorde
 
 ## Status Snapshot
 
-- Status: In Progress [-] (planning underway; execution not yet recorded)
-- Risk posture: Medium until manual verification records exist
+- Status: In Progress [-] (Stage-01-Slice-01 complete; Stage 01 execution remains open)
+- Risk posture: Medium (deferred-risk model remains active until Slice-02 and Slice-03 record manual outcomes/dispositions and required Slice-04 closeout carry-forward items are resolved)
 - Primary unlock: establish trusted UI baseline so later Phase 6 styling and surface-expansion work does not compound unknown usability/accessibility risk
 
-## Approved First Planning Slice
+## Slice 01 Execution Evidence (Completed)
+
+- execution-pack artifacts added:
+  - `stage-01-slice-01-verification-execution-pack.md`
+  - `stage-01-unblock-checklist-template.md`
+  - `stage-01-findings-and-stage-02-handoff-template.md`
+- deterministic test added:
+  - `tests/phase6Stage01Slice01ExecutionPack.test.ts`
+- validation command set recorded for Slice-01 contract coverage:
+  - `phase6Stage01Slice01ExecutionPack`
+  - `phase5AccessibilityKeyboardNavigationPart01`
+  - `phase5AdminUsabilityReadabilityPart02`
+  - `pnpm lint`
+  - `pnpm type-check`
+
+Deferred-risk continuity note:
+
+- Slice-01 completion defines execution contracts and evidence structure only.
+- The Phase 5 closeout deferred-risk exception remains open until Slice-02 captures manual run outcomes, Slice-03 locks dispositions and Stage 02 handoff inputs, and required Slice-04 closes FDB-003/FDB-004 carry-forward items.
+
+## Completed First Planning Slice
 
 Slice ID: Stage-01-Slice-01
 
+- status: Completed [x]
 - objective: define and approve the manual verification execution pack for the four P1 surfaces
 - tasks:
   - codify reviewer roles and required evidence fields for visual/usability and assistive-technology runs
@@ -77,11 +104,11 @@ Slice ID: Stage-01-Slice-04
 
 ## Next-Slice Sequencing
 
-1. Stage-01-Slice-01: approve verification execution pack
-2. Stage-01-Slice-02: run and record manual verification outcomes on four P1 surfaces
-3. Stage-01-Slice-03: disposition findings and lock Stage 01 unblock report for Stage 02 consumption
-4. Stage-01-Slice-04: resolve FDB-003/FDB-004 via external-source capture or explicit no-evidence defer memo with owner and due date
+1. Stage-01-Slice-01 [x]: verification execution pack approved and validated
+2. Stage-01-Slice-02 [-]: run and record manual verification outcomes on four P1 surfaces (next ordered slice)
+3. Stage-01-Slice-03 [ ]: disposition findings and lock Stage 01 unblock report for Stage 02 consumption
+4. Stage-01-Slice-04 [ ]: resolve FDB-003/FDB-004 via external-source capture or explicit no-evidence defer memo with owner and due date
 
 ## Status
 
-Status: In Progress [-] (first planning slice approved; execution pending)
+Status: In Progress [-] (Slice-01 complete; Stage 01 remains open pending Slice-02/Slice-03 execution outcomes and required Slice-04 carry-forward closure)
