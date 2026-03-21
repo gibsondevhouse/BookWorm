@@ -1,5 +1,7 @@
 # Stage 01 Findings and Stage 02 Handoff Template
 
+Legacy note: retained for prior-scope audit traceability after Stage 01 was re-scoped to landing-page refactor delivery.
+
 Use this template to classify findings and provide deterministic inputs to Stage 02 styling foundation decisions.
 
 ## Findings Log

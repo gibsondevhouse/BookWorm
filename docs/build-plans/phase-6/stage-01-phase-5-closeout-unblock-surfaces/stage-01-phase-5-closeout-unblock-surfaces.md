@@ -1,23 +1,32 @@
-# Stage 01: Phase 5 Closeout Unblock Surfaces
+# Stage 01: Product-Facing Landing Page Refactor
 
 ## Purpose
 
-Convert Phase 5 closeout deferred-risk verification inputs into explicit recorded outcomes on the four P1 admin/review surfaces, while establishing a concrete UX/UI baseline for subsequent Phase 6 stages.
+Deliver a full refactor target for the web landing page so BookWorm starts with a product-facing experience rather than an internal tracker/dashboard orientation.
 
-## Work To Be Done
+Stage 01 governs the landing page contract for information architecture, value framing, CTA routing, and responsive accessibility baseline. Phase 5 deferred-risk artifacts are treated as historical context, not the primary execution target for this stage.
 
-- execute and record manual visual/usability review on Review Inbox, Proposal Review Dialog, Admin Entity List, and Edit Entity Dialog
-- execute and record assistive-technology regression sign-off on the same four surfaces
-- classify findings as pass, fix-now, or defer-with-owner and feed outputs into Stage 02 styling decisions
-- ensure any discovered defects are linked to explicit remediation slices before broader UI expansion starts
+## Slice-02 Implementation Delivered
+
+- full landing-page refactor implemented in `apps/web/src/app/page.tsx` and `apps/web/src/app/page.module.css`
+- internal tracker/dashboard framing replaced with product-value narrative blocks and explicit CTA paths
+- section-level requirements and CTA route mappings executed in the root route surface
+- acceptance checks and validation command set recorded in Stage-01-Slice-02 contract
+
+## Remaining Work
+
+- execute Stage-01-Slice-03 post-implementation verification and disposition
+- lock Stage 02 handoff inputs from implemented landing-page typography, spacing, and emphasis patterns
 
 ## Deliverables
 
-- Stage 01 unblock checklist with reviewer identity, date, method, and outcome per surface
-- findings log with disposition (`fix-now`, `defer`, `no-action`) and ownership
-- carry-forward summary consumed by Stage 02 styling foundation work
+- approved Stage-01-Slice-02 execution plan for the landing-page full refactor
+- section and CTA contract for the landing page, mapped to currently available routes
+- Stage 02 handoff inputs identifying style-system decisions exposed by the landing-page refactor
 
 ### Slice 01 Execution Pack Artifacts
+
+Legacy artifact set from prior Stage 01 scope. Retained for audit traceability.
 
 - `stage-01-slice-01-verification-execution-pack.md`
 - `stage-01-unblock-checklist-template.md`
@@ -25,25 +34,28 @@ Convert Phase 5 closeout deferred-risk verification inputs into explicit recorde
 
 ## Dependencies
 
-- Phase 5 Stage 04 Part 03 closeout artifacts, especially:
+- current landing-page implementation in `apps/web/src/app/page.tsx` and `apps/web/src/app/page.module.css`
+- route availability in `apps/web/src/app` for product-facing CTA destinations
+- Phase 5 Stage 04 Part 03 closeout artifacts as contextual input only:
   - `docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/acceptance-and-sign-off-checklist.md`
   - `docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/ac-01-feedback-consolidation.md`
-- Existing P1 surfaces in `apps/web/src/app/admin`
 
 ## Exit Criteria
 
-- each of the four P1 surfaces has recorded visual/usability review results
-- each of the four P1 surfaces has recorded assistive-technology regression results
-- every issue discovered has explicit disposition and owner
-- unresolved blockers are either remediated or carried into a named Phase 6 follow-up slice
+- landing page IA and section contract is approved for implementation without unresolved scope ambiguity
+- dashboard/tracker language is removed from Stage 01 active scope and replaced with product-facing landing-page framing
+- CTA mappings reference existing app routes only and include rationale per path
+- acceptance criteria and validation commands for the approved execution slice are explicit and runnable
 
 ## Status Snapshot
 
-- Status: In Progress [-] (Stage-01-Slice-01 complete; Stage 01 execution remains open)
-- Risk posture: Medium (deferred-risk model remains active until Slice-02 and Slice-03 record manual outcomes/dispositions and required Slice-04 closeout carry-forward items are resolved)
-- Primary unlock: establish trusted UI baseline so later Phase 6 styling and surface-expansion work does not compound unknown usability/accessibility risk
+- Status: In Progress [-] (landing-page refactor contract executed in Stage-01-Slice-02; verification and Stage 02 handoff sequencing remain open)
+- Risk posture: Medium (final landing-page IA/copy/CTA contract must be locked before Stage 02 styling decisions)
+- Primary unlock: establish a product-facing entry surface that Stage 02 can style systematically instead of inheriting tracker-era framing
 
 ## Slice 01 Execution Evidence (Completed)
+
+This completed evidence is retained as historical context from the original Stage 01 scope.
 
 - execution-pack artifacts added:
   - `stage-01-slice-01-verification-execution-pack.md`
@@ -58,17 +70,17 @@ Convert Phase 5 closeout deferred-risk verification inputs into explicit recorde
   - `pnpm lint`
   - `pnpm type-check`
 
-Deferred-risk continuity note:
+Scope continuity note:
 
-- Slice-01 completion defines execution contracts and evidence structure only.
-- The Phase 5 closeout deferred-risk exception remains open until Slice-02 captures manual run outcomes, Slice-03 locks dispositions and Stage 02 handoff inputs, and required Slice-04 closes FDB-003/FDB-004 carry-forward items.
+- Slice-01 completion defined a verification-pack contract for the prior scope.
+- Stage 01 active execution scope is now landing-page refactor delivery via Stage-01-Slice-02.
 
 ## Completed First Planning Slice
 
 Slice ID: Stage-01-Slice-01
 
 - status: Completed [x]
-- objective: define and approve the manual verification execution pack for the four P1 surfaces
+- objective: define and approve the manual verification execution pack for the original Stage 01 scope
 - tasks:
   - codify reviewer roles and required evidence fields for visual/usability and assistive-technology runs
   - sequence review order by workflow criticality (Review Inbox -> Proposal Review Dialog -> Admin Entity List -> Edit Entity Dialog)
@@ -83,32 +95,26 @@ Slice ID: Stage-01-Slice-01
   - `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`
   - `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts`
 
-## Additional Required Slice For Closeout Carry-Forward
+## Archived Prior-Scope Notes
 
-Slice ID: Stage-01-Slice-04
-
-- objective: resolve Phase 5 AC-01 external-source carry-forward items FDB-003 and FDB-004 with explicit evidence capture or explicit defer memo
-- tasks:
-  - query external issue tracker systems for Stage 04 P1-surface feedback records and transcribe any findings into the Stage 01 findings log
-  - query beta survey/interview sources for Stage 04 P1-surface feedback records and transcribe any findings into the Stage 01 findings log
-  - when no records are found, publish a no-evidence defer memo that names owner, date checked, and systems reviewed
-  - update Phase 5 AC-01 consolidation artifact with final disposition and links to captured records or defer memo
-- owner and due-date fields:
-  - FDB-003 owner: Product owner (Phase 6 planning owner)
-  - FDB-004 owner: UX lead reviewer
-  - due date: 2026-03-27
-- acceptance checks:
-  - FDB-003 disposition is closed with either captured records or explicit no-evidence defer memo
-  - FDB-004 disposition is closed with either captured records or explicit no-evidence defer memo
-  - AC-01 artifact is updated and references Stage 01 outputs
+- Stage-01-Slice-04 remains archived as a prior-scope closeout carry-forward item and is not the active next ordered slice for landing-page refactor execution.
+- If this archived item is reactivated, it must be planned explicitly as a separate dependency thread and must not replace Stage-01-Slice-02 as the active Stage 01 target.
 
 ## Next-Slice Sequencing
 
 1. Stage-01-Slice-01 [x]: verification execution pack approved and validated
-2. Stage-01-Slice-02 [-]: run and record manual verification outcomes on four P1 surfaces (next ordered slice)
-3. Stage-01-Slice-03 [ ]: disposition findings and lock Stage 01 unblock report for Stage 02 consumption
-4. Stage-01-Slice-04 [ ]: resolve FDB-003/FDB-004 via external-source capture or explicit no-evidence defer memo with owner and due date
+2. Stage-01-Slice-02 [x]: full landing-page refactor execution contract implemented in root route and local page styles
+3. Stage-01-Slice-03 [ ]: post-implementation verification, disposition, and Stage 02 handoff lock
+4. Stage-01-Slice-04 [ ]: follow-on Stage 01 remediation only if Slice-03 verification identifies blocking findings
+
+## Approved Next Ordered Slice
+
+Slice ID: Stage-01-Slice-03
+
+- name: Post-Implementation Verification and Stage 02 Handoff Lock
+- status: Not Started [ ]
+- execution document: `stage-01-slice-02-product-facing-landing-page-full-refactor-contract.md`
 
 ## Status
 
-Status: In Progress [-] (Slice-01 complete; Stage 01 remains open pending Slice-02/Slice-03 execution outcomes and required Slice-04 carry-forward closure)
+Status: In Progress [-] (Stage 01 landing-page refactor scope is active; Slice-02 delivery is complete and verification/handoff slices remain open)

@@ -1,6 +1,6 @@
 # Book Worm
 
-Book Worm is a pnpm monorepo for release-aware lore publishing and editorial governance workflows.
+Book Worm is a solo-author fiction writing studio. Bring your OpenRouter API key and write your novel with an AI that knows your characters, keeps your world consistent, and helps you track every canon decision.
 
 Current implementation status: Phases 0 through 4 are complete. In Phase 5, Stage 01, Stage 02, and Stage 03 are complete (including the Stage 03 portability operations verification gate). Stage 04 Part 01 planning is complete; code implementation is next.
 

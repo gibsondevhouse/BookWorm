@@ -18,7 +18,7 @@ Establish the shared styling contract for Phase 6 through a joint product-owner 
 
 ## Dependencies
 
-- Stage 01 unblock findings and manual verification outcomes available
+- Stage 01 landing-page refactor contract and implementation outputs available
 - current style baselines in `apps/web/src/app/globals.css`, `apps/web/src/app/page.module.css`, and `apps/web/src/app/admin/adminAccessibility.module.css`
 - existing admin/public route structures in `apps/web/src/app`
 
@@ -31,7 +31,7 @@ Establish the shared styling contract for Phase 6 through a joint product-owner 
 ## Status Snapshot
 
 - Status: Not started [ ]
-- Entry gate: Stage 01 unblock report complete
+- Entry gate: Stage 01 landing-page refactor handoff complete
 - Execution note: no styling implementation should begin until this stage decisions set is locked
 
 ## Next-Slice Sequencing

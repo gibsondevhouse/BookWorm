@@ -1,5 +1,7 @@
 # Stage 01 Slice 01: Verification Execution Pack
 
+Legacy note: retained as historical evidence from the original Stage 01 scope before Stage 01 was re-scoped to landing-page refactor delivery.
+
 ## Scope and Intent
 
 This execution pack operationalizes the Phase 5 closeout exception for deferred manual verification inputs while preserving the same deferred-risk model documented at closeout.

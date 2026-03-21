@@ -144,8 +144,8 @@ During Part 03 execution, the following feedback items were already implemented 
 
 2. **Run Stage 01 slices in order and capture external feedback sources (FDB-003, FDB-004):**
    - Stage-01-Slice-01: approve manual verification pack and evidence schema
-   - Stage-01-Slice-02: execute manual verification on four P1 surfaces and record outcomes
-   - Stage-01-Slice-03: disposition findings and lock unblock report
+   - Stage-01-Slice-02: re-scoped and completed as product-facing landing-page refactor implementation
+   - Stage-01-Slice-03: execute post-implementation verification/disposition and lock Stage 02 handoff
    - Stage-01-Slice-04: capture issue-tracker and beta feedback records; if none are found, publish explicit no-evidence defer memo with named owner and due date
    - Update this artifact with external-source dispositions once records or defer memo are captured
 

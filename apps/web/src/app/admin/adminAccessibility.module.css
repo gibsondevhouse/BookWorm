@@ -392,7 +392,11 @@ textarea.input {
   max-width: 65ch;
 }
 
-:where(button, input, select, textarea, a):focus-visible {
+.page button:focus-visible,
+.page input:focus-visible,
+.page select:focus-visible,
+.page textarea:focus-visible,
+.page a:focus-visible {
   outline: 3px solid #2f5d8a;
   outline-offset: 2px;
 }

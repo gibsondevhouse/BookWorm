@@ -19,7 +19,7 @@ Implement the approved Stage 02 styling foundation across global app layers and 
 ## Dependencies
 
 - Stage 02 styling foundation approved
-- Stage 01 unblock outcomes incorporated into accessibility/usability constraints
+- Stage 01 landing-page refactor outcomes incorporated into accessibility/usability constraints
 - existing baseline quality and regression commands remain available
 
 ## Exit Criteria

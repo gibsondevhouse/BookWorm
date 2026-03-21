@@ -173,7 +173,7 @@ Full command-inventory pass status is documented in the acceptance checklist. Li
 
 - Visual/usability review of four P1 surfaces: **Not completed in-repo at closeout; accepted deferred risk with recorded product-owner rationale and Phase 6 carry-forward**
 - Assistive-technology regression sign-off for four P1 surfaces: **Not completed in-repo at closeout; accepted deferred risk with recorded product-owner rationale and Phase 6 carry-forward**
-- Deferred-item review and owner assignment: **Rationale captured; scheduled into Phase 6 Stage 01 slices in order (Stage-01-Slice-01 -> Stage-01-Slice-02 -> Stage-01-Slice-03 -> Stage-01-Slice-04)**
+- Deferred-item review and owner assignment: **Rationale captured; scheduled into Phase 6 Stage 01 slices in order (legacy sequence). Current Stage 01 re-baseline marks Stage-01-Slice-02 as completed landing-page refactor implementation, with deferred manual verification/disposition now carried by Stage-01-Slice-03 and Stage-01-Slice-04.**
 
 See `acceptance-and-sign-off-checklist.md` for closeout-exception tracking and sign-off records.
 

@@ -4,13 +4,13 @@
 
 Phase 6 shifts the project into a UX/UI-heavy execution horizon so frontend surfaces can reliably validate and exercise already-built backend capabilities from Phases 2 through 5.
 
-This phase exists because Phase 5 closeout accepted a documented deferred-risk exception for manual visual/usability and assistive-technology verification inputs. Product-owner rationale is now explicit: UI/UX must be prioritized because frontend maturity is essential for backend validation.
+The first execution focus in this phase is a full refactor of the web landing page from an internal tracker/dashboard orientation into a product-facing entry surface. Phase 5 deferred-risk closeout artifacts remain a planning input, but Stage 01 is now explicitly scoped to landing-page refactor outcomes.
 
 ## Outcome
 
 At the end of Phase 6, the project should have:
 
-- Phase 5 deferred manual verification risk converted into explicit recorded outcomes
+- a product-facing landing page baseline that presents BookWorm value, clear navigation entry points, and coherent information architecture
 - a shared styling foundation agreed jointly across product-owner and implementation work
 - global styling implementation applied consistently across core app shells and high-frequency admin/public surfaces
 - expanded UI/UX surfaces that make existing backend functionality testable, discoverable, and lower-friction
@@ -21,9 +21,10 @@ At the end of Phase 6, the project should have:
 ### Included
 
 - UX/UI planning and delivery that unlocks validation of existing backend workflows
+- Stage 01 landing-page refactor planning/execution scope centered on `apps/web/src/app/page.tsx` and `apps/web/src/app/page.module.css`
 - design decisions and styling primitives grounded in current code structure (`apps/web/src/app/globals.css`, `apps/web/src/app/admin/adminAccessibility.module.css`)
 - frontend surface improvements for already-supported capabilities (search, continuity, portability, review/admin workflows)
-- staged sequencing from unblock work -> style foundation -> global application -> surface expansion
+- staged sequencing from landing-page refactor -> style foundation -> global application -> surface expansion
 
 ### Excluded
 
@@ -39,14 +40,14 @@ At the end of Phase 6, the project should have:
 
 ## Stage Breakdown
 
-1. Stage 01: Phase 5 Closeout Unblock Surfaces
+1. Stage 01: Product-Facing Landing Page Refactor
 2. Stage 02: Joint Styling Foundation
 3. Stage 03: Global Styling Implementation
 4. Stage 04: UI/UX Surface Expansion
 
 ## Exit Criteria
 
-- deferred-risk manual verification inputs from Phase 5 have explicit recorded outcomes and follow-up dispositions
+- Stage 01 landing-page refactor scope is documented, approved, and executed against explicit acceptance criteria
 - styling rules and shared UX conventions are approved and executable by implementation slices
 - global styling is implemented on targeted app shells and high-frequency surfaces without regressing existing contracts
 - UI/UX surface expansion is sequenced against backend-ready capabilities and has explicit verification coverage
@@ -55,11 +56,11 @@ At the end of Phase 6, the project should have:
 ## Progress Snapshot
 
 - Planning kickoff complete (2026-03-20): phase structure and stage intents approved.
-- Stage 01: In progress [-] (Stage-01-Slice-01 execution pack complete; deferred-risk execution evidence and required carry-forward closure remain open, Slice-02 next).
-- Stage 02: Not started [ ] (awaits Stage 01 unblock outputs).
+- Stage 01: In progress [-] (Stage-01-Slice-02 landing-page refactor execution completed; post-implementation verification and handoff lock remain open).
+- Stage 02: Not started [ ] (awaits Stage 01 landing-page refactor outputs).
 - Stage 03: Not started [ ] (awaits Stage 02 style foundation decisions).
 - Stage 04: Not started [ ] (awaits Stage 03 global styling baseline).
 
 ## Status
 
-Status: In Progress [-] (initial Stage 01 execution evidence is recorded; deferred-risk closure remains open until Stage 01 Slice-02/Slice-03 complete and required Slice-04 carry-forward closure is complete)
+Status: In Progress [-] (Stage 01 execution target remains the landing-page refactor; Slice-02 implementation evidence is complete and verification/handoff sequencing remains open)

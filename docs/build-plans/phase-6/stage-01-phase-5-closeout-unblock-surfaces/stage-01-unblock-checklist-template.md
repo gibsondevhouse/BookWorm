@@ -1,5 +1,7 @@
 # Stage 01 Unblock Checklist Template
 
+Legacy note: retained for prior-scope audit traceability after Stage 01 was re-scoped to landing-page refactor delivery.
+
 Use this template to record Stage 01 manual verification outcomes for the four P1 surfaces.
 
 ## Checklist Record Metadata

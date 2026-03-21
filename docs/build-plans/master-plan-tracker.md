@@ -1,5 +1,13 @@
 # Book Worm Build Plan Tracker
 
+> **⚠️ DEVELOPMENT LOCK — Vision Realignment Required**
+>
+> All active Phase 6 development is frozen pending a full vision correction.
+> BookWorm is a **solo-author** AI-powered fiction writing tool — not a team editorial
+> governance platform. No implementation work on in-progress or future phases should
+> proceed until the revised product vision is formally documented and Phase 6 scope
+> is updated to reflect it. The solo-author + OpenRouter AI framing is canonical.
+
 This tracker is the top-level checklist for compartmentalized build planning. Each phase owns its own directory. Each stage and part has a dedicated markdown document that defines scope, outputs, blockers, and exit criteria.
 
 ## Status Legend
@@ -202,11 +210,11 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 6
 
-- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage-01-Slice-01 complete)
+- [-] [Phase 6 Overview](./phase-6/phase-6.md) (execution underway: Stage-01-Slice-02 landing-page refactor implementation complete; verification and handoff sequencing remain open)
 
 #### Phase 6 Stage 01
 
-- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (Stage-01-Slice-01 complete; deferred-risk execution remains open; next ordered slice: Stage-01-Slice-02)
+- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (full landing-page refactor contract implemented in Stage-01-Slice-02; verification and handoff sequencing remain open)
 
 #### Phase 6 Stage 02
 
