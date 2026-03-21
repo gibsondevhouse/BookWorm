@@ -39,6 +39,9 @@ export function ReviewInboxClient(): ReactElement {
     });
   }, [query, statusFilter]);
 
+  const activeProposal = activeIndex >= 0 ? filtered[activeIndex] ?? null : null;
+  const activeFilterLabel = statusFilter === "ALL" ? "all statuses" : statusFilter.toLowerCase();
+
   useEffect(() => {
     setActiveIndex((current) => {
       if (filtered.length === 0) {
@@ -126,6 +129,30 @@ export function ReviewInboxClient(): ReactElement {
     }
   };
 
+  const toStatusClassName = (status: ProposalStatus): string => {
+    if (status === "APPROVED") {
+      return styles.statusApproved ?? "";
+    }
+
+    if (status === "ESCALATED") {
+      return styles.statusEscalated ?? "";
+    }
+
+    return styles.statusPending ?? "";
+  };
+
+  const toPriorityClassName = (priority: ProposalRow["priority"]): string => {
+    if (priority === "HIGH") {
+      return styles.priorityHigh ?? "";
+    }
+
+    if (priority === "MEDIUM") {
+      return styles.priorityMedium ?? "";
+    }
+
+    return styles.priorityLow ?? "";
+  };
+
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
@@ -156,20 +183,49 @@ export function ReviewInboxClient(): ReactElement {
               </select>
             </label>
           </div>
+          <p id="review-filter-help" className={styles.helperText}>Filter by title or status to reduce the queue before opening the focused proposal. The active row summary updates as you move through the list.</p>
+          <div className={styles.summaryPanel} aria-live="polite" aria-atomic="true">
+            <h3 className={styles.summaryTitle}>Queue Summary</h3>
+            <ul className={styles.summaryList}>
+              <li>{filtered.length} proposals shown for {activeFilterLabel}.</li>
+              <li>{activeProposal ? `Focused proposal: ${activeProposal.title}.` : "No proposal is currently focused."}</li>
+            </ul>
+          </div>
           <p className={styles.srOnly} aria-live="polite" aria-atomic="true">{liveMessage}</p>
         </section>
 
         <section aria-labelledby="review-list-title">
           <h2 id="review-list-title">Pending Proposals</h2>
-          <ul className={styles.list} role="listbox" aria-label="Review proposals" onKeyDown={onListKeyDown}>
-            {filtered.map((proposal, index) => (
+          <ul className={styles.list} role="listbox" aria-label="Review proposals" aria-describedby="review-filter-help" onKeyDown={onListKeyDown}>
+            {filtered.length === 0 ? (
+              <li className={styles.emptyState}>
+                <h3 className={styles.emptyStateTitle}>No proposals match the current filters.</h3>
+                <p className={styles.emptyStateDescription}>Clear or broaden filters to continue triage and review workflow decisions.</p>
+                <button type="button" className={`${styles.button} ${styles.primaryButton}`} onClick={() => {
+                  setQuery("");
+                  setStatusFilter("ALL");
+                }}>
+                  Reset Filters
+                </button>
+              </li>
+            ) : filtered.map((proposal, index) => (
               <li key={proposal.id} role="option" aria-selected={activeIndex === index} className={`${styles.listItem} ${activeIndex === index ? styles.rowActive : ""}`}>
                 <button type="button" className={styles.rowButton} onClick={() => setSelectedProposal(proposal)}>
                   {proposal.title}
                 </button>
-                <span>Status: {proposal.status}</span>
-                <span>Priority: {proposal.priority}</span>
-                <span>Requester: {proposal.requester}</span>
+                <div className={styles.metaRow}>
+                  <span className={`${styles.statusBadge} ${toStatusClassName(proposal.status)}`}>{proposal.status}</span>
+                  <span className={toPriorityClassName(proposal.priority)}>Priority: {proposal.priority}</span>
+                  <span>Requester: {proposal.requester}</span>
+                </div>
+                <div className={styles.rowActions}>
+                  <button type="button" className={`${styles.button} ${styles.primaryButton}`} onClick={() => setSelectedProposal(proposal)}>
+                    Open Review
+                  </button>
+                  <button type="button" className={styles.button} onClick={() => setDecisionMessage(`Decision recorded: escalate for ${proposal.title}`)}>
+                    Flag for Revision
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

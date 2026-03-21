@@ -16,12 +16,13 @@ type EntityRow = {
   id: string;
   name: string;
   type: string;
+  status: "DRAFT" | "REVIEW" | "PUBLISHED";
 };
 
 const seedEntities: EntityRow[] = [
-  { id: "entity-01", name: "Ariadne Vale", type: "Character" },
-  { id: "entity-02", name: "Thornwatch Keep", type: "Location" },
-  { id: "entity-03", name: "The Ember Ledger", type: "Artifact" }
+  { id: "entity-01", name: "Ariadne Vale", type: "Character", status: "REVIEW" },
+  { id: "entity-02", name: "Thornwatch Keep", type: "Location", status: "PUBLISHED" },
+  { id: "entity-03", name: "The Ember Ledger", type: "Artifact", status: "DRAFT" }
 ];
 
 const initialFormValues: EntityFormValues = {
@@ -55,6 +56,9 @@ export function EntitiesClient(): ReactElement {
     });
   }, [query, sortDirection]);
 
+  const selectedCount = selectedIds.size;
+  const sortLabel = sortDirection === "none" ? "default order" : sortDirection === "ascending" ? "name ascending" : "name descending";
+
   useEffect(() => {
     const onWindowKeyDown = (event: KeyboardEvent): void => {
       const command = resolveKeyboardShortcut({ altKey: event.altKey, key: event.key });
@@ -78,6 +82,16 @@ export function EntitiesClient(): ReactElement {
     window.addEventListener("keydown", onWindowKeyDown);
     return () => window.removeEventListener("keydown", onWindowKeyDown);
   }, [isEditOpen, formValues]);
+
+  useEffect(() => {
+    setActiveIndex((current) => {
+      if (filtered.length === 0) {
+        return -1;
+      }
+
+      return Math.min(Math.max(current, 0), filtered.length - 1);
+    });
+  }, [filtered.length]);
 
   useEffect(() => {
     if (!isEditOpen) {
@@ -201,9 +215,18 @@ export function EntitiesClient(): ReactElement {
               New Entity (Alt+N)
             </button>
           </div>
+          <p id="entity-controls-help" className={styles.helperText}>Use the search box to narrow the table, then toggle sort to review names in the order that best matches your editing pass.</p>
+          <div className={styles.summaryPanel}>
+            <h3 className={styles.summaryTitle}>Working Set Summary</h3>
+            <ul className={styles.summaryList}>
+              <li>{filtered.length} entities visible.</li>
+              <li>{selectedCount} entities selected.</li>
+              <li>Current sort: {sortLabel}.</li>
+            </ul>
+          </div>
         </section>
 
-        <section aria-labelledby="entity-list-title">
+        <section aria-labelledby="entity-list-title" aria-describedby="entity-controls-help">
           <h2 id="entity-list-title">Entities</h2>
           <table className={styles.table}>
             <thead>
@@ -229,11 +252,24 @@ export function EntitiesClient(): ReactElement {
                   </button>
                 </th>
                 <th scope="col">Type</th>
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody onKeyDown={onTableKeyDown}>
-              {filtered.map((entity, index) => (
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>
+                    <div className={styles.emptyState}>
+                      <h3 className={styles.emptyStateTitle}>No entities match the current filters.</h3>
+                      <p className={styles.emptyStateDescription}>Try a broader search or clear filters to restore the full entity list.</p>
+                      <button type="button" className={`${styles.button} ${styles.primaryButton}`} onClick={() => setQuery("")}>
+                        Clear Search
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : filtered.map((entity, index) => (
                 <tr key={entity.id} className={index === activeIndex ? styles.rowActive : ""}>
                   <td>
                     <input
@@ -249,7 +285,21 @@ export function EntitiesClient(): ReactElement {
                       {entity.name}
                     </button>
                   </td>
-                  <td>{entity.type}</td>
+                  <td>
+                    <span className={styles.typeBadge}>{entity.type}</span>
+                  </td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${
+                      entity.status === "PUBLISHED"
+                        ? styles.statusApproved
+                        : entity.status === "REVIEW"
+                          ? styles.statusPending
+                          : styles.statusEscalated
+                    }`}
+                    >
+                      {entity.status}
+                    </span>
+                  </td>
                   <td>
                     <button type="button" className={styles.button} onClick={() => setIsEditOpen(true)}>
                       Edit
@@ -277,7 +327,7 @@ export function EntitiesClient(): ReactElement {
                 <strong>Fix the following before saving:</strong>
                 <ul>
                   {errorSummary.map((error) => (
-                    <li key={error}>{error}</li>
+                    <li key={error}><span className={styles.errorIcon} aria-hidden="true">!</span>{error}</li>
                   ))}
                 </ul>
               </div>
@@ -297,12 +347,13 @@ export function EntitiesClient(): ReactElement {
                     className={styles.input}
                     required
                     aria-required="true"
-                    aria-describedby={formErrors.name ? "entity-name-error" : undefined}
+                    aria-describedby={formErrors.name ? "entity-name-error entity-name-hint" : "entity-name-hint"}
                     value={formValues.name}
                     onChange={(event) => setFormValues((current) => ({ ...current, name: event.target.value }))}
                   />
                 </label>
-                {formErrors.name ? <p id="entity-name-error" className={styles.fieldError}>! {formErrors.name}</p> : null}
+                <p id="entity-name-hint" className={styles.fieldHint}>Use the published display name readers will recognize in search and release views.</p>
+                {formErrors.name ? <p id="entity-name-error" className={styles.fieldError}><span className={styles.errorIcon} aria-hidden="true">!</span>{formErrors.name}</p> : null}
 
                 <label className={styles.labelGroup} htmlFor="entity-summary">
                   Summary (required) *
@@ -311,12 +362,13 @@ export function EntitiesClient(): ReactElement {
                     className={styles.input}
                     required
                     aria-required="true"
-                    aria-describedby={formErrors.summary ? "entity-summary-error" : undefined}
+                    aria-describedby={formErrors.summary ? "entity-summary-error entity-summary-hint" : "entity-summary-hint"}
                     value={formValues.summary}
                     onChange={(event) => setFormValues((current) => ({ ...current, summary: event.target.value }))}
                   />
                 </label>
-                {formErrors.summary ? <p id="entity-summary-error" className={styles.fieldError}>! {formErrors.summary}</p> : null}
+                <p id="entity-summary-hint" className={styles.fieldHint}>Keep the summary brief and specific so it stays readable in dense admin lists.</p>
+                {formErrors.summary ? <p id="entity-summary-error" className={styles.fieldError}><span className={styles.errorIcon} aria-hidden="true">!</span>{formErrors.summary}</p> : null}
 
                 <label className={styles.labelGroup} htmlFor="entity-category">
                   Category (required) *
@@ -325,7 +377,7 @@ export function EntitiesClient(): ReactElement {
                     className={styles.select}
                     required
                     aria-required="true"
-                    aria-describedby={formErrors.category ? "entity-category-error" : undefined}
+                    aria-describedby={formErrors.category ? "entity-category-error entity-category-hint" : "entity-category-hint"}
                     value={formValues.category}
                     onChange={(event) => setFormValues((current) => ({ ...current, category: event.target.value }))}
                   >
@@ -335,7 +387,8 @@ export function EntitiesClient(): ReactElement {
                     <option value="artifact">Artifact</option>
                   </select>
                 </label>
-                {formErrors.category ? <p id="entity-category-error" className={styles.fieldError}>! {formErrors.category}</p> : null}
+                <p id="entity-category-hint" className={styles.fieldHint}>Choose the category that matches how this record should be grouped in the codex.</p>
+                {formErrors.category ? <p id="entity-category-error" className={styles.fieldError}><span className={styles.errorIcon} aria-hidden="true">!</span>{formErrors.category}</p> : null}
               </fieldset>
               <div className={styles.actions}>
                 <button type="button" className={styles.button} onClick={closeDialog}>

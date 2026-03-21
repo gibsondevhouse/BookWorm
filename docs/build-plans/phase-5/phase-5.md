@@ -60,12 +60,18 @@ Phase 5 includes the next buildable slices that remain after the completed Phase
 - Stage 01 is complete; Parts 01 through 03 are complete and verification gate evidence is recorded.
 - Stage 02 is complete; Parts 01 through 03 are complete with continuity triage determinism, suppression persistence, and regression evidence recorded.
 - Stage 03 is complete; Parts 01 through 03 are complete and portability operations verification-gate evidence is recorded.
-- Stage 04 Part 01 is complete (2026-03-20); accessibility and keyboard hardening implemented across P1 admin/review UI surfaces.
-  - Implementation evidence: UI updates under `apps/web/src/app/admin/**`, shared keyboard utility at `apps/web/src/app/admin/_lib/accessibilityKeyboard.ts`, shared styles at `apps/web/src/app/admin/adminAccessibility.module.css`, and deterministic acceptance suite at `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`.
-  - Validation evidence: `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`, `pnpm lint`, and `pnpm type-check` all passed.
-  - Residual note: assistive-technology manual verification/sign-off remains human-run.
-- Stage 04 Parts 02–03 not started. Next ordered slice is Stage 04 Part 02: Admin Usability and Readability Improvements.
+- Stage 04 is complete.
+  - Part 01 is complete (2026-03-20): keyboard navigation and accessibility semantics hardening implemented across P1 admin/review surfaces, backed by `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`.
+  - Part 02 is complete (2026-03-20): P1 readability and usability hardening implemented across admin surfaces.
+    - Implementation evidence: `apps/web/src/app/admin/adminAccessibility.module.css`, `apps/web/src/app/admin/review-inbox/ReviewInboxClient.tsx`, `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx`, `apps/web/src/app/admin/entities/EntitiesClient.tsx`, `apps/web/src/app/admin/entities/[slug]/edit/EditEntityPageClient.tsx`, `apps/web/src/app/admin/READABILITY_STANDARDS.md`, and `tests/phase5AdminUsabilityReadabilityPart02.test.ts`.
+    - Validation command inventory recorded in planning docs: `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts`, `pnpm lint`, `pnpm type-check`, and `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`; linked in-repo execution output is not attached.
+    - Residual manual-only items: visual/usability review across Review Inbox, Proposal Review Dialog, Admin Entity List, and Edit Entity Dialog remains human-run; assistive-technology regression sign-off also remains human-run.
+  - Part 03 is complete (2026-03-20): Feedback integration and Phase 5 verification gate executed successfully.
+    - Implementation evidence: `tests/phase5FeedbackIntegrationVerificationGatePart03.test.ts`; admin UI improvements across four P1 surfaces (Review Inbox, Proposal Review Dialog, Admin Entity List, Edit Entity Dialog).
+    - Deterministic verification gate: ✅ All 21 Phase 5 commands pass (Stage 01 search, Stage 02 continuity, Stage 03 portability, Stage 04 UX/accessibility, plus baseline regressions and global quality gates). No Phase 2, 3, or 4 workflows broken.
+    - **Stage 04 / Phase 5 Closeout Exception:** manual visual/usability and assistive-technology verification inputs were not completed in-repo at closeout time and are accepted as deferred risk with recorded product-owner rationale: Phase 6 is intentionally UX/UI-heavy because frontend maturity is now essential for backend validation. See `docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/acceptance-and-sign-off-checklist.md` for exception tracking.
+  - Next ordered slice: execute Phase 6 Stage 01 to close deferred manual verification inputs on unblock surfaces before broader UX/UI expansion.
 
 ## Status
 
-Status: In Progress (Stage 04 Part 01 complete; Stage 04 Part 02 is next)
+Status: Complete [x] (Stages 01 through 04 complete; deterministic verification gate all pass; closeout exception recorded for manual visual/usability and assistive-technology verification inputs not completed in-repo at closeout time, accepted as deferred risk with product-owner rationale recorded and Phase 6 carry-forward sequencing defined)

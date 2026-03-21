@@ -170,7 +170,7 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 ### Phase 5
 
-- [-] [Phase 5 Overview](./phase-5/phase-5.md)
+- [x] [Phase 5 Overview](./phase-5/phase-5.md)
 
 #### Phase 5 Stage 01
 
@@ -195,10 +195,30 @@ This tracker is the top-level checklist for compartmentalized build planning. Ea
 
 #### Phase 5 Stage 04
 
-- [-] [Stage 04 Overview](./phase-5/stage-04-ux-accessibility-and-feedback-integration/stage-04-ux-accessibility-and-feedback-integration.md)
+- [x] [Stage 04 Overview](./phase-5/stage-04-ux-accessibility-and-feedback-integration/stage-04-ux-accessibility-and-feedback-integration.md)
 - [x] [Part 01: Accessibility and Keyboard Navigation Hardening](./phase-5/stage-04-ux-accessibility-and-feedback-integration/part-01-accessibility-and-keyboard-navigation-hardening/part-01-accessibility-and-keyboard-navigation-hardening.md)
-- [ ] Part 02: Admin Usability and Readability Improvements
-- [ ] Part 03: Feedback Integration and Phase 5 Verification Gate
+- [x] [Part 02: Admin Usability and Readability Improvements](./phase-5/stage-04-ux-accessibility-and-feedback-integration/part-02-admin-usability-and-readability-improvements/part-02-admin-usability-and-readability-improvements.md)
+- [x] [Part 03: Feedback Integration and Phase 5 Verification Gate](./phase-5/stage-04-ux-accessibility-and-feedback-integration/part-03-feedback-integration-and-phase-5-verification-gate/part-03-feedback-integration-and-phase-5-verification-gate.md) (closeout exception: manual visual/usability and assistive-technology verification inputs were not completed in-repo at closeout time and are accepted as deferred risk with recorded product-owner rationale to prioritize Phase 6 UX/UI execution)
+
+### Phase 6
+
+- [-] [Phase 6 Overview](./phase-6/phase-6.md) (planning underway)
+
+#### Phase 6 Stage 01
+
+- [-] [Stage 01 Overview](./phase-6/stage-01-phase-5-closeout-unblock-surfaces/stage-01-phase-5-closeout-unblock-surfaces.md) (planning underway; first planning slice approved)
+
+#### Phase 6 Stage 02
+
+- [ ] [Stage 02 Overview](./phase-6/stage-02-joint-styling-foundation/stage-02-joint-styling-foundation.md)
+
+#### Phase 6 Stage 03
+
+- [ ] [Stage 03 Overview](./phase-6/stage-03-global-styling-implementation/stage-03-global-styling-implementation.md)
+
+#### Phase 6 Stage 04
+
+- [ ] [Stage 04 Overview](./phase-6/stage-04-ui-ux-surface-expansion/stage-04-ui-ux-surface-expansion.md)
 
 ## Update Rules
 
