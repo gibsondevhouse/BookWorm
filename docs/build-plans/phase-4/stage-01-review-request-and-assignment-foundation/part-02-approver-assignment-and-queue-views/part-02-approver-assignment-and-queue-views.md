@@ -33,20 +33,24 @@ Provide explicit reviewer assignment and queue visibility so pending review work
 
 ## Implementation Notes
 
-**Schema and Persistence**
+### Schema and Persistence
+
 - `review_requests` now persists assignment metadata with `assignedApproverId`, `assignedAt`, and `assignmentHistory` JSON audit entries.
 - Assignment and queue indexes support deterministic assignee/status pagination.
 
-**API and Services**
+### API and Services
+
 - `PATCH /review-requests/:id/assign` supports assignment and reassignment with policy checks.
 - `GET /review-requests/queue/reviewer` enforces assignee scoping (editors limited to self; admins can query reviewer-specific queues).
 - `GET /review-requests/queue/admin` provides cross-team queue visibility with assignee/state filters, deterministic ordering, and pagination.
 
-**Validation and Authorization**
+### Validation and Authorization
+
 - Assignment allowed for `AUTHOR_ADMIN` and policy-authorized assigned editors.
 - Unauthorized assignment and queue access return explicit policy/authorization errors.
 
-**Tests**
+### Tests
+
 - `tests/phase4ApproverAssignmentQueueViewsPart02.test.ts` covers AC-01 through AC-05 for assignment, reassignment history, queue scope, deterministic ordering/pagination, workflow filtering, and unauthorized access denial.
 
 ## Status
@@ -54,6 +58,7 @@ Provide explicit reviewer assignment and queue visibility so pending review work
 Status: Complete [x]
 
 Evidence bounded to implemented behavior:
+
 - schema fields and indexes present for assignment metadata in `prisma/schema.prisma`
 - assignment and queue routes implemented in `apps/api/src/routes/reviewRequestRouter.ts`
 - assignment policy error contract implemented in `apps/api/src/services/reviewRequestService.ts`

@@ -39,11 +39,11 @@ Stage 04 Part 01 does not introduce release mutation behavior. It introduces rel
 
 - Phase 2 Stage 03 complete.
 - Existing public release-selection contract remains source-of-truth for release gating:
-	- omitted `releaseSlug` uses active release fallback where supported
-	- explicit `releaseSlug` is valid only for `ACTIVE` or `ARCHIVED` releases on public surfaces
+  - omitted `releaseSlug` uses active release fallback where supported
+  - explicit `releaseSlug` is valid only for `ACTIVE` or `ARCHIVED` releases on public surfaces
 - Existing release mutation guardrails remain unchanged:
-	- draft-only composition mutation
-	- activation transitions `ACTIVE -> ARCHIVED` + `DRAFT -> ACTIVE`
+  - draft-only composition mutation
+  - activation transitions `ACTIVE -> ARCHIVED` + `DRAFT -> ACTIVE`
 
 ---
 
@@ -51,134 +51,134 @@ Stage 04 Part 01 does not introduce release mutation behavior. It introduces rel
 
 ### 1.1 Admin Release History List
 
-| Property | Value |
-|---|---|
-| Method | `GET` |
-| Path | `/admin/releases/history` |
-| Auth | `AUTHOR_ADMIN` |
-| Query Params | `status?=DRAFT|ACTIVE|ARCHIVED`, `limit?` (default 20, max 100), `offset?` (default 0) |
-| Success | `200 OK` |
+| Property     | Value                     |
+| ------------ | ------------------------- | ------ | ------------------------------------------------------------- |
+| Method       | `GET`                     |
+| Path         | `/admin/releases/history` |
+| Auth         | `AUTHOR_ADMIN`            |
+| Query Params | `status?=DRAFT            | ACTIVE | ARCHIVED`,`limit?`(default 20, max 100),`offset?` (default 0) |
+| Success      | `200 OK`                  |
 
-**Response shape**
+#### Response shape (Public Archive Release List) (Admin Release History Detail) (Admin Release History List)
 
 ```json
 {
-	"items": [
-		{
-			"slug": "spring-arc",
-			"name": "Spring Arc",
-			"status": "ACTIVE",
-			"createdAt": "2026-03-19T01:30:00.000Z",
-			"activatedAt": "2026-03-19T03:45:00.000Z",
-			"entryCounts": {
-				"entities": 42,
-				"manuscripts": 18,
-				"relationships": 21
-			},
-			"isMutable": false
-		}
-	],
-	"page": {
-		"limit": 20,
-		"offset": 0,
-		"total": 3
-	}
+  "items": [
+    {
+      "slug": "spring-arc",
+      "name": "Spring Arc",
+      "status": "ACTIVE",
+      "createdAt": "2026-03-19T01:30:00.000Z",
+      "activatedAt": "2026-03-19T03:45:00.000Z",
+      "entryCounts": {
+        "entities": 42,
+        "manuscripts": 18,
+        "relationships": 21
+      },
+      "isMutable": false
+    }
+  ],
+  "page": {
+    "limit": 20,
+    "offset": 0,
+    "total": 3
+  }
 }
 ```
 
 ### 1.2 Admin Release History Detail
 
-| Property | Value |
-|---|---|
-| Method | `GET` |
-| Path | `/admin/releases/:slug/history` |
-| Auth | `AUTHOR_ADMIN` |
-| Success | `200 OK` |
+| Property  | Value                                  |
+| --------- | -------------------------------------- |
+| Method    | `GET`                                  |
+| Path      | `/admin/releases/:slug/history`        |
+| Auth      | `AUTHOR_ADMIN`                         |
+| Success   | `200 OK`                               |
 | Not Found | `404` when release slug does not exist |
 
-**Response shape**
+#### Response shape (Public Archive Release List)
 
 ```json
 {
-	"release": {
-		"slug": "spring-arc",
-		"name": "Spring Arc",
-		"status": "ARCHIVED",
-		"createdAt": "2026-03-18T01:30:00.000Z",
-		"activatedAt": "2026-03-18T03:45:00.000Z",
-		"isMutable": false
-	},
-	"composition": {
-		"entityEntries": [
-			{
-				"entitySlug": "captain-mira",
-				"entityType": "CHARACTER",
-				"revisionId": "rev_entity_123",
-				"version": 3,
-				"visibility": "PUBLIC"
-			}
-		],
-		"manuscriptEntries": [
-			{
-				"manuscriptSlug": "chapter-1",
-				"manuscriptType": "CHAPTER",
-				"manuscriptRevisionId": "rev_manuscript_123",
-				"version": 2,
-				"visibility": "PUBLIC"
-			}
-		],
-		"relationshipEntries": [
-			{
-				"relationshipId": "rel_123",
-				"relationshipRevisionId": "rel_rev_123",
-				"relationType": "ALLY_OF",
-				"version": 4,
-				"visibility": "PUBLIC"
-			}
-		]
-	}
+  "release": {
+    "slug": "spring-arc",
+    "name": "Spring Arc",
+    "status": "ARCHIVED",
+    "createdAt": "2026-03-18T01:30:00.000Z",
+    "activatedAt": "2026-03-18T03:45:00.000Z",
+    "isMutable": false
+  },
+  "composition": {
+    "entityEntries": [
+      {
+        "entitySlug": "captain-mira",
+        "entityType": "CHARACTER",
+        "revisionId": "rev_entity_123",
+        "version": 3,
+        "visibility": "PUBLIC"
+      }
+    ],
+    "manuscriptEntries": [
+      {
+        "manuscriptSlug": "chapter-1",
+        "manuscriptType": "CHAPTER",
+        "manuscriptRevisionId": "rev_manuscript_123",
+        "version": 2,
+        "visibility": "PUBLIC"
+      }
+    ],
+    "relationshipEntries": [
+      {
+        "relationshipId": "rel_123",
+        "relationshipRevisionId": "rel_rev_123",
+        "relationType": "ALLY_OF",
+        "version": 4,
+        "visibility": "PUBLIC"
+      }
+    ]
+  }
 }
 ```
 
 ### 1.3 Public Archive Release List
 
-| Property | Value |
-|---|---|
-| Method | `GET` |
-| Path | `/codex/releases` |
-| Auth | Public |
+| Property     | Value                                                 |
+| ------------ | ----------------------------------------------------- |
+| Method       | `GET`                                                 |
+| Path         | `/codex/releases`                                     |
+| Auth         | Public                                                |
 | Query Params | `limit?` (default 20, max 100), `offset?` (default 0) |
-| Success | `200 OK` |
+| Success      | `200 OK`                                              |
 
 **Behavior:** Returns only `ACTIVE` and `ARCHIVED` releases, newest first by `activatedAt DESC` then `createdAt DESC`.
 
-**Response shape**
+#### Response shape
 
 ```json
 {
-	"items": [
-		{
-			"slug": "spring-arc",
-			"name": "Spring Arc",
-			"status": "ACTIVE",
-			"activatedAt": "2026-03-19T03:45:00.000Z",
-			"createdAt": "2026-03-19T01:30:00.000Z",
-			"browseHref": "/codex?releaseSlug=spring-arc"
-		},
-		{
-			"slug": "winter-arc",
-			"name": "Winter Arc",
-			"status": "ARCHIVED",
-			"activatedAt": "2026-03-11T08:00:00.000Z",
-			"createdAt": "2026-03-10T22:00:00.000Z",
-			"browseHref": "/codex?releaseSlug=winter-arc"
-		}
-	],
-	"page": {
-		"limit": 20,
-		"offset": 0,
-		"total": 2
-	}
+  "items": [
+    {
+      "slug": "spring-arc",
+      "name": "Spring Arc",
+      "status": "ACTIVE",
+      "activatedAt": "2026-03-19T03:45:00.000Z",
+      "createdAt": "2026-03-19T01:30:00.000Z",
+      "browseHref": "/codex?releaseSlug=spring-arc"
+    },
+    {
+      "slug": "winter-arc",
+      "name": "Winter Arc",
+      "status": "ARCHIVED",
+      "activatedAt": "2026-03-11T08:00:00.000Z",
+      "createdAt": "2026-03-10T22:00:00.000Z",
+      "browseHref": "/codex?releaseSlug=winter-arc"
+    }
+  ],
+  "page": {
+    "limit": 20,
+    "offset": 0,
+    "total": 2
+  }
 }
 ```
 
@@ -189,10 +189,12 @@ Stage 04 Part 01 does not introduce release mutation behavior. It introduces rel
 1. Public content routes that accept `releaseSlug` (`/codex`, `/codex/:entityType/:slug/related`, `/codex/timeline/events`, `/codex/manuscripts`, `/codex/manuscripts/:slug`) continue to allow only `ACTIVE` or `ARCHIVED` selected releases.
 2. Any explicit `releaseSlug` that resolves to `DRAFT` or unknown release must produce existing leak-safe not-found behavior (404).
 3. Omitted `releaseSlug` semantics remain unchanged per endpoint:
-	 - endpoints with active fallback continue using current active release
-	 - no-active-release behavior remains endpoint-specific and unchanged
-4. `/codex/releases` is read-only discovery; it does not switch release state and does not imply activation rights.
-5. Admin history endpoints may show `DRAFT`, `ACTIVE`, and `ARCHIVED` because they are inspection endpoints for author-admin users.
+
+- endpoints with active fallback continue using current active release
+- no-active-release behavior remains endpoint-specific and unchanged
+
+1. `/codex/releases` is read-only discovery; it does not switch release state and does not imply activation rights.
+2. Admin history endpoints may show `DRAFT`, `ACTIVE`, and `ARCHIVED` because they are inspection endpoints for author-admin users.
 
 ---
 
@@ -208,16 +210,16 @@ Stage 04 Part 01 does not introduce release mutation behavior. It introduces rel
 
 ## 4. File Layout and Likely Touch Points
 
-| File | Action | Why |
-|---|---|---|
-| `apps/api/src/repositories/releaseHistoryRepository.ts` | Create | Centralize Prisma reads for release history list/detail and public archive list |
-| `apps/api/src/services/releaseHistoryService.ts` | Create | Author-admin history orchestration and response shaping |
-| `apps/api/src/services/publicCodexService.ts` | Extend | Add delegate method for public archive release list |
-| `apps/api/src/repositories/publicCodexRepository.ts` | Extend or delegate | Reuse existing public release gating logic for archive listing |
-| `apps/api/src/routes/adminReleaseRouter.ts` | Extend | Add `GET /history` and `GET /:slug/history` handlers using Zod parsing + single service call |
-| `apps/api/src/routes/publicCodexRouter.ts` | Extend | Add `GET /releases` public archive browsing endpoint |
-| `apps/api/src/routes/publicReleaseQuerySchema.ts` | Reuse | Keep `releaseSlug` selector contract consistent |
-| `tests/phase2ReleaseHistoryArchiveBrowsing.test.ts` | Create | Integration tests for admin/public release history and archive browsing |
+| File                                                    | Action             | Why                                                                                          |
+| ------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------- |
+| `apps/api/src/repositories/releaseHistoryRepository.ts` | Create             | Centralize Prisma reads for release history list/detail and public archive list              |
+| `apps/api/src/services/releaseHistoryService.ts`        | Create             | Author-admin history orchestration and response shaping                                      |
+| `apps/api/src/services/publicCodexService.ts`           | Extend             | Add delegate method for public archive release list                                          |
+| `apps/api/src/repositories/publicCodexRepository.ts`    | Extend or delegate | Reuse existing public release gating logic for archive listing                               |
+| `apps/api/src/routes/adminReleaseRouter.ts`             | Extend             | Add `GET /history` and `GET /:slug/history` handlers using Zod parsing + single service call |
+| `apps/api/src/routes/publicCodexRouter.ts`              | Extend             | Add `GET /releases` public archive browsing endpoint                                         |
+| `apps/api/src/routes/publicReleaseQuerySchema.ts`       | Reuse              | Keep `releaseSlug` selector contract consistent                                              |
+| `tests/phase2ReleaseHistoryArchiveBrowsing.test.ts`     | Create             | Integration tests for admin/public release history and archive browsing                      |
 
 Implementation note: if `adminReleaseRouter.ts` grows materially, extract release-history handlers into a dedicated router file and mount under `/admin/releases` in `apps/api/src/app/createApp.ts` while preserving route behavior.
 

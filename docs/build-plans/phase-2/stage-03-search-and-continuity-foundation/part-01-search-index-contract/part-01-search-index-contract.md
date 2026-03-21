@@ -40,13 +40,13 @@ interface EntitySearchDocument {
   // Fixed discriminant; distinguishes EntitySearchDocument from ManuscriptSearchDocument.
 
   // ── Entity root ─────────────────────────────────────────────────────────────
-  entityId: string;        // Entity.id
-  entityType: EntityType;  // Entity.type — one of 13 EntityType enum values (see §1.4)
-  entitySlug: string;      // Entity.slug
+  entityId: string; // Entity.id
+  entityType: EntityType; // Entity.type — one of 13 EntityType enum values (see §1.4)
+  entitySlug: string; // Entity.slug
 
   // ── Revision content (full-text indexed) ────────────────────────────────────
-  name: string;            // EntityRevision.name
-  summary: string;         // EntityRevision.summary
+  name: string; // EntityRevision.name
+  summary: string; // EntityRevision.summary
   revisionVersion: number; // EntityRevision.version
 
   // ── Visibility ──────────────────────────────────────────────────────────────
@@ -96,21 +96,21 @@ interface EntitySearchDocument {
 
 ### 1.2 `detailPath` Computation
 
-| `entityType` | `detailPath` |
-|---|---|
-| `CHARACTER` | `/characters/:entitySlug` |
-| `FACTION` | `/factions/:entitySlug` |
-| `LOCATION` | `/locations/:entitySlug` |
-| `EVENT` | `/events/:entitySlug` |
-| `ARTIFACT` | `null` |
-| `CREATURE` | `null` |
-| `BELIEF_SYSTEM` | `null` |
-| `POLITICAL_BODY` | `null` |
-| `LANGUAGE` | `null` |
-| `TIMELINE_ERA` | `null` |
-| `SECRET` | `null` |
-| `REVEAL` | `null` |
-| `TAG` | `null` |
+| `entityType`     | `detailPath`              |
+| ---------------- | ------------------------- |
+| `CHARACTER`      | `/characters/:entitySlug` |
+| `FACTION`        | `/factions/:entitySlug`   |
+| `LOCATION`       | `/locations/:entitySlug`  |
+| `EVENT`          | `/events/:entitySlug`     |
+| `ARTIFACT`       | `null`                    |
+| `CREATURE`       | `null`                    |
+| `BELIEF_SYSTEM`  | `null`                    |
+| `POLITICAL_BODY` | `null`                    |
+| `LANGUAGE`       | `null`                    |
+| `TIMELINE_ERA`   | `null`                    |
+| `SECRET`         | `null`                    |
+| `REVEAL`         | `null`                    |
+| `TAG`            | `null`                    |
 
 The four codex types with non-null paths are identical to the `buildDetailPath()` helper in `publicCodexRepository.ts`. If that helper's paths change, this mapping must change in sync.
 
@@ -126,13 +126,13 @@ interface ManuscriptSearchDocument {
   documentType: "MANUSCRIPT";
 
   // ── Manuscript root ─────────────────────────────────────────────────────────
-  manuscriptId: string;               // Manuscript.id
+  manuscriptId: string; // Manuscript.id
   manuscriptType: "CHAPTER" | "SCENE"; // Manuscript.type
-  manuscriptSlug: string;             // Manuscript.slug
+  manuscriptSlug: string; // Manuscript.slug
 
   // ── Revision content (full-text indexed) ────────────────────────────────────
-  title: string;           // ManuscriptRevision.title
-  summary: string;         // ManuscriptRevision.summary
+  title: string; // ManuscriptRevision.title
+  summary: string; // ManuscriptRevision.summary
   revisionVersion: number; // ManuscriptRevision.version
 
   // ── Visibility ──────────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ type SearchDocument = EntitySearchDocument | ManuscriptSearchDocument;
 
 A release qualifies as a document source if and only if:
 
-```
+```text
 Release.status IN ('ACTIVE', 'ARCHIVED')
 ```
 
@@ -192,11 +192,11 @@ Releases with `status = 'DRAFT'` are **never** indexed, regardless of the conten
 
 All four conditions must hold for an `EntityRevision` to produce an `EntitySearchDocument`.
 
-| Gate | Condition | Source field |
-|---|---|---|
+| Gate   | Condition                                                                  | Source field                                                                                                           |
+| ------ | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **E1** | A `ReleaseEntry` exists linking `EntityRevision.id` to an eligible release | `ReleaseEntry.revisionId = revision.id AND ReleaseEntry.releaseId IN (releases WHERE status IN ('ACTIVE','ARCHIVED'))` |
-| **E2** | `EntityRevision.visibility = 'PUBLIC'` | `EntityRevision.visibility` |
-| **E3** | `Entity.retiredAt IS NULL` | `Entity.retiredAt` |
+| **E2** | `EntityRevision.visibility = 'PUBLIC'`                                     | `EntityRevision.visibility`                                                                                            |
+| **E3** | `Entity.retiredAt IS NULL`                                                 | `Entity.retiredAt`                                                                                                     |
 
 **RESTRICTED excluded.** The `Visibility` enum has three values: PUBLIC, RESTRICTED, PRIVATE. RESTRICTED is treated as non-public and is never indexed. There is no "unlisted" tier in this schema. Indexing RESTRICTED would require caller-role enforcement inside the adapter; that path does not exist in the MVP.
 
@@ -206,10 +206,10 @@ All four conditions must hold for an `EntityRevision` to produce an `EntitySearc
 
 Both conditions must hold for a `ManuscriptRevision` to produce a `ManuscriptSearchDocument`.
 
-| Gate | Condition | Source field |
-|---|---|---|
+| Gate   | Condition                                                                                | Source field                                                                                                            |
+| ------ | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **M1** | A `ReleaseManuscriptEntry` exists linking `ManuscriptRevision.id` to an eligible release | `ReleaseManuscriptEntry.manuscriptRevisionId = revision.id AND ReleaseManuscriptEntry.releaseId IN (eligible releases)` |
-| **M2** | `ManuscriptRevision.visibility = 'PUBLIC'` | `ManuscriptRevision.visibility` |
+| **M2** | `ManuscriptRevision.visibility = 'PUBLIC'`                                               | `ManuscriptRevision.visibility`                                                                                         |
 
 ### 2.4 Multi-Release Behavior
 
@@ -229,17 +229,18 @@ For manuscripts, only `title` and `summary` are full-text indexed. The body cont
 
 Every conforming `SearchAdapter.search()` implementation must support exact-match filtering on all fields in the table below.
 
-| Filter key | TypeScript type | Semantics | Default when absent |
-|---|---|---|---|
-| `releaseSlug` | `string` | Scope results to documents from this specific release | Resolve to current ACTIVE release; return `[]` if none |
-| `documentType` | `"ENTITY" \| "MANUSCRIPT"` | Restrict to one document class | All document types |
-| `entityType` | `EntityType` | Restrict to one entity type (ENTITY docs only; ignored for MANUSCRIPT) | All entity types |
-| `manuscriptType` | `"CHAPTER" \| "SCENE"` | Restrict to one manuscript type (MANUSCRIPT docs only; ignored for ENTITY) | Both manuscript types |
-| `spoilerTier` | `("NONE" \| "MINOR" \| "MAJOR")[]` | **OR** match: return docs whose tier is in this array | All spoiler tiers |
-| `tags` | `string[]` | **AND** match: return only docs carrying all listed tags | No tag constraint |
-| `timelineEraSlug` | `string` | Restrict to ENTITY docs with this `timelineEraSlug` (ignored for MANUSCRIPT) | No era constraint |
+| Filter key        | TypeScript type | Semantics                                                                    | Default when absent                                                        |
+| ----------------- | --------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------- |
+| `releaseSlug`     | `string`        | Scope results to documents from this specific release                        | Resolve to current ACTIVE release; return `[]` if none                     |
+| `documentType`    | `"ENTITY" \     | "MANUSCRIPT"`                                                                | Restrict to one document class                                             | All document types                                    |
+| `entityType`      | `EntityType`    | Restrict to one entity type (ENTITY docs only; ignored for MANUSCRIPT)       | All entity types                                                           |
+| `manuscriptType`  | `"CHAPTER" \    | "SCENE"`                                                                     | Restrict to one manuscript type (MANUSCRIPT docs only; ignored for ENTITY) | Both manuscript types                                 |
+| `spoilerTier`     | `("NONE" \      | "MINOR" \                                                                    | "MAJOR")[]`                                                                | **OR** match: return docs whose tier is in this array | All spoiler tiers |
+| `tags`            | `string[]`      | **AND** match: return only docs carrying all listed tags                     | No tag constraint                                                          |
+| `timelineEraSlug` | `string`        | Restrict to ENTITY docs with this `timelineEraSlug` (ignored for MANUSCRIPT) | No era constraint                                                          |
 
 **Filter combination rules:**
+
 - `entityType` and `manuscriptType` are applied exclusively to their respective `documentType`. A query with both fields set and no `documentType` constraint applies each filter only to its matching document class.
 - `spoilerTier: ["NONE", "MINOR"]` returns documents with NONE or MINOR; MAJOR documents are excluded.
 - `tags: ["war", "magic"]` returns only documents containing both `"war"` and `"magic"` in their `tags` array.
@@ -247,10 +248,10 @@ Every conforming `SearchAdapter.search()` implementation must support exact-matc
 
 **Pagination (required on every `SearchQuery`, not filters):**
 
-| Field | Type | Default | Constraint |
-|---|---|---|---|
-| `limit` | `number` | 20 | Clamped to [1, 50] by caller before passing to adapter |
-| `offset` | `number` | 0 | Negative values treated as 0 |
+| Field    | Type     | Default | Constraint                                             |
+| -------- | -------- | ------- | ------------------------------------------------------ |
+| `limit`  | `number` | 20      | Clamped to [1, 50] by caller before passing to adapter |
+| `offset` | `number` | 0       | Negative values treated as 0                           |
 
 ---
 
@@ -260,11 +261,11 @@ Every conforming `SearchAdapter.search()` implementation must support exact-matc
 
 A **full rebuild** calls `SearchAdapter.rebuild(docs)` with a freshly computed complete document set from `SearchIndexBuilder.buildAllDocuments()`.
 
-| # | Event | DB change that fires it |
-|---|---|---|
-| R1 | Release activated | `Release.status` transitions DRAFT → ACTIVE |
-| R2 | Release archived | `Release.status` transitions ACTIVE → ARCHIVED |
-| R3 | Release deleted | `Release` record hard-deleted (removes orphaned documents) |
+| #   | Event             | DB change that fires it                                    |
+| --- | ----------------- | ---------------------------------------------------------- |
+| R1  | Release activated | `Release.status` transitions DRAFT → ACTIVE                |
+| R2  | Release archived  | `Release.status` transitions ACTIVE → ARCHIVED             |
+| R3  | Release deleted   | `Release` record hard-deleted (removes orphaned documents) |
 
 R1–R3 require a full rebuild because they change the release-eligibility baseline used to scope all search results.
 
@@ -272,17 +273,17 @@ R1–R3 require a full rebuild because they change the release-eligibility basel
 
 An **incremental update** calls `SearchAdapter.index(doc)` or `SearchAdapter.delete(id)` for specific documents, leaving other documents untouched.
 
-| # | Event | DB change | Required operation |
-|---|---|---|---|
-| I1 | Entity revision included in active release with PUBLIC visibility | New `EntityRevision` (`visibility=PUBLIC`) + new/updated `ReleaseEntry` → ACTIVE release | `index(newDoc)` + `delete(previousRevisionId)` if an older revision for the same entity was indexed |
-| I2 | Entity visibility promoted to PUBLIC | `EntityRevision.visibility` updated to `PUBLIC` on a revision with an eligible `ReleaseEntry` | `index(doc)` |
-| I3 | Entity visibility demoted from PUBLIC | `EntityRevision.visibility` updated to `RESTRICTED` or `PRIVATE` | `delete(revisionId)` |
-| I4 | Entity retired | `Entity.retiredAt` set to non-null | `delete(revisionId)` for each document in the index with this `entityId` |
-| I5 | `ReleaseEntry` revision swapped | `ReleaseEntry.revisionId` updated to a different revision | `index(newRevisionDoc)` + `delete(oldRevisionId)` |
-| I6 | Manuscript revision included in active release with PUBLIC visibility | New `ManuscriptRevision` (`visibility=PUBLIC`) + new/updated `ReleaseManuscriptEntry` → ACTIVE release | `index(newDoc)` + `delete(previousRevisionId)` if applicable |
-| I7 | Manuscript visibility promoted to PUBLIC | `ManuscriptRevision.visibility` updated to `PUBLIC` | `index(doc)` |
-| I8 | Manuscript visibility demoted from PUBLIC | `ManuscriptRevision.visibility` updated to `RESTRICTED` or `PRIVATE` | `delete(revisionId)` |
-| I9 | `ReleaseManuscriptEntry` revision swapped | `ReleaseManuscriptEntry.manuscriptRevisionId` updated | `index(newRevisionDoc)` + `delete(oldRevisionId)` |
+| #   | Event                                                                 | DB change                                                                                              | Required operation                                                                                  |
+| --- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| I1  | Entity revision included in active release with PUBLIC visibility     | New `EntityRevision` (`visibility=PUBLIC`) + new/updated `ReleaseEntry` → ACTIVE release               | `index(newDoc)` + `delete(previousRevisionId)` if an older revision for the same entity was indexed |
+| I2  | Entity visibility promoted to PUBLIC                                  | `EntityRevision.visibility` updated to `PUBLIC` on a revision with an eligible `ReleaseEntry`          | `index(doc)`                                                                                        |
+| I3  | Entity visibility demoted from PUBLIC                                 | `EntityRevision.visibility` updated to `RESTRICTED` or `PRIVATE`                                       | `delete(revisionId)`                                                                                |
+| I4  | Entity retired                                                        | `Entity.retiredAt` set to non-null                                                                     | `delete(revisionId)` for each document in the index with this `entityId`                            |
+| I5  | `ReleaseEntry` revision swapped                                       | `ReleaseEntry.revisionId` updated to a different revision                                              | `index(newRevisionDoc)` + `delete(oldRevisionId)`                                                   |
+| I6  | Manuscript revision included in active release with PUBLIC visibility | New `ManuscriptRevision` (`visibility=PUBLIC`) + new/updated `ReleaseManuscriptEntry` → ACTIVE release | `index(newDoc)` + `delete(previousRevisionId)` if applicable                                        |
+| I7  | Manuscript visibility promoted to PUBLIC                              | `ManuscriptRevision.visibility` updated to `PUBLIC`                                                    | `index(doc)`                                                                                        |
+| I8  | Manuscript visibility demoted from PUBLIC                             | `ManuscriptRevision.visibility` updated to `RESTRICTED` or `PRIVATE`                                   | `delete(revisionId)`                                                                                |
+| I9  | `ReleaseManuscriptEntry` revision swapped                             | `ReleaseManuscriptEntry.manuscriptRevisionId` updated                                                  | `index(newRevisionDoc)` + `delete(oldRevisionId)`                                                   |
 
 **MVP implementation note:** For the first implementation shipped in Part 02, **a full rebuild (`SearchAdapter.rebuild(docs)`) is acceptable for every trigger — both R-series and I-series**. The incremental operations above define the target steady-state behavior and exist so that the invalidation hooks are wired with the correct granularity semantics from day one. Upgrade from full-rebuild to incremental is a non-breaking optimization pass.
 
@@ -322,8 +323,8 @@ type SearchQuery = {
   // Exact match against EntitySearchDocument.timelineEraSlug.
   // Silently ignored for MANUSCRIPT documents.
 
-  limit: number;   // Required. Caller must clamp to [1, 50] before passing in.
-  offset: number;  // Required. Caller must ensure >= 0 before passing in.
+  limit: number; // Required. Caller must clamp to [1, 50] before passing in.
+  offset: number; // Required. Caller must ensure >= 0 before passing in.
 };
 ```
 
@@ -449,7 +450,9 @@ interface SearchIndexBuilder {
    * Evaluates gates M1–M2 at call time.
    * Returns null if the revision does not satisfy all gates.
    */
-  buildManuscriptDocument(manuscriptRevisionId: string): Promise<ManuscriptSearchDocument | null>;
+  buildManuscriptDocument(
+    manuscriptRevisionId: string
+  ): Promise<ManuscriptSearchDocument | null>;
 }
 ```
 
@@ -459,20 +462,20 @@ interface SearchIndexBuilder {
 
 ### Part 01 deliverables (type definitions and interface declarations only — no runtime behavior)
 
-| File | Contents |
-|---|---|
-| `apps/api/src/lib/searchTypes.ts` | `EntitySearchDocument`, `ManuscriptSearchDocument`, `SearchDocument`, `SearchQuery`, `SearchHit`, `SearchResult` |
-| `apps/api/src/lib/searchAdapter.ts` | `SearchAdapter` interface |
-| `apps/api/src/lib/searchIndexBuilder.ts` | `SearchIndexBuilder` interface |
+| File                                     | Contents                                                                                                         |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `apps/api/src/lib/searchTypes.ts`        | `EntitySearchDocument`, `ManuscriptSearchDocument`, `SearchDocument`, `SearchQuery`, `SearchHit`, `SearchResult` |
+| `apps/api/src/lib/searchAdapter.ts`      | `SearchAdapter` interface                                                                                        |
+| `apps/api/src/lib/searchIndexBuilder.ts` | `SearchIndexBuilder` interface                                                                                   |
 
 ### Part 02 deliverables (implementations; listed here for orientation)
 
-| File | Contents |
-|---|---|
-| `apps/api/src/lib/searchAdapters/inMemorySearchAdapter.ts` | MVP in-memory `SearchAdapter` implementation |
-| `apps/api/src/services/searchIndexService.ts` | `SearchIndexBuilder` implementation; queries DB, applies indexability gates, constructs `SearchDocument` instances |
-| `apps/api/src/repositories/searchIndexRepository.ts` | Prisma queries used by `searchIndexService`; joins `ReleaseEntry`→`EntityRevision`→`Entity` and `ReleaseManuscriptEntry`→`ManuscriptRevision`→`Manuscript` |
-| `apps/api/src/routes/searchRouter.ts` | Public search API route handler |
+| File                                                       | Contents                                                                                                                                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api/src/lib/searchAdapters/inMemorySearchAdapter.ts` | MVP in-memory `SearchAdapter` implementation                                                                                                               |
+| `apps/api/src/services/searchIndexService.ts`              | `SearchIndexBuilder` implementation; queries DB, applies indexability gates, constructs `SearchDocument` instances                                         |
+| `apps/api/src/repositories/searchIndexRepository.ts`       | Prisma queries used by `searchIndexService`; joins `ReleaseEntry`→`EntityRevision`→`Entity` and `ReleaseManuscriptEntry`→`ManuscriptRevision`→`Manuscript` |
+| `apps/api/src/routes/searchRouter.ts`                      | Public search API route handler                                                                                                                            |
 
 ---
 
@@ -510,16 +513,16 @@ The following are discrete, testable conditions. Tests for all ACs ship in Part 
 
 ## Key Design Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| **Document ID** | `EntityRevision.id` / `ManuscriptRevision.id` | Revision IDs are globally unique, immutable, and stable across rebuilds when content is unchanged. Using revision IDs makes invalidation precise — `delete(revisionId)` removes exactly one document — and is consistent with the existing revision-anchored data model. |
-| **Multi-release indexing** | All non-DRAFT releases (ACTIVE + ARCHIVED) indexed; ACTIVE takes priority for shared IDs | Aligns with `publicCodexRepository.findPublicRelease()` pattern. Enables future archived-release search without index redesign. Avoids index and query complexity of managing separate per-release indexes. |
-| **RESTRICTED excluded** | Public only | RESTRICTED lacks a caller-role enforcement path at search time. Indexing it safely would require per-request role checks inside the adapter, which is out of scope for MVP. |
-| **All EntityTypes eligible** | No exclusion by type | Consistent with `publicDiscoveryRepository` which does not restrict by entity type. Spoiler tier filtering provides exposure control for sensitive types (SECRET, REVEAL). |
-| **Manuscript `timelineAnchor`** | Not indexed in MVP | No `manuscriptMetadataContract` exists. Manuscript timeline placement is a Phase 3 concern. |
-| **Full rebuild for MVP** | Acceptable for all triggers | Incremental invalidation is specified in §4.2 as the target steady state. Part 02 implements full rebuild for simplicity. `SearchAdapter` interface supports both from day one. |
-| **Full-text fields** | `name`+`summary` for entities; `title`+`summary` for manuscripts | `payload` body is JSON with unspecified shape. Indexing it would risk unbounded growth and surfacing draft prose content. Only editorially stable fields are indexed. |
-| **Active-release default** | Queries without `releaseSlug` resolve to ACTIVE release | Consistent with all existing public read paths. Prevents inadvertent cross-release result mixing. |
+| Decision                        | Choice                                                                                   | Rationale                                                                                                                                                                                                                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Document ID**                 | `EntityRevision.id` / `ManuscriptRevision.id`                                            | Revision IDs are globally unique, immutable, and stable across rebuilds when content is unchanged. Using revision IDs makes invalidation precise — `delete(revisionId)` removes exactly one document — and is consistent with the existing revision-anchored data model. |
+| **Multi-release indexing**      | All non-DRAFT releases (ACTIVE + ARCHIVED) indexed; ACTIVE takes priority for shared IDs | Aligns with `publicCodexRepository.findPublicRelease()` pattern. Enables future archived-release search without index redesign. Avoids index and query complexity of managing separate per-release indexes.                                                              |
+| **RESTRICTED excluded**         | Public only                                                                              | RESTRICTED lacks a caller-role enforcement path at search time. Indexing it safely would require per-request role checks inside the adapter, which is out of scope for MVP.                                                                                              |
+| **All EntityTypes eligible**    | No exclusion by type                                                                     | Consistent with `publicDiscoveryRepository` which does not restrict by entity type. Spoiler tier filtering provides exposure control for sensitive types (SECRET, REVEAL).                                                                                               |
+| **Manuscript `timelineAnchor`** | Not indexed in MVP                                                                       | No `manuscriptMetadataContract` exists. Manuscript timeline placement is a Phase 3 concern.                                                                                                                                                                              |
+| **Full rebuild for MVP**        | Acceptable for all triggers                                                              | Incremental invalidation is specified in §4.2 as the target steady state. Part 02 implements full rebuild for simplicity. `SearchAdapter` interface supports both from day one.                                                                                          |
+| **Full-text fields**            | `name`+`summary` for entities; `title`+`summary` for manuscripts                         | `payload` body is JSON with unspecified shape. Indexing it would risk unbounded growth and surfacing draft prose content. Only editorially stable fields are indexed.                                                                                                    |
+| **Active-release default**      | Queries without `releaseSlug` resolve to ACTIVE release                                  | Consistent with all existing public read paths. Prevents inadvertent cross-release result mixing.                                                                                                                                                                        |
 
 ---
 
@@ -556,10 +559,10 @@ The following are explicitly out of scope here and addressed in Part 02 or later
 
 **Delivered files (interface/type definitions only — no runtime behavior):**
 
-| File | Status |
-|---|---|
-| `apps/api/src/lib/searchTypes.ts` | Created — exports `EntitySearchDocument`, `ManuscriptSearchDocument`, `SearchDocument`, `SearchQuery`, `SearchHit`, `SearchResult` exactly as specified in §1 and §5.1–5.2 |
-| `apps/api/src/lib/searchAdapter.ts` | Created — exports `SearchAdapter` interface with all seven methods as specified in §5.3 |
-| `apps/api/src/lib/searchIndexBuilder.ts` | Created — exports `SearchIndexBuilder` interface with all four methods as specified in §6, including JSDoc for the ARCHIVED-before-ACTIVE ordering guarantee |
+| File                                     | Status                                                                                                                                                                     |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api/src/lib/searchTypes.ts`        | Created — exports `EntitySearchDocument`, `ManuscriptSearchDocument`, `SearchDocument`, `SearchQuery`, `SearchHit`, `SearchResult` exactly as specified in §1 and §5.1–5.2 |
+| `apps/api/src/lib/searchAdapter.ts`      | Created — exports `SearchAdapter` interface with all seven methods as specified in §5.3                                                                                    |
+| `apps/api/src/lib/searchIndexBuilder.ts` | Created — exports `SearchIndexBuilder` interface with all four methods as specified in §6, including JSDoc for the ARCHIVED-before-ACTIVE ordering guarantee               |
 
 **Verification:** `pnpm type-check` passes with zero errors. No runtime implementation shipped in this part, consistent with Non-Goals.

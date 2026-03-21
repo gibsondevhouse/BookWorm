@@ -38,19 +38,20 @@ This part covers only rule-pack expansion and deterministic rule execution behav
 
 ## Part 01 Rule Inventory
 
-| Rule Code | Severity | Subject Type | Detection Trigger | Notes |
-|---|---|---|---|---|
-| `REQ_META_CHRONOLOGY_ANCHOR` | BLOCKING | Entity Revision | Missing timeline anchor on release entry | Baseline; Phase 2 implementation |
-| `DATE_ORDER_SORT_KEY_REGRESSION` | BLOCKING | Entity Revision | Timeline sort-order violation across entries | Baseline; Phase 2 implementation |
-| `REQ_META_SPOILER_TIER_PUBLIC` | BLOCKING | Entity Revision / Manuscript Revision | Public release contains untiered entity | Baseline; Phase 2 implementation |
-| `REVEAL_TIMING_DEPENDENCY_PRESENT` | BLOCKING | Entity Revision | Reveal dependency precedes unlock | Baseline; Phase 2 implementation |
-| `DUPLICATE_ENTITY_SLUG_IN_RELEASE` | BLOCKING | Release | Release contains duplicate entity slugs | Baseline; Phase 2 implementation |
-| `DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE` | BLOCKING | Release | Release contains duplicate manuscript slugs | Baseline; Phase 2 implementation |
-| `ENTITY_KNOWLEDGE_STATE_REGRESSION` | WARNING | Entity Revision | Entity appears in release with lower knowledge-state tier than same entity in prior release | Stage 02 expansion; detects unintended knowledge degradation across release boundaries |
-| `MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY` | WARNING | Manuscript Revision | Manuscript chapters exhibit non-contiguous sequence numbers or missing chapter identifiers in release composition | Stage 02 expansion; catches chapter indexing inconsistencies that may cause reader confusion |
-| `RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE` | WARNING | Relationship Revision | Relationship marked as unrevealed/restricted but appears to be exposed via unrestricted related entities in same release | Stage 02 expansion; detects information leakage through relationship tier misconfigurations |
+| Rule Code                                    | Severity | Subject Type                          | Detection Trigger                                                                                                        | Notes                                                                                        |
+| -------------------------------------------- | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `REQ_META_CHRONOLOGY_ANCHOR`                 | BLOCKING | Entity Revision                       | Missing timeline anchor on release entry                                                                                 | Baseline; Phase 2 implementation                                                             |
+| `DATE_ORDER_SORT_KEY_REGRESSION`             | BLOCKING | Entity Revision                       | Timeline sort-order violation across entries                                                                             | Baseline; Phase 2 implementation                                                             |
+| `REQ_META_SPOILER_TIER_PUBLIC`               | BLOCKING | Entity Revision / Manuscript Revision | Public release contains untiered entity                                                                                  | Baseline; Phase 2 implementation                                                             |
+| `REVEAL_TIMING_DEPENDENCY_PRESENT`           | BLOCKING | Entity Revision                       | Reveal dependency precedes unlock                                                                                        | Baseline; Phase 2 implementation                                                             |
+| `DUPLICATE_ENTITY_SLUG_IN_RELEASE`           | BLOCKING | Release                               | Release contains duplicate entity slugs                                                                                  | Baseline; Phase 2 implementation                                                             |
+| `DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE`       | BLOCKING | Release                               | Release contains duplicate manuscript slugs                                                                              | Baseline; Phase 2 implementation                                                             |
+| `ENTITY_KNOWLEDGE_STATE_REGRESSION`          | WARNING  | Entity Revision                       | Entity appears in release with lower knowledge-state tier than same entity in prior release                              | Stage 02 expansion; detects unintended knowledge degradation across release boundaries       |
+| `MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY`      | WARNING  | Manuscript Revision                   | Manuscript chapters exhibit non-contiguous sequence numbers or missing chapter identifiers in release composition        | Stage 02 expansion; catches chapter indexing inconsistencies that may cause reader confusion |
+| `RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE` | WARNING  | Relationship Revision                 | Relationship marked as unrevealed/restricted but appears to be exposed via unrestricted related entities in same release | Stage 02 expansion; detects information leakage through relationship tier misconfigurations  |
 
 **Inventory Scope:**
+
 - **Baseline rules (rows 1-6):** Already implemented in Phase 2 and retained unchanged during Part 01. Part 01 does not modify baseline rule logic, fingerprinting, or severity. These are prerequisites, not Stage 02 deliverables.
 - **Expansion rules (rows 7-9):** Stage 02 Part 01 implemented deliverables. Rules and fingerprint generation logic are implemented and verified with deterministic behavior.
   - `ENTITY_KNOWLEDGE_STATE_REGRESSION`: Compares entity spoiler tier in current release against maximum tier seen in prior release history. Detects unintended knowledge degradation.
@@ -59,6 +60,7 @@ This part covers only rule-pack expansion and deterministic rule execution behav
 - **Acceptance gates:** Detection accuracy, baseline compatibility, and deterministic fingerprinting are verified by the Part 01 suite and baseline regression suite.
 
 **Fingerprint Composition Details for Expansion Rules:**
+
 - `ENTITY_KNOWLEDGE_STATE_REGRESSION`: fingerprint = `(ruleCode, entityRevisionId, currentTier, priorMaxTier)` — ensures one issue per entity-tier state pair; stable across reruns for same release/prior-release comparison
 - `MANUSCRIPT_CHAPTER_SEQUENCING_ANOMALY`: fingerprint = `(ruleCode, manuscriptRevisionId, anomalyType, position)` where anomalyType is "MISSING" or "DUPLICATE" — ensures one issue per specific sequence anomaly; stable for same manuscript structure
 - `RELATIONSHIP_REVEAL_CONSISTENCY_INCOMPLETE`: fingerprint = `(ruleCode, relationshipId, violatingEntityId, relationshipTier, entityTier)` — one issue per relationship-entity tier mismatch; stable for same relationship/entity metadata state
@@ -77,6 +79,7 @@ Status: Complete [✓]
 Implementation Date: 2026-03-20
 
 ### Implementation Summary
+
 - All 3 expansion rules implemented with deterministic fingerprints
 - Rule execution verified with comprehensive test coverage
 - All acceptance criteria satisfied (AC-01 through AC-05)

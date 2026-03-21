@@ -23,14 +23,14 @@ Rules in this part run against release composition for one target release slug. 
 
 ### 1.1 Rule Inventory
 
-| Rule Code | Severity | Applies To | Field-Level Checks |
-|---|---|---|---|
-| `REQ_META_CHRONOLOGY_ANCHOR` | `BLOCKING` | Included `EntityRevision` where `Entity.type IN (EVENT, REVEAL, TIMELINE_ERA)` and revision is release-visible (`ReleaseEntry`) | `EntityRevision.payload.metadata.timelineAnchor` must exist and contain non-empty `anchorLabel` and non-empty `sortKey`; `timelineEraSlug` may be null but, when present, must resolve to an existing `Entity.slug` with `Entity.type = TIMELINE_ERA` and `Entity.retiredAt IS NULL` |
-| `REQ_META_SPOILER_TIER_PUBLIC` | `BLOCKING` | Included PUBLIC `EntityRevision` for `Entity.type IN (SECRET, REVEAL, EVENT)` and included PUBLIC `ManuscriptRevision` | `payload.metadata.spoilerTier` must be explicitly present and one of `NONE | MINOR | MAJOR`; absence is a failure even though runtime normalization defaults to `NONE` |
-| `DATE_ORDER_SORT_KEY_REGRESSION` | `BLOCKING` | Included chronology-sensitive entity revisions also present in currently ACTIVE release for the same `Entity.id` | Compare `payload.metadata.timelineAnchor.sortKey` between target release revision and current ACTIVE release revision: target value must be greater than or equal to active value in lexicographic ISO-8601 order |
-| `REVEAL_TIMING_DEPENDENCY_PRESENT` | `BLOCKING` | Included PUBLIC `EntityRevision` where `Entity.type = REVEAL` | `EntityRevision.payload.requiredDependencies` must include at least one dependency item with `kind = ENTITY`; each referenced `entitySlug` must resolve to an entity that is also included in the same release (`ReleaseEntry`) |
-| `DUPLICATE_ENTITY_SLUG_IN_RELEASE` | `BLOCKING` | Release entity composition | Group included entity rows by `Entity.slug`; any count greater than 1 is a failure (corruption/import-defense rule; should normally be prevented by schema uniqueness) |
-| `DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE` | `BLOCKING` | Release manuscript composition | Group included manuscript rows by `Manuscript.slug`; any count greater than 1 is a failure (corruption/import-defense rule; should normally be prevented by schema uniqueness) |
+| Rule Code                              | Severity   | Applies To                                                                                                                      | Field-Level Checks                                                                                                                                                                                                                                                                   |
+| -------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | -------------------------------------------------------------------------------- |
+| `REQ_META_CHRONOLOGY_ANCHOR`           | `BLOCKING` | Included `EntityRevision` where `Entity.type IN (EVENT, REVEAL, TIMELINE_ERA)` and revision is release-visible (`ReleaseEntry`) | `EntityRevision.payload.metadata.timelineAnchor` must exist and contain non-empty `anchorLabel` and non-empty `sortKey`; `timelineEraSlug` may be null but, when present, must resolve to an existing `Entity.slug` with `Entity.type = TIMELINE_ERA` and `Entity.retiredAt IS NULL` |
+| `REQ_META_SPOILER_TIER_PUBLIC`         | `BLOCKING` | Included PUBLIC `EntityRevision` for `Entity.type IN (SECRET, REVEAL, EVENT)` and included PUBLIC `ManuscriptRevision`          | `payload.metadata.spoilerTier` must be explicitly present and one of `NONE                                                                                                                                                                                                           | MINOR | MAJOR`; absence is a failure even though runtime normalization defaults to`NONE` |
+| `DATE_ORDER_SORT_KEY_REGRESSION`       | `BLOCKING` | Included chronology-sensitive entity revisions also present in currently ACTIVE release for the same `Entity.id`                | Compare `payload.metadata.timelineAnchor.sortKey` between target release revision and current ACTIVE release revision: target value must be greater than or equal to active value in lexicographic ISO-8601 order                                                                    |
+| `REVEAL_TIMING_DEPENDENCY_PRESENT`     | `BLOCKING` | Included PUBLIC `EntityRevision` where `Entity.type = REVEAL`                                                                   | `EntityRevision.payload.requiredDependencies` must include at least one dependency item with `kind = ENTITY`; each referenced `entitySlug` must resolve to an entity that is also included in the same release (`ReleaseEntry`)                                                      |
+| `DUPLICATE_ENTITY_SLUG_IN_RELEASE`     | `BLOCKING` | Release entity composition                                                                                                      | Group included entity rows by `Entity.slug`; any count greater than 1 is a failure (corruption/import-defense rule; should normally be prevented by schema uniqueness)                                                                                                               |
+| `DUPLICATE_MANUSCRIPT_SLUG_IN_RELEASE` | `BLOCKING` | Release manuscript composition                                                                                                  | Group included manuscript rows by `Manuscript.slug`; any count greater than 1 is a failure (corruption/import-defense rule; should normally be prevented by schema uniqueness)                                                                                                       |
 
 ### 1.2 Rule Execution Contract
 
@@ -50,61 +50,61 @@ This part adds persisted issue tracking in Prisma and requires a migration.
 
 ```prisma
 enum ContinuityIssueSeverity {
-	BLOCKING
-	WARNING
+ BLOCKING
+ WARNING
 }
 
 enum ContinuityIssueStatus {
-	OPEN
-	ACKNOWLEDGED
-	RESOLVED
-	DISMISSED
+ OPEN
+ ACKNOWLEDGED
+ RESOLVED
+ DISMISSED
 }
 
 enum ContinuityIssueSubjectType {
-	RELEASE
-	ENTITY_REVISION
-	MANUSCRIPT_REVISION
-	RELATIONSHIP_REVISION
+ RELEASE
+ ENTITY_REVISION
+ MANUSCRIPT_REVISION
+ RELATIONSHIP_REVISION
 }
 
 model ContinuityIssue {
-	id                     String                   @id @default(cuid())
-	releaseId              String
-	ruleCode               String
-	severity               ContinuityIssueSeverity
-	status                 ContinuityIssueStatus    @default(OPEN)
-	subjectType            ContinuityIssueSubjectType
-	subjectId              String
-	title                  String
-	details                String
-	fingerprint            String
-	metadata               Json?
-	detectedAt             DateTime                 @default(now())
-	resolvedAt             DateTime?
-	createdAt              DateTime                 @default(now())
-	updatedAt              DateTime                 @updatedAt
+ id                     String                   @id @default(cuid())
+ releaseId              String
+ ruleCode               String
+ severity               ContinuityIssueSeverity
+ status                 ContinuityIssueStatus    @default(OPEN)
+ subjectType            ContinuityIssueSubjectType
+ subjectId              String
+ title                  String
+ details                String
+ fingerprint            String
+ metadata               Json?
+ detectedAt             DateTime                 @default(now())
+ resolvedAt             DateTime?
+ createdAt              DateTime                 @default(now())
+ updatedAt              DateTime                 @updatedAt
 
-	entityId               String?
-	entityRevisionId       String?
-	manuscriptId           String?
-	manuscriptRevisionId   String?
-	relationshipId         String?
-	relationshipRevisionId String?
+ entityId               String?
+ entityRevisionId       String?
+ manuscriptId           String?
+ manuscriptRevisionId   String?
+ relationshipId         String?
+ relationshipRevisionId String?
 
-	release                Release                  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
-	entity                 Entity?                  @relation(fields: [entityId], references: [id], onDelete: SetNull)
-	entityRevision         EntityRevision?          @relation(fields: [entityRevisionId], references: [id], onDelete: SetNull)
-	manuscript             Manuscript?              @relation(fields: [manuscriptId], references: [id], onDelete: SetNull)
-	manuscriptRevision     ManuscriptRevision?      @relation(fields: [manuscriptRevisionId], references: [id], onDelete: SetNull)
-	relationship           Relationship?            @relation(fields: [relationshipId], references: [id], onDelete: SetNull)
-	relationshipRevision   RelationshipRevision?    @relation(fields: [relationshipRevisionId], references: [id], onDelete: SetNull)
+ release                Release                  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+ entity                 Entity?                  @relation(fields: [entityId], references: [id], onDelete: SetNull)
+ entityRevision         EntityRevision?          @relation(fields: [entityRevisionId], references: [id], onDelete: SetNull)
+ manuscript             Manuscript?              @relation(fields: [manuscriptId], references: [id], onDelete: SetNull)
+ manuscriptRevision     ManuscriptRevision?      @relation(fields: [manuscriptRevisionId], references: [id], onDelete: SetNull)
+ relationship           Relationship?            @relation(fields: [relationshipId], references: [id], onDelete: SetNull)
+ relationshipRevision   RelationshipRevision?    @relation(fields: [relationshipRevisionId], references: [id], onDelete: SetNull)
 
-	@@unique([releaseId, fingerprint])
-	@@index([releaseId, status, severity])
-	@@index([ruleCode])
-	@@index([subjectType, subjectId])
-	@@map("continuity_issues")
+ @@unique([releaseId, fingerprint])
+ @@index([releaseId, status, severity])
+ @@index([ruleCode])
+ @@index([subjectType, subjectId])
+ @@map("continuity_issues")
 }
 ```
 
@@ -114,31 +114,31 @@ Add the following relation lists:
 
 ```prisma
 model Release {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model Entity {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model EntityRevision {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model Manuscript {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model ManuscriptRevision {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model Relationship {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 
 model RelationshipRevision {
-	continuityIssues ContinuityIssue[]
+ continuityIssues ContinuityIssue[]
 }
 ```
 
@@ -158,9 +158,9 @@ pnpm prisma generate
 
 Continuity checks run from both manual and activation paths.
 
-| Trigger | Behavior |
-|---|---|
-| Manual admin run | `POST /admin/releases/:slug/continuity/runs` executes all baseline rules and persists issue upserts/reopens/resolutions |
+| Trigger            | Behavior                                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Manual admin run   | `POST /admin/releases/:slug/continuity/runs` executes all baseline rules and persists issue upserts/reopens/resolutions                    |
 | Activation attempt | `releaseService.activateRelease()` executes continuity run before `releaseRepository.activateRelease()` and blocks on open blocking issues |
 
 Trigger policy:
@@ -177,38 +177,38 @@ Routes are extension points on `adminReleaseRouter` to keep release-readiness be
 
 ### 4.1 Run Baseline Rules
 
-| Property | Value |
-|---|---|
-| Method | `POST` |
-| Path | `/admin/releases/:slug/continuity/runs` |
-| Auth | `AUTHOR_ADMIN` |
-| Request body | `{ source?: "MANUAL" | "ACTIVATION" }` (default `MANUAL`) |
-| Success | `200 OK` |
+| Property     | Value                                   |
+| ------------ | --------------------------------------- | -------------------------------- |
+| Method       | `POST`                                  |
+| Path         | `/admin/releases/:slug/continuity/runs` |
+| Auth         | `AUTHOR_ADMIN`                          |
+| Request body | `{ source?: "MANUAL"                    | "ACTIVATION" }`(default`MANUAL`) |
+| Success      | `200 OK`                                |
 
-**Response shape**
+#### Response shape
 
 ```json
 {
-	"releaseSlug": "spring-arc",
-	"source": "MANUAL",
-	"summary": {
-		"ruleCount": 9,
-		"issueCount": 4,
-		"blockingOpenCount": 2,
-		"warningOpenCount": 2
-	},
-	"issues": [
-		{
-			"id": "ci_xxx",
-			"ruleCode": "REQ_META_CHRONOLOGY_ANCHOR",
-			"severity": "BLOCKING",
-			"status": "OPEN",
-			"subjectType": "ENTITY_REVISION",
-			"subjectId": "rev_xxx",
-			"title": "Missing timeline anchor metadata",
-			"details": "EVENT revision must define metadata.timelineAnchor.anchorLabel and sortKey"
-		}
-	]
+  "releaseSlug": "spring-arc",
+  "source": "MANUAL",
+  "summary": {
+    "ruleCount": 9,
+    "issueCount": 4,
+    "blockingOpenCount": 2,
+    "warningOpenCount": 2
+  },
+  "issues": [
+    {
+      "id": "ci_xxx",
+      "ruleCode": "REQ_META_CHRONOLOGY_ANCHOR",
+      "severity": "BLOCKING",
+      "status": "OPEN",
+      "subjectType": "ENTITY_REVISION",
+      "subjectId": "rev_xxx",
+      "title": "Missing timeline anchor metadata",
+      "details": "EVENT revision must define metadata.timelineAnchor.anchorLabel and sortKey"
+    }
+  ]
 }
 ```
 
@@ -216,24 +216,24 @@ Note: this baseline route contract was introduced in Phase 2 with six rules; cur
 
 ### 4.2 List Issues
 
-| Property | Value |
-|---|---|
-| Method | `GET` |
-| Path | `/admin/releases/:slug/continuity/issues` |
-| Auth | `AUTHOR_ADMIN` |
+| Property     | Value                                                                    |
+| ------------ | ------------------------------------------------------------------------ |
+| Method       | `GET`                                                                    |
+| Path         | `/admin/releases/:slug/continuity/issues`                                |
+| Auth         | `AUTHOR_ADMIN`                                                           |
 | Query params | `status?`, `severity?`, `ruleCode?`, `subjectType?`, `limit?`, `offset?` |
-| Success | `200 OK` |
+| Success      | `200 OK`                                                                 |
 
 ### 4.3 Transition Issue Status
 
-| Property | Value |
-|---|---|
-| Method | `PATCH` |
-| Path | `/admin/releases/:slug/continuity/issues/:issueId/status` |
-| Auth | `AUTHOR_ADMIN` |
-| Request body | `{ status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED" | "DISMISSED" }` |
-| Success | `200 OK` |
-| Not found | `404` when release/issue pair is invalid |
+| Property     | Value                                                     |
+| ------------ | --------------------------------------------------------- | -------------- | ---------- | -------------- |
+| Method       | `PATCH`                                                   |
+| Path         | `/admin/releases/:slug/continuity/issues/:issueId/status` |
+| Auth         | `AUTHOR_ADMIN`                                            |
+| Request body | `{ status: "OPEN"                                         | "ACKNOWLEDGED" | "RESOLVED" | "DISMISSED" }` |
+| Success      | `200 OK`                                                  |
+| Not found    | `404` when release/issue pair is invalid                  |
 
 Transition constraints:
 
@@ -267,11 +267,17 @@ Add a new service error class:
 
 ```ts
 class ReleaseActivationContinuityError extends Error {
-	continuityStatus: {
-		releaseSlug: string;
-		blockingIssueCount: number;
-		issues: Array<{ id: string; ruleCode: string; status: string; severity: string; title: string }>;
-	};
+  continuityStatus: {
+    releaseSlug: string;
+    blockingIssueCount: number;
+    issues: Array<{
+      id: string;
+      ruleCode: string;
+      status: string;
+      severity: string;
+      title: string;
+    }>;
+  };
 }
 ```
 
@@ -282,20 +288,20 @@ Router mapping in `POST /admin/releases/:slug/activate`:
 
 ```json
 {
-	"error": "Release cannot be activated while blocking continuity issues are open",
-	"continuityStatus": {
-		"releaseSlug": "spring-arc",
-		"blockingIssueCount": 2,
-		"issues": [
-			{
-				"id": "ci_xxx",
-				"ruleCode": "REVEAL_TIMING_DEPENDENCY_PRESENT",
-				"severity": "BLOCKING",
-				"status": "OPEN",
-				"title": "Reveal revision is missing in-release dependency references"
-			}
-		]
-	}
+  "error": "Release cannot be activated while blocking continuity issues are open",
+  "continuityStatus": {
+    "releaseSlug": "spring-arc",
+    "blockingIssueCount": 2,
+    "issues": [
+      {
+        "id": "ci_xxx",
+        "ruleCode": "REVEAL_TIMING_DEPENDENCY_PRESENT",
+        "severity": "BLOCKING",
+        "status": "OPEN",
+        "title": "Reveal revision is missing in-release dependency references"
+      }
+    ]
+  }
 }
 ```
 
@@ -303,17 +309,17 @@ Router mapping in `POST /admin/releases/:slug/activate`:
 
 ## 6. File Layout
 
-| File | Action | Purpose |
-|---|---|---|
-| `prisma/schema.prisma` | Extend | Add continuity enums, `ContinuityIssue` model, and relation arrays |
-| `prisma/migrations/<timestamp>_add_continuity_issue_baseline/migration.sql` | Create | Persist schema changes |
-| `apps/api/src/repositories/continuityIssueRepository.ts` | Create | Rule data reads + issue upsert/list/status-update queries |
-| `apps/api/src/services/continuityIssueService.ts` | Create | Execute baseline rules, upsert/reopen/resolve issues, summarize blocking counts |
-| `apps/api/src/services/releaseActivationContinuityError.ts` | Create | Activation-block continuity error payload type |
-| `apps/api/src/services/releaseService.ts` | Extend | Invoke continuity run in activation path and throw continuity error when blocked |
-| `apps/api/src/routes/adminReleaseRouter.ts` | Extend | Add continuity run/list/status endpoints and activation error mapping |
-| `apps/api/src/app/createApp.ts` | No change expected | Existing `/admin/releases` mount already covers new endpoints |
-| `tests/phase2ContinuityIssueBaseline.test.ts` | Create | Integration coverage for rule runs, persistence, status transitions, and activation blocking |
+| File                                                                        | Action             | Purpose                                                                                      |
+| --------------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------- |
+| `prisma/schema.prisma`                                                      | Extend             | Add continuity enums, `ContinuityIssue` model, and relation arrays                           |
+| `prisma/migrations/<timestamp>_add_continuity_issue_baseline/migration.sql` | Create             | Persist schema changes                                                                       |
+| `apps/api/src/repositories/continuityIssueRepository.ts`                    | Create             | Rule data reads + issue upsert/list/status-update queries                                    |
+| `apps/api/src/services/continuityIssueService.ts`                           | Create             | Execute baseline rules, upsert/reopen/resolve issues, summarize blocking counts              |
+| `apps/api/src/services/releaseActivationContinuityError.ts`                 | Create             | Activation-block continuity error payload type                                               |
+| `apps/api/src/services/releaseService.ts`                                   | Extend             | Invoke continuity run in activation path and throw continuity error when blocked             |
+| `apps/api/src/routes/adminReleaseRouter.ts`                                 | Extend             | Add continuity run/list/status endpoints and activation error mapping                        |
+| `apps/api/src/app/createApp.ts`                                             | No change expected | Existing `/admin/releases` mount already covers new endpoints                                |
+| `tests/phase2ContinuityIssueBaseline.test.ts`                               | Create             | Integration coverage for rule runs, persistence, status transitions, and activation blocking |
 
 ---
 
@@ -341,8 +347,8 @@ Scaffold pattern (match existing phase integration tests):
 - `node:test` with suite-level `before` and `after`
 - `createServer(createApp())` for real route execution
 - Prisma fixture setup for:
-	- one ACTIVE baseline release
-	- one DRAFT target release with intentionally broken metadata/dependency cases
+  - one ACTIVE baseline release
+  - one DRAFT target release with intentionally broken metadata/dependency cases
 - direct assertions on both HTTP responses and persisted `continuity_issues` rows via `prismaClient.continuityIssue`
 
 Suggested test blocks:

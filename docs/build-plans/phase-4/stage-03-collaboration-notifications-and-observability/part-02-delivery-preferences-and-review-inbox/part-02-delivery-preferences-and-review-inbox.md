@@ -40,19 +40,23 @@ Status: **COMPLETE** [x]
 **Validated:** 21/21 tests passing — `tests/phase4DeliveryPreferencesReviewInboxPart02.test.ts`
 
 ### Migration
+
 - `20260320185457_add_notification_preferences` — `NotificationPreference` model added to Prisma schema
 
 ### Repositories
+
 - Added: `notificationPreferenceRepository.ts`
 - Added: `reviewInboxRepository.ts`
 - Updated: `notificationEventRepository.ts` — added `listForUser`
 
 ### Services
+
 - Added: `notificationPreferenceService.ts`
 - Added: `reviewInboxService.ts`
 - Updated: `notificationEventService.ts` — added `listNotificationEventsForUser`
 
 ### Routers
+
 - Added: `notificationPreferenceRouter.ts` — `GET /notification-preferences`, `PUT /notification-preferences/:category`
 - Added: `reviewInboxRouter.ts` — `GET /review-inbox`
 - Updated: `notificationEventRouter.ts` — added `GET /notification-events/my`

@@ -14,20 +14,20 @@
 
 ## Permission Matrix
 
-| Operation                               | Public | Editor    | Author/Admin |
-|----------------------------------------|:------:|:---------:|:-----------:|
-| View public codex pages                 |  ✓     |     ✓     |      ✓      |
-| View restricted content                 |   ✗    |     ✓     |      ✓      |
-| View private content                    |   ✗    |     ✗     |      ✓      |
-| Search public content                   |  ✓     |     ✓     |      ✓      |
-| Search restricted content               |   ✗    |     ✓     |      ✓      |
-| Create/edit entities & chapters         |   ✗    |     ✓     |      ✓      |
-| Delete entities & chapters              |   ✗    |     ✗     |      ✓      |
-| Propose changes via comments            |   ✗    |     ✓     |      ✓      |
-| Accept/reject proposed changes          |   ✗    |     ✗     |      ✓      |
-| Create releases and set active release  |   ✗    |     ✗     |      ✓      |
-| View continuity issues                  |   ✗    |     ✓     |      ✓      |
-| Override/resolve continuity issues      |   ✗    |     ✗     |      ✓      |
-| Manage roles and settings               |   ✗    |     ✗     |      ✓      |
+| Operation                              | Public | Editor | Author/Admin |
+| -------------------------------------- | :----: | :----: | :----------: |
+| View public codex pages                |   ✓    |   ✓    |      ✓       |
+| View restricted content                |   ✗    |   ✓    |      ✓       |
+| View private content                   |   ✗    |   ✗    |      ✓       |
+| Search public content                  |   ✓    |   ✓    |      ✓       |
+| Search restricted content              |   ✗    |   ✓    |      ✓       |
+| Create/edit entities & chapters        |   ✗    |   ✓    |      ✓       |
+| Delete entities & chapters             |   ✗    |   ✗    |      ✓       |
+| Propose changes via comments           |   ✗    |   ✓    |      ✓       |
+| Accept/reject proposed changes         |   ✗    |   ✗    |      ✓       |
+| Create releases and set active release |   ✗    |   ✗    |      ✓       |
+| View continuity issues                 |   ✗    |   ✓    |      ✓       |
+| Override/resolve continuity issues     |   ✗    |   ✗    |      ✓       |
+| Manage roles and settings              |   ✗    |   ✗    |      ✓       |
 
 All API endpoints, UI pages and search queries must enforce these rules. Never rely on client‑side hiding alone; the backend must filter data based on user role.

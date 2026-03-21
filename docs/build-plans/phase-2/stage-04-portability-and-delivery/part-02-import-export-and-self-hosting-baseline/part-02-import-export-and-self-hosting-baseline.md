@@ -55,8 +55,8 @@ This part therefore defines an execution-ready baseline for portability and self
 - Phase 2 Stage 03 complete.
 - Stage 04 Part 01 complete so release-history and archive semantics are already defined.
 - Existing release mutation guardrails remain unchanged:
-	- only draft releases are mutable
-	- activation and archiving remain controlled by the current release service
+  - only draft releases are mutable
+  - activation and archiving remain controlled by the current release service
 - Existing entity and manuscript metadata rules remain source-of-truth for portable field coverage.
 
 ---
@@ -101,60 +101,64 @@ Required operator rule set:
 
 ## 2.1 Export command
 
-| Property | Value |
-|---|---|
-| Command | `pnpm portability:export` |
-| Backing script | `scripts/exportPortability.ts` |
-| Primary consumer | author-admin operator on the repo host |
-| Result | writes a portability package to a local directory |
+| Property         | Value                                             |
+| ---------------- | ------------------------------------------------- |
+| Command          | `pnpm portability:export`                         |
+| Backing script   | `scripts/exportPortability.ts`                    |
+| Primary consumer | author-admin operator on the repo host            |
+| Result           | writes a portability package to a local directory |
 
-**Required arguments**
+### Required arguments (Import command) (Export command)
 
 - `--scope=current|release`
 - `--format=json|markdown`
 - `--output=<path>`
 
-**Conditional arguments**
+### Conditional arguments
 
 - `--release-slug=<slug>` is required when `--scope=release`
 
-**Behavior**
+### Behavior (Import command) (Export command)
 
 1. `scope=current` exports the latest authored state for implemented records:
-	 - all entity records and their latest entity revision payloads
-	 - all manuscripts and their latest manuscript revision payloads
-	 - all relationships and their latest relationship revision state
-	 - entity-level retirement state where present
-2. `scope=release` exports an exact release-bound snapshot for one release slug:
-	 - only revisions included in the selected release
-	 - release composition metadata for entities, manuscripts, and relationships
-	 - release metadata in a dedicated release manifest file
-3. Export is read-only and must never mutate revision versions, release status, timestamps, or search state.
-4. `scope=current` does not export draft releases because draft releases are mutable assembly state, not the default portability target.
-5. `scope=release` may export `DRAFT`, `ACTIVE`, or `ARCHIVED` releases for author-admin operators, but the manifest must record the original status explicitly.
+
+- all entity records and their latest entity revision payloads
+- all manuscripts and their latest manuscript revision payloads
+- all relationships and their latest relationship revision state
+- entity-level retirement state where present
+
+1. `scope=release` exports an exact release-bound snapshot for one release slug:
+
+- only revisions included in the selected release
+- release composition metadata for entities, manuscripts, and relationships
+- release metadata in a dedicated release manifest file
+
+1. Export is read-only and must never mutate revision versions, release status, timestamps, or search state.
+2. `scope=current` does not export draft releases because draft releases are mutable assembly state, not the default portability target.
+3. `scope=release` may export `DRAFT`, `ACTIVE`, or `ARCHIVED` releases for author-admin operators, but the manifest must record the original status explicitly.
 
 ## 2.2 Import command
 
-| Property | Value |
-|---|---|
-| Command | `pnpm portability:import` |
-| Backing script | `scripts/importPortability.ts` |
-| Primary consumer | author-admin operator on the repo host |
-| Result | validates and applies a portability package into database-backed draft-safe state |
+| Property         | Value                                                                             |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Command          | `pnpm portability:import`                                                         |
+| Backing script   | `scripts/importPortability.ts`                                                    |
+| Primary consumer | author-admin operator on the repo host                                            |
+| Result           | validates and applies a portability package into database-backed draft-safe state |
 
-**Required arguments**
+### Required arguments
 
 - `--format=json|markdown`
 - `--input=<path>`
 - `--actor-email=<email>`
 
-**Optional arguments**
+### Optional arguments
 
 - `--dry-run`
 - `--report=<path>`
 - `--conflict=fail|create-revision` with default `fail`
 
-**Behavior**
+### Behavior
 
 1. `--actor-email` must resolve to an existing `AUTHOR_ADMIN` user. The import uses that user as `createdById` for created revisions and releases.
 2. The command validates the full package before applying changes.
@@ -166,14 +170,14 @@ Required operator rule set:
 
 ## 2.3 Bootstrap admin command
 
-| Property | Value |
-|---|---|
-| Command | `pnpm auth:bootstrap-admin` |
-| Backing script | `scripts/bootstrapAuthorAdmin.ts` |
-| Primary consumer | self-host operator on a clean install |
-| Result | creates the first `AUTHOR_ADMIN` user without seeding demo content |
+| Property         | Value                                                              |
+| ---------------- | ------------------------------------------------------------------ |
+| Command          | `pnpm auth:bootstrap-admin`                                        |
+| Backing script   | `scripts/bootstrapAuthorAdmin.ts`                                  |
+| Primary consumer | self-host operator on a clean install                              |
+| Result           | creates the first `AUTHOR_ADMIN` user without seeding demo content |
 
-**Required contract**
+### Required contract (Bootstrap admin command)
 
 - must create exactly one author-admin user when the email does not already exist
 - must fail clearly when the email already exists
@@ -184,14 +188,14 @@ This command is required because the current repo only provisions an author-admi
 
 ## 2.4 Backup and restore commands
 
-| Property | Value |
-|---|---|
-| Commands | `pnpm db:backup`, `pnpm db:restore` |
-| Backing scripts | `scripts/backupDatabase.mjs`, `scripts/restoreDatabase.mjs` |
-| Primary consumer | operator |
-| Result | database dump and restore wrappers for the authoritative data store |
+| Property         | Value                                                               |
+| ---------------- | ------------------------------------------------------------------- |
+| Commands         | `pnpm db:backup`, `pnpm db:restore`                                 |
+| Backing scripts  | `scripts/backupDatabase.mjs`, `scripts/restoreDatabase.mjs`         |
+| Primary consumer | operator                                                            |
+| Result           | database dump and restore wrappers for the authoritative data store |
 
-**Required behavior**
+### Required behavior (Backup and restore commands)
 
 1. `db:backup` creates a PostgreSQL dump at a caller-provided path.
 2. `db:restore` restores a PostgreSQL dump from a caller-provided path and is documented as an offline operation.
@@ -210,20 +214,20 @@ Every export package must include `manifests/export-manifest.json` with at least
 
 ```json
 {
-	"schemaVersion": 1,
-	"format": "json",
-	"scope": "release",
-	"exportedAt": "2026-03-19T00:00:00.000Z",
-	"release": {
-		"slug": "spring-arc",
-		"status": "ARCHIVED"
-	},
-	"counts": {
-		"entities": 42,
-		"manuscripts": 18,
-		"relationships": 21,
-		"releases": 1
-	}
+  "schemaVersion": 1,
+  "format": "json",
+  "scope": "release",
+  "exportedAt": "2026-03-19T00:00:00.000Z",
+  "release": {
+    "slug": "spring-arc",
+    "status": "ARCHIVED"
+  },
+  "counts": {
+    "entities": 42,
+    "manuscripts": 18,
+    "relationships": 21,
+    "releases": 1
+  }
 }
 ```
 
@@ -269,11 +273,13 @@ Required Markdown rules:
 
 1. Entity and manuscript records use front matter plus body content.
 2. Structural records that are not naturally body-oriented remain JSON in Markdown packages:
-	 - relationship revisions
-	 - release manifests
-	 - package manifest
-3. Front matter must preserve fields already represented in the current domain model, including visibility and metadata.
-4. The body must round-trip the narrative or summary-bearing fields without stripping significant text.
+
+- relationship revisions
+- release manifests
+- package manifest
+
+1. Front matter must preserve fields already represented in the current domain model, including visibility and metadata.
+2. The body must round-trip the narrative or summary-bearing fields without stripping significant text.
 
 ## 3.4 Identity and matching rules
 
@@ -426,33 +432,33 @@ Required operator guidance:
 
 ## 6. File Layout and Likely Touch Points
 
-| File | Action | Why |
-|---|---|---|
-| `package.json` | Change | add root scripts for `portability:export`, `portability:import`, `auth:bootstrap-admin`, `db:backup`, and `db:restore` |
-| `apps/api/package.json` | Change | add portability parser/serializer dependency if needed, such as a Markdown front matter parser |
-| `apps/api/src/services/portabilityExportService.ts` | Create | orchestrate export scope resolution and serialization-ready shaping |
-| `apps/api/src/services/portabilityImportService.ts` | Create | orchestrate validation, identity matching, transaction-safe apply, and import reporting |
-| `apps/api/src/services/bootstrapAuthorAdminService.ts` | Create | encapsulate clean-install author-admin bootstrap rules |
-| `apps/api/src/repositories/portabilityExportRepository.ts` | Create | centralize Prisma reads for latest-state and release-bound exports |
-| `apps/api/src/repositories/portabilityImportRepository.ts` | Create | centralize Prisma writes and lookups required for import matching and apply |
-| `apps/api/src/lib/portability/portabilityTypes.ts` | Create | shared manifest, report, and record contract types |
-| `apps/api/src/lib/portability/jsonPortabilitySerializer.ts` | Create | deterministic JSON output shaping |
-| `apps/api/src/lib/portability/markdownPortabilitySerializer.ts` | Create | Markdown plus front matter serialization |
-| `apps/api/src/lib/portability/jsonPortabilityParser.ts` | Create | JSON package parsing and validation |
-| `apps/api/src/lib/portability/markdownPortabilityParser.ts` | Create | Markdown front matter parsing and validation |
-| `scripts/exportPortability.ts` | Create | CLI entrypoint for export |
-| `scripts/importPortability.ts` | Create | CLI entrypoint for import |
-| `scripts/bootstrapAuthorAdmin.ts` | Create | CLI entrypoint for bootstrap admin creation |
-| `scripts/backupDatabase.mjs` | Create | operator-facing PostgreSQL dump wrapper |
-| `scripts/restoreDatabase.mjs` | Create | operator-facing restore wrapper |
-| `README.md` | Change | replace Phase 0/1-biased startup guidance with current self-host baseline links and command flow |
-| `scripts/README.md` | Change | document new portability, bootstrap, backup, and restore scripts |
-| `.env.example` | Change if needed | keep the checked-in environment contract synchronized with the self-host guide |
-| `tests/phase2PortabilityExportBaseline.test.ts` | Create | verify current and release export behavior |
-| `tests/phase2PortabilityImportJsonBaseline.test.ts` | Create | verify JSON import behavior, constraints, and failure reporting |
-| `tests/phase2PortabilityImportMarkdownBaseline.test.ts` | Create | verify Markdown package parsing and import behavior |
-| `tests/phase2SelfHostingBaseline.test.ts` | Create | verify bootstrap and backup/restore script argument contracts and operator-critical safeguards |
-| `tests/README.md` | Change | document the expanded Phase 2 portability and operator test coverage |
+| File                                                            | Action           | Why                                                                                                                    |
+| --------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `package.json`                                                  | Change           | add root scripts for `portability:export`, `portability:import`, `auth:bootstrap-admin`, `db:backup`, and `db:restore` |
+| `apps/api/package.json`                                         | Change           | add portability parser/serializer dependency if needed, such as a Markdown front matter parser                         |
+| `apps/api/src/services/portabilityExportService.ts`             | Create           | orchestrate export scope resolution and serialization-ready shaping                                                    |
+| `apps/api/src/services/portabilityImportService.ts`             | Create           | orchestrate validation, identity matching, transaction-safe apply, and import reporting                                |
+| `apps/api/src/services/bootstrapAuthorAdminService.ts`          | Create           | encapsulate clean-install author-admin bootstrap rules                                                                 |
+| `apps/api/src/repositories/portabilityExportRepository.ts`      | Create           | centralize Prisma reads for latest-state and release-bound exports                                                     |
+| `apps/api/src/repositories/portabilityImportRepository.ts`      | Create           | centralize Prisma writes and lookups required for import matching and apply                                            |
+| `apps/api/src/lib/portability/portabilityTypes.ts`              | Create           | shared manifest, report, and record contract types                                                                     |
+| `apps/api/src/lib/portability/jsonPortabilitySerializer.ts`     | Create           | deterministic JSON output shaping                                                                                      |
+| `apps/api/src/lib/portability/markdownPortabilitySerializer.ts` | Create           | Markdown plus front matter serialization                                                                               |
+| `apps/api/src/lib/portability/jsonPortabilityParser.ts`         | Create           | JSON package parsing and validation                                                                                    |
+| `apps/api/src/lib/portability/markdownPortabilityParser.ts`     | Create           | Markdown front matter parsing and validation                                                                           |
+| `scripts/exportPortability.ts`                                  | Create           | CLI entrypoint for export                                                                                              |
+| `scripts/importPortability.ts`                                  | Create           | CLI entrypoint for import                                                                                              |
+| `scripts/bootstrapAuthorAdmin.ts`                               | Create           | CLI entrypoint for bootstrap admin creation                                                                            |
+| `scripts/backupDatabase.mjs`                                    | Create           | operator-facing PostgreSQL dump wrapper                                                                                |
+| `scripts/restoreDatabase.mjs`                                   | Create           | operator-facing restore wrapper                                                                                        |
+| `README.md`                                                     | Change           | replace Phase 0/1-biased startup guidance with current self-host baseline links and command flow                       |
+| `scripts/README.md`                                             | Change           | document new portability, bootstrap, backup, and restore scripts                                                       |
+| `.env.example`                                                  | Change if needed | keep the checked-in environment contract synchronized with the self-host guide                                         |
+| `tests/phase2PortabilityExportBaseline.test.ts`                 | Create           | verify current and release export behavior                                                                             |
+| `tests/phase2PortabilityImportJsonBaseline.test.ts`             | Create           | verify JSON import behavior, constraints, and failure reporting                                                        |
+| `tests/phase2PortabilityImportMarkdownBaseline.test.ts`         | Create           | verify Markdown package parsing and import behavior                                                                    |
+| `tests/phase2SelfHostingBaseline.test.ts`                       | Create           | verify bootstrap and backup/restore script argument contracts and operator-critical safeguards                         |
+| `tests/README.md`                                               | Change           | document the expanded Phase 2 portability and operator test coverage                                                   |
 
 Implementation note: if portability repositories become too broad, split read and write responsibilities by concern, but keep Prisma access out of the CLI scripts.
 

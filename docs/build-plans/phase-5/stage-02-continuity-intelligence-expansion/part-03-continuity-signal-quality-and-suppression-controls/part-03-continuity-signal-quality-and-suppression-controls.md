@@ -11,11 +11,13 @@ This part covers suppression/state controls, rule-level signal-quality protectio
 ## Baseline Behavior vs. Planned Change
 
 **Current Phase 2 Implementation (Baseline):**
+
 - The `DISMISSED` status enum exists and transitions are supported (OPEN ↔ DISMISSED).
 - When a continuity run re-detects an issue (matching fingerprint), the current code **automatically reopens it to `OPEN` status regardless of its previous state**, including DISMISSED issues.
 - This means a user cannot permanently suppress a continuity issue via DISMISSED: the next run will reopen it, causing repeated noise in the triage workflow.
 
 **Part 03 Planned Change:**
+
 - Implement deterministic suppression persistence: when an issue is in DISMISSED status, rerunning continuity detection will honor that suppression and NOT auto-reopen the issue.
 - Add signal-quality guardrails to prevent noisy re-emission of known-dismissed low-value patterns (rule-specific thresholds).
 - Ensure activation-blocking safety is not bypassed: unsuppressed BLOCKING issues continue to prevent release activation even if other BLOCKING issues are suppressed.
@@ -25,11 +27,13 @@ This part covers suppression/state controls, rule-level signal-quality protectio
 **Suppression Mechanism:** BookWorm continuity issues already support a `DISMISSED` status (Phase 2 baseline). This part operationalizes `DISMISSED` as the explicit suppression mechanism for Part 03 signal-quality work.
 
 **Suppression Scope Definition [Implemented]:**
+
 - **Scope Type:** Per-issue (individual issue state, not rule-level or release-level suppression)
 - **Scope Applicability:** Any continuity issue may be dismissed when its current lifecycle state allows a transition to `DISMISSED` (for example, `OPEN` and `ACKNOWLEDGED`), regardless of severity or rule code
 - **Scope Lifetime:** Indefinite until manually reopened to `OPEN`; `DISMISSED` does **not auto-revert or reset across continuity reruns**
 
 **Suppression Semantics [Implemented Behavior]:**
+
 - Transitioning an issue to `DISMISSED` removes it from activation-blocking calculations (e.g., does not prevent release activation even if `DISMISSED` issue would otherwise be `BLOCKING`)
 - When a release continuity run detects the same issue again (matched by fingerprint):
   - **If existing issue is `DISMISSED`:** the run will **NOT auto-reopen it**; `DISMISSED` status persists across the rerun

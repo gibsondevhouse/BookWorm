@@ -36,16 +36,25 @@ tests/
 
 1. Copy `.env.example` to `.env`.
 2. Install dependencies:
-  - `pnpm install`
-3. Provision PostgreSQL and set `DATABASE_URL` in `.env`.
-4. Generate Prisma client:
-  - `pnpm db:generate`
-5. Run migrations:
-  - `pnpm db:migrate`
-6. Create an initial admin account:
-  - `pnpm auth:bootstrap-admin --email <email> --display-name <name> --password <password>`
-7. Start the app stack:
-  - `pnpm dev`
+
+- `pnpm install`
+
+1. Provision PostgreSQL and set `DATABASE_URL` in `.env`.
+2. Generate Prisma client:
+
+- `pnpm db:generate`
+
+1. Run migrations:
+
+- `pnpm db:migrate`
+
+1. Create an initial admin account:
+
+- `pnpm auth:bootstrap-admin --email <email> --display-name <name> --password <password>`
+
+1. Start the app stack:
+
+- `pnpm dev`
 
 The dev launcher includes port fallback behavior for API and web processes and prints a startup summary with selected ports.
 

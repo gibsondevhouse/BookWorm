@@ -3,6 +3,7 @@
 This document instructs a coding agent on how to begin building Book Worm based on the specifications provided.
 
 ## Scope of the Agent
+
 The agent’s primary job is to implement the technical foundation and features described in the Build Bible and supporting documents. The agent should not invent product requirements. All decisions must align with:
 
 - The Product Requirements Document (PRD).
@@ -13,6 +14,7 @@ The agent’s primary job is to implement the technical foundation and features 
 - The Search, Continuity, Import/Export and API specifications.
 
 ## Operating Guidelines
+
 1. **Read Documents:** Before writing code, read the relevant specifications in the `documentation` folder. Understand what entities and relationships need to be built, what endpoints to expose and what UI components are required.
 2. **Stay Within Phase:** Only implement features assigned to the current phase (e.g. dev‑use, MVP, Beta, v1). Do not progress to later phases without instruction.
 3. **Follow Coding Standards:** Use TypeScript with strict typing. Adhere to ESLint rules, Prettier formatting and naming conventions. Use conventional commits.

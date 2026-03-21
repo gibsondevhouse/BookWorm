@@ -32,22 +32,26 @@ Introduce a first-class review-request entity so formal review can be tracked in
 
 ## Implementation Notes
 
-**Schema & Model**
+### Schema & Model
+
 - `review_requests` table in Prisma schema with `proposalId`, `status`, `createdById`, timestamps
 - Indexes on `(proposalId)`, `(createdById)`, `(status, createdAt)` for deterministic querying
 - Migration: `20260320190000_add_review_request_model`
 
-**Repository & Service**
+### Repository & Service
+
 - `ReviewRequestService` with create/read/list authorization checks
 - Validation: proposal reference is required, must exist, must target entity or manuscript content, and must be in `PENDING` + `IN_REVIEW` proposal state
 - Error contract: `ReviewRequestNotFoundError`, `ReviewRequestProposalNotFoundError`, `ReviewRequestProposalIneligibleError`
 
-**API Routes**
+### API Routes
+
 - `POST /review-requests` — create with proposal linkage (AUTHOR_ADMIN only)
 - `GET /review-requests/:id` — fetch by id (AUTHOR_ADMIN only)
 - `GET /review-requests` — list with pagination (AUTHOR_ADMIN only)
 
-**Tests**
+### Tests
+
 - `tests/phase4ReviewRequestModelApiPart01.test.ts` covers AC-01 through AC-08, including create success, validation failures, read/list behavior, unauthorized access denial, and ineligible proposal linkage blocking
 - Deterministic fixtures and role-based access validation included
 

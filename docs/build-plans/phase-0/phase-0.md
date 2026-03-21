@@ -1,10 +1,13 @@
 # Phase 0
 
 ## Purpose
+
 Phase 0 establishes the real implementation baseline for Book Worm. Its job is to turn resolved planning decisions into a working, buildable system skeleton before broader feature work begins.
 
 ## Outcome
+
 At the end of Phase 0, the project should have:
+
 - a committed application structure
 - local infrastructure for the selected stack
 - a running Express and TypeScript runtime
@@ -14,9 +17,11 @@ At the end of Phase 0, the project should have:
 - a public read path that only resolves through the active release
 
 ## Scope
+
 Phase 0 includes only the minimum work needed to prove the architecture and unblock implementation.
 
 ### Included
+
 - repository and application scaffold
 - local infrastructure services
 - runtime shell and environment configuration
@@ -26,18 +31,21 @@ Phase 0 includes only the minimum work needed to prove the architecture and unbl
 - test and verification baseline for the slice
 
 ### Excluded
+
 - full multi-entity CRUD coverage
 - continuity rules beyond schema and future extension points
 - import/export implementation beyond planning placeholders
 - proposal, comments, diff viewer, and other Beta surfaces
 
 ## Stage Breakdown
+
 1. Stage 01: Foundation and Bootstrap
 2. Stage 02: Core Runtime and Auth
 3. Stage 03: Data Model and Release Spine
 4. Stage 04: First Vertical Slice
 
 ## Exit Criteria
+
 - local stack can start from documented commands
 - database migrations run successfully
 - a user session can be created and validated

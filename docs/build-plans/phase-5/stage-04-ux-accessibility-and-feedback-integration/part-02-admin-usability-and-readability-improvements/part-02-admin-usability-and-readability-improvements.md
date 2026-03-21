@@ -111,12 +111,12 @@ This part is complete. P1 readability and usability hardening was implemented ac
 
 ### Evidence Structure
 
-| AC | Evidence | Status |
-| --- | --- | --- |
-| AC-01 | Matrix-defined readability gaps and hard metrics remain documented for each P1 surface and are asserted by `tests/phase5AdminUsabilityReadabilityPart02.test.ts` | ✓ |
-| AC-02 | Shared readability styles and P1 surface updates are implemented in `apps/web/src/app/admin/**` and validated by deterministic assertions plus lint/type-check | ✓ |
-| AC-03 | Status, affordance, empty-state, and error-state patterns are documented in `apps/web/src/app/admin/READABILITY_STANDARDS.md` and consumed by the implemented P1 surfaces | ✓ |
-| AC-04 | Required validation commands are recorded in planning docs; residual screen-level visual/usability assessment remains human-run and is recorded separately from automated evidence | ✓ |
+| AC    | Evidence                                                                                                                                                                           | Status |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| AC-01 | Matrix-defined readability gaps and hard metrics remain documented for each P1 surface and are asserted by `tests/phase5AdminUsabilityReadabilityPart02.test.ts`                   | ✓      |
+| AC-02 | Shared readability styles and P1 surface updates are implemented in `apps/web/src/app/admin/**` and validated by deterministic assertions plus lint/type-check                     | ✓      |
+| AC-03 | Status, affordance, empty-state, and error-state patterns are documented in `apps/web/src/app/admin/READABILITY_STANDARDS.md` and consumed by the implemented P1 surfaces          | ✓      |
+| AC-04 | Required validation commands are recorded in planning docs; residual screen-level visual/usability assessment remains human-run and is recorded separately from automated evidence | ✓      |
 
 ### Execution Outcomes
 

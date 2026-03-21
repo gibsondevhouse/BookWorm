@@ -4,9 +4,9 @@ Use this template to classify findings and provide deterministic inputs to Stage
 
 ## Findings Log
 
-| Finding ID | Surface ID | Run Type | Severity | Summary | Disposition | Owner | Target Slice | Due Date | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| FND-001 | S-P1-01 | visual-usability |  |  | pass/fix-now/defer-with-owner |  |  |  |  |
+| Finding ID | Surface ID | Run Type         | Severity | Summary | Disposition                   | Owner | Target Slice | Due Date | Notes |
+| ---------- | ---------- | ---------------- | -------- | ------- | ----------------------------- | ----- | ------------ | -------- | ----- |
+| FND-001    | S-P1-01    | visual-usability |          |         | pass/fix-now/defer-with-owner |       |              |          |       |
 
 Severity guidance:
 
@@ -16,17 +16,17 @@ Severity guidance:
 
 ## Stage 02 Handoff Summary
 
-| Field | Value |
-| --- | --- |
-| handoffDate |  |
-| phase | Phase 6 |
-| stage | Stage 01 |
-| sourceSlice | Stage-01-Slice-01 / Stage-01-Slice-02 / Stage-01-Slice-03 |
-| surfaceCoverage | 4/4 P1 surfaces recorded |
-| recordCount |  |
-| fixNowItems |  |
-| deferredItems |  |
-| stage02DecisionInputs |  |
+| Field                 | Value                                                     |
+| --------------------- | --------------------------------------------------------- |
+| handoffDate           |                                                           |
+| phase                 | Phase 6                                                   |
+| stage                 | Stage 01                                                  |
+| sourceSlice           | Stage-01-Slice-01 / Stage-01-Slice-02 / Stage-01-Slice-03 |
+| surfaceCoverage       | 4/4 P1 surfaces recorded                                  |
+| recordCount           |                                                           |
+| fixNowItems           |                                                           |
+| deferredItems         |                                                           |
+| stage02DecisionInputs |                                                           |
 
 ## Handoff Rules
 

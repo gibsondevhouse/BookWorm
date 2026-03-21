@@ -40,30 +40,32 @@ Status: **COMPLETE** [x]
 **Validated:** performance regression coverage added and executed for collaboration hotspot endpoints.
 
 ### Migrations
+
 - `20260321013000_stage4_part01_collab_perf_indexes`
-	- Added composite indexes for queue, approval-step, approval-event, and analytics access patterns.
+  - Added composite indexes for queue, approval-step, approval-event, and analytics access patterns.
 
 ### Repository Hardening
+
 - Updated `reviewDecisionAnalyticsRepository.ts`
-	- Added `listSummaryForWindow` with a lightweight select contract for analytics summary aggregation.
-	- Kept timeline/history contract intact for detailed decision lineage reads.
+  - Added `listSummaryForWindow` with a lightweight select contract for analytics summary aggregation.
+  - Kept timeline/history contract intact for detailed decision lineage reads.
 
 ### Service Hardening
+
 - Updated `reviewDecisionAnalyticsService.ts`
-	- Switched summary endpoint to the lightweight summary query path to avoid loading timeline/event payloads during aggregate-only reads.
+  - Switched summary endpoint to the lightweight summary query path to avoid loading timeline/event payloads during aggregate-only reads.
 
 ### Schema / Index Hardening
+
 - Updated `schema.prisma` indexes:
-	- `ReviewRequest`: `(assignedApproverId, status, createdAt, id)`, `(status, createdAt, id)`
-	- `ApprovalChain`: `(status, finalizedAt, createdAt)`
-	- `ApprovalStep`: `(assignedReviewerId, status, createdAt)`, `(chainId, status, createdAt, id)`
-	- `ApprovalStepEvent`: `(toAssignedReviewerId, eventType, createdAt)`
+  - `ReviewRequest`: `(assignedApproverId, status, createdAt, id)`, `(status, createdAt, id)`
+  - `ApprovalChain`: `(status, finalizedAt, createdAt)`
+  - `ApprovalStep`: `(assignedReviewerId, status, createdAt)`, `(chainId, status, createdAt, id)`
+  - `ApprovalStepEvent`: `(toAssignedReviewerId, eventType, createdAt)`
 
 ### Regression Detection
+
 - Added `tests/phase4CollaborationPerformanceQueryHardeningPart01.test.ts`
-	- Seeds representative review-request, approval-chain, step, and delegation-event data.
-	- Measures p95 response latency for critical collaboration endpoints under fixture load:
-		- `GET /review-inbox` (delegated + escalated + overdue filters)
-		- `GET /review-requests/history/timeline`
-		- `GET /review-requests/analytics/decision-summary`
-	- Fails if configured baseline targets are exceeded.
+  - Seeds representative review-request, approval-chain, step, and delegation-event data.
+  - Measures p95 response latency for critical collaboration endpoints under fixture load: - `GET /review-inbox` (delegated + escalated + overdue filters) - `GET /review-requests/history/timeline` - `GET /review-requests/analytics/decision-summary`
+  - Fails if configured baseline targets are exceeded.

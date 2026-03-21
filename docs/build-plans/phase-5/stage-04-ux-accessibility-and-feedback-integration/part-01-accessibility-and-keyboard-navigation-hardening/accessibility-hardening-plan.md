@@ -15,6 +15,7 @@ This document establishes the comprehensive accessibility and keyboard navigatio
 ### I.1 Core Navigation Patterns
 
 All keyboard-only users must be able to navigate BookWorm admin and review interfaces without a mouse, using only:
+
 - **Tab/Shift+Tab** for forward/backward focus movement
 - **Enter/Space** for activation of buttons, links, and toggles
 - **Arrow keys** for within-control navigation (lists, dropdowns, trees)
@@ -24,6 +25,7 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 ### I.2 Target Workflow Categories
 
 #### A. Form Submission & Dialogs
+
 - **Tab Order:** Logical top-to-bottom flow through form fields
 - **First Focus:** Modal receives keyboard focus; first focusable element is pre-selected
 - **Submit/Cancel:** Both buttons keyboard-accessible; Enter triggers primary action only in appropriate contexts
@@ -31,6 +33,7 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 - **Tab Trapping:** Focus is contained within modal; pressing Tab in last field cycles to first focusable element
 
 #### B. Lists & Data Tables
+
 - **Tab Entry:** Tab key enters the list; arrow keys navigate within list
 - **Row Activation:** Enter activates/selects current row; Space toggles checkbox/selection state
 - **Header Navigation:** Column headers accessible via keyboard; sorting triggers via Enter/Space
@@ -38,6 +41,7 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 - **Filter/Search:** Search/filter inputs immediately navigate the list based on input
 
 #### C. Dropdowns & Comboboxes
+
 - **Open/Close:** Enter or Space opens dropdown; Arrow-Down or Tab enters list; Escape closes
 - **Navigation:** Arrow-Up/Down navigate options; Home/End jump to first/last
 - **Selection:** Enter or Tab selects highlighted option; Escape cancels without selecting
@@ -45,18 +49,21 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 - **Search within:** If searchable, type to filter visible options
 
 #### D. Menu Bars & Context Menus
+
 - **Access:** Alt+first-letter or Alt+key for top-level menus
 - **Navigation:** Arrow-Left/Right move between menu items; Arrow-Down opens submenu
 - **Activation:** Enter or Space selects menu item
 - **Escape:** Closes menu and returns focus to trigger
 
 #### E. Inline Editors & Rich Text
+
 - **Entry:** Tab to field; Enter or Space enters edit mode
 - **Exit:** Tab or Escape exits edit mode; Escape discards changes; Tab confirms changes
 - **Within Editor:** Standard text editing keys (Ctrl+B/I/U for formatting, Ctrl+Z for undo)
 - **Toolbar:** Tab navigates toolbar buttons; similar activation rules apply
 
 #### F. Tree/Hierarchical Navigation
+
 - **Navigation:** Arrow-Up/Down move between nodes; Arrow-Right expands; Arrow-Left collapses
 - **Jump:** Home/End jump to first/last visible node at current level
 - **Selection:** Space toggles node selection; Enter activates/opens node
@@ -65,6 +72,7 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 ### I.3 Workflow-Specific Shortcuts
 
 **Admin Entity Management:**
+
 - `Alt+N` — New entity
 - `Alt+E` — Edit
 - `Alt+D` — Delete (with confirmation)
@@ -73,6 +81,7 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 - `Alt+R` — Refresh list
 
 **Review Workflows:**
+
 - `Alt+I` — Open Review Inbox
 - `Alt+A` — Approve proposal
 - `Alt+D` — Deny proposal
@@ -87,13 +96,13 @@ All keyboard-only users must be able to navigate BookWorm admin and review inter
 
 All admin and review pages must include:
 
-| Landmark | Purpose | Requirement |
-|----------|---------|-------------|
-| `<header>` / role="banner" | Site header, branding, top nav | Must contain site title and primary navigation |
-| `<nav>` / role="navigation" | Primary and secondary navigation | Must label navigation purpose (e.g., aria-label="Main navigation") |
-| `<main>` / role="main" | Page's primary content | Exactly one per page; immediate child of body |
-| `<aside>` / role="complementary" | Sidebar filters, related content | Optional; must be relevant to main content |
-| `<footer>` / role="contentinfo" | Site footer | Optional; typically contains legal info, copyright |
+| Landmark                         | Purpose                          | Requirement                                                        |
+| -------------------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| `<header>` / role="banner"       | Site header, branding, top nav   | Must contain site title and primary navigation                     |
+| `<nav>` / role="navigation"      | Primary and secondary navigation | Must label navigation purpose (e.g., aria-label="Main navigation") |
+| `<main>` / role="main"           | Page's primary content           | Exactly one per page; immediate child of body                      |
+| `<aside>` / role="complementary" | Sidebar filters, related content | Optional; must be relevant to main content                         |
+| `<footer>` / role="contentinfo"  | Site footer                      | Optional; typically contains legal info, copyright                 |
 
 **Requirement:** Every admin/review screen must have at least `<header>`, `<main>`, and page-level `<nav>`.
 
@@ -118,17 +127,17 @@ All admin and review pages must include:
 
 ### II.4 Interactive Control Semantics
 
-| Control | Element/Role | Required ARIA |
-|---------|-------------|---|
-| Button | `<button>` or role="button" | role, aria-pressed (if toggle), aria-expanded (if it toggles content) |
-| Link | `<a href>` or role="link" | None required if text is descriptive |
-| Toggle | `<button role="switch">` or via checkbox styled as toggle | aria-checked, aria-label |
-| Menu Button | `<button aria-haspopup="menu">` | aria-expanded, aria-controls |
-| Disclosure Button | `<button aria-expanded="bool">` | Points to content ID via aria-controls |
-| Tab Bar | `<div role="tablist">` with child tabs | role="tab", role="tabpanel", aria-selected |
-| Combobox | `<input role="combobox">` or `<select>` | aria-expanded, aria-owns (for autocomplete) |
-| Listbox | `<ul role="listbox">` with `<li role="option">` | aria-selected, aria-multiselectable |
-| Dialog | `<div role="dialog">` or `<dialog>` | aria-labelledby, aria-describedby, aria-modal="true" |
+| Control           | Element/Role                                              | Required ARIA                                                         |
+| ----------------- | --------------------------------------------------------- | --------------------------------------------------------------------- |
+| Button            | `<button>` or role="button"                               | role, aria-pressed (if toggle), aria-expanded (if it toggles content) |
+| Link              | `<a href>` or role="link"                                 | None required if text is descriptive                                  |
+| Toggle            | `<button role="switch">` or via checkbox styled as toggle | aria-checked, aria-label                                              |
+| Menu Button       | `<button aria-haspopup="menu">`                           | aria-expanded, aria-controls                                          |
+| Disclosure Button | `<button aria-expanded="bool">`                           | Points to content ID via aria-controls                                |
+| Tab Bar           | `<div role="tablist">` with child tabs                    | role="tab", role="tabpanel", aria-selected                            |
+| Combobox          | `<input role="combobox">` or `<select>`                   | aria-expanded, aria-owns (for autocomplete)                           |
+| Listbox           | `<ul role="listbox">` with `<li role="option">`           | aria-selected, aria-multiselectable                                   |
+| Dialog            | `<div role="dialog">` or `<dialog>`                       | aria-labelledby, aria-describedby, aria-modal="true"                  |
 
 **Requirement:** All interactive controls must have the correct semantic role and all required ARIA attributes for their interaction model.
 
@@ -154,12 +163,12 @@ All admin and review pages must include:
 
 ### III.2 Focus Trap vs Focus Movement
 
-| Scenario | Behavior |
-|----------|----------|
-| Modal Dialog | Focus trap: Tab/Shift+Tab cycles within modal; cannot escape via Tab alone |
-| Dropdown Menu | Focus escape: Tab moves to next page element; Escape closes menu |
-| Inline Editor | Focus escape: Tab confirms edit and moves focus; Escape discards and moves focus |
-| Search Results | Focus maintain: Results update behind current focus or focus moves to results region |
+| Scenario        | Behavior                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| Modal Dialog    | Focus trap: Tab/Shift+Tab cycles within modal; cannot escape via Tab alone                     |
+| Dropdown Menu   | Focus escape: Tab moves to next page element; Escape closes menu                               |
+| Inline Editor   | Focus escape: Tab confirms edit and moves focus; Escape discards and moves focus               |
+| Search Results  | Focus maintain: Results update behind current focus or focus moves to results region           |
 | Page Transition | Focus reset: After route change, focus returns to top of new page (or first focusable element) |
 
 **Requirement:** Each component must implement the appropriate focus cycle/escape behavior for its interaction pattern.
@@ -190,7 +199,7 @@ All admin and review pages must include:
 
 - **Visual:** Required fields marked with `*` or "(required)" text
 - **Semantic:** HTML5 `required` attribute or `aria-required="true"` on input
-- **Notice:** Form must have a notice at top stating "* indicates required field" or equivalent
+- **Notice:** Form must have a notice at top stating "\* indicates required field" or equivalent
 
 **Requirement:** Both visual and semantic indicators must be present; not one or the other.
 
@@ -208,6 +217,7 @@ All admin and review pages must include:
 ### V.1 Admin Entity List/CRUD Screens
 
 **Keyboard Navigation:**
+
 - [ ] Tab navigates: sidebar → search/filter → list → action buttons
 - [ ] Within list: Arrow-Up/Down move between rows; Home/End jump to first/last
 - [ ] Enter on row: Opens detail/edit view
@@ -215,6 +225,7 @@ All admin and review pages must include:
 - [ ] Alt+R: Refreshes list
 
 **Accessibility:**
+
 - [ ] Page `<h1>` is "Entity [Type] List" (e.g., "Character List")
 - [ ] List is proper `<table>` or `<ul>` with semantic structure
 - [ ] Column headers have `scope="col"` if table
@@ -222,6 +233,7 @@ All admin and review pages must include:
 - [ ] Delete button triggers confirmation dialog
 
 **Focus:**
+
 - [ ] Initial focus on main search/filter input or list
 - [ ] Opening detail view traps focus in new screen
 - [ ] Closing detail view returns focus to list
@@ -229,18 +241,21 @@ All admin and review pages must include:
 ### V.2 Edit/Create Dialogs
 
 **Keyboard Navigation:**
+
 - [ ] Tab flows: Title → text fields → selects → rich editors → buttons
 - [ ] Enter in text field continues tabbing (not submitting)
 - [ ] Enter on submit button (or when focused on it) submits form
 - [ ] Escape closes without losing data (if pristine) or with confirmation (if dirty)
 
 **Accessibility:**
+
 - [ ] Modal has `aria-labelledby` pointing to title
 - [ ] All form fields have labels (not placeholders)
 - [ ] Submit/Cancel buttons clearly labeled
 - [ ] Validation errors appear in live region at top
 
 **Focus:**
+
 - [ ] First focusable element is automatically focused when modal opens
 - [ ] Focus cannot escape via Tab (trapped within modal)
 - [ ] Closing modal returns focus to triggering element (or list)
@@ -248,36 +263,42 @@ All admin and review pages must include:
 ### V.3 Review Inbox
 
 **Keyboard Navigation:**
+
 - [ ] Tab navigates: filters → inbox list → actions
 - [ ] Arrow-Up/Down within list; Enter opens proposal
 - [ ] Alt+I: Focus on inbox (for quick switch)
 - [ ] Within inbox row: action buttons (Approve/Deny/Escalate) keyboard-accessible
 
 **Accessibility:**
+
 - [ ] Status filters properly labeled (checkboxes or buttons with `aria-pressed`)
 - [ ] Inbox list is semantic `<ul>` or `<table>`
 - [ ] Each item shows status, priority, assigner name, and action buttons
 - [ ] Live region announces when filters load new results
 
 **Focus:**
+
 - [ ] Initial focus on first filter or inbox list
 - [ ] Opening proposal review maintains focus inside review panel
 
 ### V.4 Proposal Review & Approval Dialogs
 
 **Keyboard Navigation:**
+
 - [ ] Tab navigates: proposal title → content → comments → approval/decision buttons
 - [ ] Within comment section: Alt+C creates new comment; Tab through comment replies
 - [ ] Alt+A: Approve; Alt+D: Deny; Alt+E: Escalate (global shortcuts)
 - [ ] Escape closes review without committing decision (with confirmation if changes exist)
 
 **Accessibility:**
+
 - [ ] Proposal title is `<h2>` or `<h3>` (modal is `<h2>`)
 - [ ] Content sections use semantic headings
 - [ ] Comments are in semantic list structure with timestamps and author info
 - [ ] Decision buttons clearly labeled and visually distinct
 
 **Focus:**
+
 - [ ] Focus trapped within review modal/panel
 - [ ] Approval decision opens confirmation dialog
 - [ ] After decision, focus returns to inbox or next proposal
@@ -285,12 +306,14 @@ All admin and review pages must include:
 ### V.5 Comment Threads
 
 **Keyboard Navigation:**
+
 - [ ] Tab navigates: comment authors → comment text → reply button
 - [ ] Within thread: Arrow-Up/Down move between comments
 - [ ] Enter on reply button opens inline reply editor
 - [ ] Escape exits reply without saving; Tab confirms reply
 
 **Accessibility:**
+
 - [ ] Comments in proper `<ol>` or equivalent semantic list
 - [ ] Each comment has author, timestamp, and content clearly marked
 - [ ] Reply button per comment is keyboard-accessible
@@ -303,6 +326,7 @@ All admin and review pages must include:
 ### VI.1 Automated Test Coverage
 
 **Test Categories:**
+
 1. **Keyboard Navigation Tests** - Verify Tab order, Escape handling, Enter activation
 2. **Focus Management Tests** - Verify initial focus, modal trapping, return focus on close
 3. **ARIA & Semantics Tests** - Verify aria-labels, roles, hierarchies are correct
@@ -312,6 +336,7 @@ All admin and review pages must include:
 **Test Framework:** Integration tests using Node.js test harness with simulated keyboard events and DOM inspection.
 
 **Minimum Coverage:**
+
 - Each of V.1–V.5 screens must have at least one keyboard navigation test
 - Every form/dialog must have at least one focus trap and one error messaging test
 - Every list/table must have at least one arrow-key navigation test
@@ -325,13 +350,11 @@ All admin and review pages must include:
   - Tab order is logical and predictable
   - No keyboard traps (except modals where intentional)
   - Focus indicator is always visible
-  
 - [ ] **Screen Reader Testing:** Open each screen with NVDA (Windows) or VoiceOver (macOS)
   - Page structure makes sense when read linearly
   - Form labels are associated and announced
   - Dynamic content changes are announced
   - Buttons and links are announced with clear purpose
-  
 - [ ] **Validation & Error Handling:**
   - Submit empty form; errors appear and are keyboard-accessible
   - Fix errors and re-submit; success message appears
@@ -349,6 +372,7 @@ All admin and review pages must include:
 ### VII.1 AC-01: Keyboard Navigation Expectations Defined
 
 **Evidence Required:**
+
 - This plan document defines keyboard patterns for all target workflows (Section I)
 - Specific shortcuts listed for admin and review workflows (Section I.3)
 - Tab order and escape behavior documented for each control type (Section I.2)
@@ -358,6 +382,7 @@ All admin and review pages must include:
 ### VII.2 AC-02: Accessibility Semantics Requirements Documented
 
 **Evidence Required:**
+
 - Section II defines semantic requirements for landmarks, headings, forms, and controls
 - Section V.1–V.5 specifies accessibility requirements for each screen category
 - Implementation checklist shows checkbox-ready requirements
@@ -367,6 +392,7 @@ All admin and review pages must include:
 ### VII.3 AC-03: Focus Lifecycle Requirements Documented
 
 **Evidence Required:**
+
 - Section III.1 defines initial focus placement for each interaction type
 - Section III.2 defines focus trap vs. focus escape behavior
 - Section V.1–V.5 includes focus requirements for each screen
@@ -376,6 +402,7 @@ All admin and review pages must include:
 ### VII.4 AC-04: Verification Plan With Deterministic Tests
 
 **Evidence Required:**
+
 - Section VI defines test categories and minimum coverage (VI.1)
 - Section VI.2 lists specific manual verification steps
 - Test commands are provided in test file comments and CI integration (see Test Files section below)
@@ -385,6 +412,7 @@ All admin and review pages must include:
 ### VII.5 AC-05: Exit Conditions Specific and Unambiguous
 
 **Evidence Required:**
+
 - Clear checklist in V.1–V.5 for each screen type
 - Test coverage requirements in VI.1 are quantified
 - Manual verification checklist VI.2 has binary pass/fail items
@@ -407,13 +435,15 @@ All admin and review pages must include:
 ## IX. Schedule & Sequencing
 
 **Part 01 Execution:**
+
 1. Plan completion: ✓ (This document)
 2. Test file creation: Baseline tests created with Part 01 closure
 3. Code implementation: Part 01 code PR follows test framework
 4. Verification: VI.1 automated tests + VI.2 manual checks before Part 01 close
 5. Part 02 unblocks: After Part 01 verification gate passes
 
-**Estimated effort:** 
+**Estimated effort:**
+
 - Planning/Documentation: Included (Week 1)
 - Test framework setup: 2–3 days
 - Code implementation: 1–2 weeks (parallelizable by screen type)

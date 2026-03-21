@@ -17,18 +17,18 @@ This matrix identifies the core admin and review screens targeted for Part 01 ac
 
 ## Priority Matrix
 
-| Priority | Screen | Workflow | Frequency | Complexity | Impact | Dependency | Known Issues | Target Completion |
-|----------|--------|----------|-----------|------------|--------|-----------|---|---|
-| **P1** | Review Inbox | Review & Approval | Daily | High | Very High | Core | Filter/sort only mouse-accessible; no keyboard shortcuts | Part 01, Week 1-2 |
-| **P1** | Proposal Review Dialog | Review & Approval | Daily | High | Very High | Core | Tab order unpredictable; focus traps not managed | Part 01, Week 1-2 |
-| **P1** | Admin Entity List | Entity Management | Daily-Weekly | Medium | High | Core | Bulk actions require mouse; search debounce delays keyboard input feedback | Part 01, Week 2-3 |
-| **P1** | Edit Entity Dialog | Entity Management | Daily-Weekly | High | High | Core | Form validation not accessible; error messages not keyboard-reachable | Part 01, Week 2-3 |
-| **P2** | Comment Thread | Collaboration | Weekly | Medium | Medium | Secondary | Reply button buried; keyboard navigation unclear | Part 01+, Week 3-4 |
-| **P2** | Approval Chain Editor | Governance Config | Weekly-Monthly | High | Medium | Configuration | Matrix interface has no keyboard support; drag-drop only | Part 01+, Week 4-5 |
-| **P2** | Release/Manuscript List | Content Management | Weekly | Medium | Medium | Secondary | Sorting requires mouse; inline text editing not keyboard-manageable | Part 01+, Week 4-5 |
-| **P3** | Revision Timeline | Historical Review | Monthly | Low | Low | Tertiary | Visual navigation only; no keyboard equivalent | Part 02 |
-| **P3** | Relationship Editor | Entity Management | Monthly | High | Low | Tertiary | Relationship graph is SVG; no keyboard alternative | Part 02 |
-| **P3** | Metadata Visibility Config | Governance Config | Monthly | Medium | Low | Configuration | Nested toggles; focus management weak | Part 02 |
+| Priority | Screen                     | Workflow           | Frequency      | Complexity | Impact    | Dependency    | Known Issues                                                               | Target Completion  |
+| -------- | -------------------------- | ------------------ | -------------- | ---------- | --------- | ------------- | -------------------------------------------------------------------------- | ------------------ |
+| **P1**   | Review Inbox               | Review & Approval  | Daily          | High       | Very High | Core          | Filter/sort only mouse-accessible; no keyboard shortcuts                   | Part 01, Week 1-2  |
+| **P1**   | Proposal Review Dialog     | Review & Approval  | Daily          | High       | Very High | Core          | Tab order unpredictable; focus traps not managed                           | Part 01, Week 1-2  |
+| **P1**   | Admin Entity List          | Entity Management  | Daily-Weekly   | Medium     | High      | Core          | Bulk actions require mouse; search debounce delays keyboard input feedback | Part 01, Week 2-3  |
+| **P1**   | Edit Entity Dialog         | Entity Management  | Daily-Weekly   | High       | High      | Core          | Form validation not accessible; error messages not keyboard-reachable      | Part 01, Week 2-3  |
+| **P2**   | Comment Thread             | Collaboration      | Weekly         | Medium     | Medium    | Secondary     | Reply button buried; keyboard navigation unclear                           | Part 01+, Week 3-4 |
+| **P2**   | Approval Chain Editor      | Governance Config  | Weekly-Monthly | High       | Medium    | Configuration | Matrix interface has no keyboard support; drag-drop only                   | Part 01+, Week 4-5 |
+| **P2**   | Release/Manuscript List    | Content Management | Weekly         | Medium     | Medium    | Secondary     | Sorting requires mouse; inline text editing not keyboard-manageable        | Part 01+, Week 4-5 |
+| **P3**   | Revision Timeline          | Historical Review  | Monthly        | Low        | Low       | Tertiary      | Visual navigation only; no keyboard equivalent                             | Part 02            |
+| **P3**   | Relationship Editor        | Entity Management  | Monthly        | High       | Low       | Tertiary      | Relationship graph is SVG; no keyboard alternative                         | Part 02            |
+| **P3**   | Metadata Visibility Config | Governance Config  | Monthly        | Medium     | Low       | Configuration | Nested toggles; focus management weak                                      | Part 02            |
 
 ---
 
@@ -40,7 +40,7 @@ P1 screens are **daily-use paths** that directly impact **approval and proposal 
 
 - **Review Inbox** is the primary entry point for editorial decision-making
 - **Proposal Review Dialog** is where reviewers spend 60%+ of review time
-- **Admin Entity List/Edit** supports the highest-frequency content authoring operations  
+- **Admin Entity List/Edit** supports the highest-frequency content authoring operations
 
 Hardening these four screens ensures the core approval workflow is accessible to all users, including those using keyboard-only or assistive devices.
 
@@ -54,6 +54,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 **User Flow:** Editor opens app → navigates to inbox → filters proposals → selects proposal for review
 
 **Accessibility Gaps:**
+
 - Filter buttons and status checkboxes are not clearly labeled with ARIA
 - Tab order jumps erratically between list and filters
 - List rows are not keyboard-selectable (hover state only)
@@ -61,6 +62,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - No keyboard shortcuts to switch between filtered views
 
 **Hardening Requirements:**
+
 - [ ] All filter controls (buttons, checkboxes) have semantic `<button>` or `<input type="checkbox">` with associated labels
 - [ ] Tab order: filters → search → list → action buttons (logical, consistent)
 - [ ] Arrow-Up/Down navigates list rows; Enter selects current row
@@ -69,6 +71,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - [ ] All interactive elements have visible focus indicator
 
 **Verification:**
+
 - Manual keyboard navigation: Can reach all filters, search, list, and actions with Tab only
 - Screen reader: All controls announced with clear labels and purpose
 - Automated: Keyboard navigation test covers Tab order and focus movement
@@ -81,6 +84,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 **User Flow:** Editor selects proposal from inbox → opens proposal review panel → reviews content → makes decision (approve/deny/escalate)
 
 **Accessibility Gaps:**
+
 - Modal focus trap not implemented (Tab escapes modal unintentionally)
 - Decision buttons (Approve/Deny/Escalate) are visually obvious but not grouped semantically
 - Comment section is difficult to navigate; reply buttons are small and hard to tab to
@@ -88,6 +92,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - Error messages from validation appear only in toast, not in main flow
 
 **Hardening Requirements:**
+
 - [ ] Modal is `<div role="dialog" aria-modal="true" aria-labelledby="proposal-title">`
 - [ ] Focus trapped within modal: Tab/Shift+Tab cycles between first and last focusable elements
 - [ ] First focusable element (proposal title or first button) receives focus on modal open
@@ -100,6 +105,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - [ ] Approval chain is described in text below the visualization with current step highlighted
 
 **Verification:**
+
 - Manual keyboard: Can open dialog, navigate to all comments, make decision, close without mouse
 - Screen reader: Dialog structure, comments, and decision options are clearly announced
 - Automated: Focus trap test, Tab order test, decision button test
@@ -112,6 +118,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 **User Flow:** Admin navigates to entity type list → views entities in list → can sort, filter, bulk-select → opens detail/edit view
 
 **Accessibility Gaps:**
+
 - List is HTML table but headers are not properly marked with `<th scope="col">`
 - Bulk action checkboxes are present but not properly labeled for screen readers
 - Sort controls only work via mouse click (no keyboard activation)
@@ -119,6 +126,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - Search input has debounce delay; keyboard input feels sluggish
 
 **Hardening Requirements:**
+
 - [ ] List is semantic `<table>` with `<thead>`, `<tbody`, `<tr>`, `<td>`
 - [ ] Column headers are `<th scope="col">` with sort button inside (if sortable)
 - [ ] Sort button has `aria-sort="ascending"` or `="descending"` or `="none"`
@@ -131,6 +139,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - [ ] Focus returns to list after detail view closes
 
 **Verification:**
+
 - Manual keyboard: Can search, sort, select rows, and perform bulk actions with keyboard only
 - Screen reader: Table structure, headers, and row content are properly announced
 - Automated: Table semantics test, Tab order test, bulk action test
@@ -143,6 +152,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 **User Flow:** Admin opens entity details → clicks Edit → form appears with fields → admin updates fields → clicks Save or Cancel
 
 **Accessibility Gaps:**
+
 - Form fields lack proper `<label>` elements; labels are embedded in placeholder text
 - Required field indicators are visual only (`*`), not semantic (`required` attribute)
 - Validation errors appear in red text only; position relative to fields is unclear
@@ -150,10 +160,11 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - Submit/Cancel buttons are not clearly distinguished
 
 **Hardening Requirements:**
+
 - [ ] Every form field has explicit `<label for="[id]">` element
 - [ ] Required fields have `required` attribute and `aria-required="true"`
 - [ ] Visual indicator: Required fields show `*` and label text includes "(required)"
-- [ ] Form has notice at top: "* indicates required field"
+- [ ] Form has notice at top: "\* indicates required field"
 - [ ] Validation errors appear in live region `aria-live="assertive"` listing all errors
 - [ ] Individual field errors are associated via `aria-describedby="[error-id]"`
 - [ ] Error messages positioned immediately after field; use color + icon + text
@@ -163,6 +174,7 @@ Hardening these four screens ensures the core approval workflow is accessible to
 - [ ] Focus returns to list or detail view after Save/Cancel
 
 **Verification:**
+
 - Manual keyboard: Can fill all form fields, see validation errors, and submit with keyboard only
 - Screen reader: All labels, required indicators, and errors are announced
 - Automated: Form label test, validation messaging test, required field test

@@ -4,37 +4,37 @@ This specification defines the core entity types, relationships, fields and beha
 
 ## Core Entities
 
-| Type            | Purpose                                                      |
-|-----------------|--------------------------------------------------------------|
-| Character       | A person in the story. Fields: name, slug, summary, aliases, traits, affiliations, wants/needs, voice, relations to factions, events, locations and secrets. Metadata: status (canon/provisional/deprecated), visibility (public/restricted/private), spoiler tier, tags, first/last appearance, timeline anchors, secrets, related events. |
-| Faction         | An organization, family or house. Fields: name, slug, summary, type (empire, guild, insurgency), ideology, structure, notable members, relations to characters, events and locations. |
-| Location        | A place in the world. Fields: name, slug, description, geography, region, coordinates, map image reference, relations to events, factions and characters. |
-| Event           | Something that happens. Fields: name, slug, summary, date (or date range), era, significance, participants, outcomes, relations to characters, factions, locations, artifacts, secrets. |
-| Artifact        | A significant object. Fields: name, slug, description, origin, properties, current owner, relations to characters, events and factions. |
-| Creature        | A non‑humanoid species or monster. Fields: name, slug, habitat, behaviour, powers, relations. |
-| Belief System   | A religion, philosophy or magic system. Fields: name, slug, doctrine, rituals, taboos, powers, relations. |
-| Political Body  | A state or government. Fields: name, slug, structure, laws, leaders, relations to events and factions. |
-| Language        | A language or dialect. Fields: name, slug, script, speaker regions, examples, relations. |
-| Secret          | A hidden truth. Fields: name, slug, description, holders (characters/factions), reveal event, relations. |
-| Reveal          | An event or scene where a secret is exposed. Fields: name, slug, event reference, affected entities. |
-| Tag             | A keyword used to group entities. Fields: name, slug, description. Tags are free‑form and apply to any entity. |
-| Timeline Era    | A named period in history. Fields: name, slug, start date, end date, summary. Eras group events and serve as top‑level timeline categories. |
+| Type           | Purpose                                                                                                                                                                                                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Character      | A person in the story. Fields: name, slug, summary, aliases, traits, affiliations, wants/needs, voice, relations to factions, events, locations and secrets. Metadata: status (canon/provisional/deprecated), visibility (public/restricted/private), spoiler tier, tags, first/last appearance, timeline anchors, secrets, related events. |
+| Faction        | An organization, family or house. Fields: name, slug, summary, type (empire, guild, insurgency), ideology, structure, notable members, relations to characters, events and locations.                                                                                                                                                       |
+| Location       | A place in the world. Fields: name, slug, description, geography, region, coordinates, map image reference, relations to events, factions and characters.                                                                                                                                                                                   |
+| Event          | Something that happens. Fields: name, slug, summary, date (or date range), era, significance, participants, outcomes, relations to characters, factions, locations, artifacts, secrets.                                                                                                                                                     |
+| Artifact       | A significant object. Fields: name, slug, description, origin, properties, current owner, relations to characters, events and factions.                                                                                                                                                                                                     |
+| Creature       | A non‑humanoid species or monster. Fields: name, slug, habitat, behaviour, powers, relations.                                                                                                                                                                                                                                               |
+| Belief System  | A religion, philosophy or magic system. Fields: name, slug, doctrine, rituals, taboos, powers, relations.                                                                                                                                                                                                                                   |
+| Political Body | A state or government. Fields: name, slug, structure, laws, leaders, relations to events and factions.                                                                                                                                                                                                                                      |
+| Language       | A language or dialect. Fields: name, slug, script, speaker regions, examples, relations.                                                                                                                                                                                                                                                    |
+| Secret         | A hidden truth. Fields: name, slug, description, holders (characters/factions), reveal event, relations.                                                                                                                                                                                                                                    |
+| Reveal         | An event or scene where a secret is exposed. Fields: name, slug, event reference, affected entities.                                                                                                                                                                                                                                        |
+| Tag            | A keyword used to group entities. Fields: name, slug, description. Tags are free‑form and apply to any entity.                                                                                                                                                                                                                              |
+| Timeline Era   | A named period in history. Fields: name, slug, start date, end date, summary. Eras group events and serve as top‑level timeline categories.                                                                                                                                                                                                 |
 
 ## Manuscript Entities
 
-| Type            | Purpose                                                      |
-|-----------------|--------------------------------------------------------------|
-| Chapter         | A section of the manuscript. Fields: number, slug, title, summary, body (Markdown), POV character, relations to scenes, timeline anchors, release associations. |
-| Scene           | A subsection of a chapter. Fields: slug, chapter reference, summary, body (Markdown), timestamp, location, participants. Scenes may reference events or secrets. |
+| Type    | Purpose                                                                                                                                                          |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chapter | A section of the manuscript. Fields: number, slug, title, summary, body (Markdown), POV character, relations to scenes, timeline anchors, release associations.  |
+| Scene   | A subsection of a chapter. Fields: slug, chapter reference, summary, body (Markdown), timestamp, location, participants. Scenes may reference events or secrets. |
 
 ## System Entities
 
-| Type            | Purpose                                                      |
-|-----------------|--------------------------------------------------------------|
+| Type            | Purpose                                                                                                                                                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Relationship    | Connects two entities with a type (e.g. Character → Faction membership, Character → Event participation). Fields: subject_id, subject_type, relation_type, object_id, object_type, metadata (e.g. role, strength), visibility. |
-| Revision        | Captures changes to an entity. Fields: entity_id, entity_type, changed_fields, timestamp, author_id, notes. |
-| Release         | Groups revisions into a snapshot. Fields: name, slug, type (draft/internal/published/archived), created_at, active status, included_revisions, release_notes. |
-| ContinuityIssue | Records a continuity violation. Fields: entity_ids, scene_ids, rule_id, severity, description, status (open, resolved, accepted), notes. |
+| Revision        | Captures changes to an entity. Fields: entity_id, entity_type, changed_fields, timestamp, author_id, notes.                                                                                                                    |
+| Release         | Groups revisions into a snapshot. Fields: name, slug, type (draft/internal/published/archived), created_at, active status, included_revisions, release_notes.                                                                  |
+| ContinuityIssue | Records a continuity violation. Fields: entity_ids, scene_ids, rule_id, severity, description, status (open, resolved, accepted), notes.                                                                                       |
 
 ## Fields and Behaviours
 

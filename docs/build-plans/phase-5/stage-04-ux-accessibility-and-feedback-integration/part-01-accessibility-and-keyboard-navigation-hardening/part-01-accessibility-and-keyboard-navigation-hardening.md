@@ -64,6 +64,7 @@ Out of scope for this part:
 **Scope:** Comprehensive specification document covering keyboard navigation, semantic markup, focus management, and error handling.
 
 **Contents:**
+
 - Section I: Keyboard Navigation Expectations (Tab/Arrow/Escape/Alt patterns for forms, lists, dialogs, dropdowns, trees)
 - Section II: Accessibility Semantics Requirements (landmarks, heading hierarchy, form labeling, ARIA roles, content relationships)
 - Section III: Focus Management Requirements (initial focus, traps vs. escapes, visibility)
@@ -79,6 +80,7 @@ Out of scope for this part:
 **Scope:** Prioritization framework for selecting and sequencing hardening targets.
 
 **Contents:**
+
 - Priority Matrix table: 10 admin/review screens prioritized by frequency, complexity, impact, dependency, risk
 - P1 (Daily Use): Review Inbox, Proposal Review Dialog, Admin Entity List, Edit Entity Dialog
 - P2 (Weekly Use): Comment Thread, Approval Chain Editor, Release/Manuscript List
@@ -93,6 +95,7 @@ Out of scope for this part:
 **Scope:** Detailed evidence mapping for all five acceptance criteria (AC-01 through AC-05).
 
 **Contents:**
+
 - AC-01 Evidence: Keyboard navigation expectations documented (Plan I.1–I.3 with explicit tab/arrow/escape/alt patterns)
 - AC-02 Evidence: Accessibility semantics requirements documented (Plan II.1–II.5 + V.1–V.5 with landmark, heading, label, ARIA, content relationship specs)
 - AC-03 Evidence: Focus lifecycle documented (Plan III.1–III.3 with initial focus, traps/escapes, visibility requirements)
@@ -108,6 +111,7 @@ Out of scope for this part:
 **Scope:** Baseline test structure and manual verification checklist.
 
 **Contents:**
+
 - Test suite organized by AC criteria (AC-01 Keyboard Navigation, AC-02 Semantics, AC-03 Focus, AC-04 Verification, AC-05 Exit Conditions)
 - 40+ test placeholders for keyboard navigation, focus management, ARIA, validation, and manual verification
 - Manual Verification Section (VI.2): Step-by-step instructions for keyboard-only testing and screen reader testing on each P1 screen
@@ -124,13 +128,13 @@ This part is complete. Accessibility and keyboard hardening was implemented acro
 
 ### Evidence of AC Criteria Met
 
-| AC | Evidence | Status |
-|---|---|---|
-| AC-01 | Keyboard shortcuts and list/focus mechanics implemented and asserted in `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts` | ✓ |
-| AC-02 | Semantic structure and ARIA coverage implemented across Review Inbox, Proposal Review, Entity List, and Edit Entity surfaces | ✓ |
-| AC-03 | Focus lifecycle behavior implemented and asserted for modal surfaces plus shared focus-visible styling | ✓ |
-| AC-04 | Deterministic suite and required gate commands executed successfully | ✓ |
-| AC-05 | Tracker/stage/phase docs updated and Part 01 completion evidence recorded | ✓ |
+| AC    | Evidence                                                                                                                            | Status |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| AC-01 | Keyboard shortcuts and list/focus mechanics implemented and asserted in `tests/phase5AccessibilityKeyboardNavigationPart01.test.ts` | ✓      |
+| AC-02 | Semantic structure and ARIA coverage implemented across Review Inbox, Proposal Review, Entity List, and Edit Entity surfaces        | ✓      |
+| AC-03 | Focus lifecycle behavior implemented and asserted for modal surfaces plus shared focus-visible styling                              | ✓      |
+| AC-04 | Deterministic suite and required gate commands executed successfully                                                                | ✓      |
+| AC-05 | Tracker/stage/phase docs updated and Part 01 completion evidence recorded                                                           | ✓      |
 
 ### Execution Outcomes
 

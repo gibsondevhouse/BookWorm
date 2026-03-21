@@ -150,6 +150,7 @@ Use [acceptance-and-sign-off-checklist.md](acceptance-and-sign-off-checklist.md)
 **Implementation Date:** 2026-03-20
 
 **Implementation Scope:**
+
 - Implemented bounded feedback-integration improvements on four approved P1 Stage 04 surfaces: Review Inbox, Proposal Review Dialog, Admin Entity List, Edit Entity Dialog
 - Updated admin UI files: `apps/web/src/app/admin/adminAccessibility.module.css`, `apps/web/src/app/admin/review-inbox/ReviewInboxClient.tsx`, `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx`, `apps/web/src/app/admin/entities/EntitiesClient.tsx`, `apps/web/src/app/admin/entities/[slug]/edit/EditEntityPageClient.tsx`
 - Created verification gate test: `tests/phase5FeedbackIntegrationVerificationGatePart03.test.ts`
@@ -157,6 +158,7 @@ Use [acceptance-and-sign-off-checklist.md](acceptance-and-sign-off-checklist.md)
 **Deterministic Verification Gate Result:** Complete (2026-03-20). The 21 deterministic validation commands in the gate inventory are recorded as PASS in `acceptance-and-sign-off-checklist.md`; raw command-output artifacts are not attached in-repo.
 
 The following 21 deterministic validation commands form the Part 03 verification gate and are recorded as PASS:
+
 - 6 Stage 04 regression commands (accessibility, readability, review workflows, entity CRUD)
 - 3 Stage 01 search commands (query expansion, typo tolerance, baseline)
 - 4 Stage 02 continuity commands (rule expansion, triage, suppression, baseline)
@@ -168,6 +170,7 @@ Supplemental evidence: `tests/phase5FeedbackIntegrationVerificationGatePart03.te
 Full command-inventory pass status is documented in the acceptance checklist. Linked raw command-output artifacts are not attached in-repo.
 
 **Manual Verification Status:** Closeout exception recorded (2026-03-20)
+
 - Visual/usability review of four P1 surfaces: **Not completed in-repo at closeout; accepted deferred risk with recorded product-owner rationale and Phase 6 carry-forward**
 - Assistive-technology regression sign-off for four P1 surfaces: **Not completed in-repo at closeout; accepted deferred risk with recorded product-owner rationale and Phase 6 carry-forward**
 - Deferred-item review and owner assignment: **Rationale captured; scheduled into Phase 6 Stage 01 slices in order (Stage-01-Slice-01 -> Stage-01-Slice-02 -> Stage-01-Slice-03 -> Stage-01-Slice-04)**

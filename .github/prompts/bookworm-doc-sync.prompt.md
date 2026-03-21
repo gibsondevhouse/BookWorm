@@ -5,9 +5,13 @@ argument-hint: "What completed slice, files, or documentation scope should be sy
 agent: "BookWorm Phase Architect"
 tools: [read, search, edit]
 ---
+
+# BookWorm Doc Sync
+
 Review the completed implementation work against the current BookWorm documentation and synchronize the relevant docs with repository reality.
 
 Requirements:
+
 - Read the relevant code, tests, and existing documentation before editing.
 - Update only the planning and project docs that are materially affected by the completed slice.
 - Keep tracker, phase, and stage status grounded in what is actually implemented and validated.
@@ -16,6 +20,7 @@ Requirements:
 - Keep edits focused on materially affected docs instead of broad narrative rewrites.
 
 Output:
+
 - State which documentation was updated.
 - Summarize the implementation evidence used.
 - Note any contradictions that were resolved or remain open.

@@ -3,6 +3,7 @@ name: "BookWorm Customization Rules"
 description: "Use when creating or updating BookWorm custom agent and prompt files. Covers workflow boundaries, naming, handoffs, and validation rules for .github/agents and .github/prompts."
 applyTo: ".github/**"
 ---
+
 # BookWorm Customization Rules
 
 Apply these rules whenever editing workspace agent or prompt files for BookWorm.

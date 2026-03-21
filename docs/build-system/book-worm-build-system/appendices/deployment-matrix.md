@@ -1,11 +1,11 @@
 # Appendix F: Deployment Matrix
 
-| Environment   | Purpose                                  | Characteristics                                    |
-|---------------|------------------------------------------|----------------------------------------------------|
-| Local Dev     | Developer workstation                    | Runs directly on the host with debug settings. Uses seeded data and permissive CORS. No monitoring. |
-| Staging       | Pre‑production testing                   | Mirrors production environment with less traffic. Uses production‑like database and search size. Enables monitoring and backups. |
-| Production    | Public self‑hosted deployment            | Hardened configuration, environment variables loaded from secrets store, HTTPS termination via reverse proxy, monitoring and alerts enabled. |
-| Testing       | Dedicated environment for automated tests| Provisioned as part of CI/CD. Database resets between runs, seeded data, parallelizable. |
+| Environment | Purpose                                   | Characteristics                                                                                                                              |
+| ----------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local Dev   | Developer workstation                     | Runs directly on the host with debug settings. Uses seeded data and permissive CORS. No monitoring.                                          |
+| Staging     | Pre‑production testing                    | Mirrors production environment with less traffic. Uses production‑like database and search size. Enables monitoring and backups.             |
+| Production  | Public self‑hosted deployment             | Hardened configuration, environment variables loaded from secrets store, HTTPS termination via reverse proxy, monitoring and alerts enabled. |
+| Testing     | Dedicated environment for automated tests | Provisioned as part of CI/CD. Database resets between runs, seeded data, parallelizable.                                                     |
 
 ## Deployment Steps
 

@@ -118,8 +118,8 @@ pnpm type-check
 
 ## Stage 02 Exit Criteria Status
 
-| Criterion | Status |
-| --- | --- |
-| Readers can navigate core public codex pages for the supported MVP types (CHARACTER, FACTION, LOCATION, EVENT) | Complete — Parts 01 and 02 |
-| Timeline views resolve chronological content from release data only | Complete — Part 02 |
-| Reader views resolve chapters and scenes from the selected release without leaking drafts | Complete — Part 03 Slice 01 |
+| Criterion                                                                                                      | Status                      |
+| -------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Readers can navigate core public codex pages for the supported MVP types (CHARACTER, FACTION, LOCATION, EVENT) | Complete — Parts 01 and 02  |
+| Timeline views resolve chronological content from release data only                                            | Complete — Part 02          |
+| Reader views resolve chapters and scenes from the selected release without leaking drafts                      | Complete — Part 03 Slice 01 |
