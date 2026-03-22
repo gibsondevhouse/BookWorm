@@ -261,6 +261,11 @@ textarea.input {
   margin-bottom: 0.5rem;
 }
 
+.sectionBody {
+  display: grid;
+  gap: 1rem;
+}
+
 .sectionDescription {
   margin: 0;
   color: var(--muted);
@@ -392,6 +397,7 @@ textarea.input {
   max-width: 65ch;
 }
 
+.page :where(button, input, select, textarea, a):focus-visible,
 .page button:focus-visible,
 .page input:focus-visible,
 .page select:focus-visible,

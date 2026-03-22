@@ -24,7 +24,7 @@
 
 ### Phase-f-0
 
-- [ ] [Phase-f-0 Overview](./phase-f-0/phase-f-0.md)
+- [x] [Phase-f-0 Overview](./phase-f-0/phase-f-0.md)
 
 #### Phase-f-0 Stage-f0-01
 
@@ -38,7 +38,29 @@
 
 #### Phase-f-0 Stage-f0-03
 
-- [ ] [Stage-f0-03 Overview](./phase-f-0/stage-f0-03-root-shell-behavioral-polish/stage-f0-03-root-shell-behavioral-polish.md)
+- [x] [Stage-f0-03 Overview](./phase-f-0/stage-f0-03-root-shell-behavioral-polish/stage-f0-03-root-shell-behavioral-polish.md)
+- [x] [Slice-01: Root Shell Behavioral Polish](./phase-f-0/stage-f0-03-root-shell-behavioral-polish/stage-f0-03-slice-01-root-shell-behavioral-polish.md)
+
+### Phase-f-1
+
+- [-] [Phase-f-1 Overview](./phase-f-1/phase-f-1.md)
+
+#### Phase-f-1 Stage-f1-01
+
+- [x] [Stage-f1-01 Overview](./phase-f-1/stage-f1-01-chat-surface-modularization/stage-f1-01-chat-surface-modularization.md)
+- [x] [Slice-01: Chat Surface Component Extraction and Submit Flow](./phase-f-1/stage-f1-01-chat-surface-modularization/stage-f1-01-slice-01-chat-surface-component-extraction-and-submit-flow.md)
+
+#### Phase-f-1 Stage-f1-02
+
+- [x] [Stage-f1-02 Overview](./phase-f-1/stage-f1-02-sidebar-navigation-state-alignment/stage-f1-02-sidebar-navigation-state-alignment.md)
+- [x] [Slice-01: Sidebar Navigation Data Extraction and Active Link Semantics](./phase-f-1/stage-f1-02-sidebar-navigation-state-alignment/stage-f1-02-slice-01-sidebar-navigation-data-extraction-and-active-link-semantics.md)
+- [x] [Slice-02: Collapsed Mode Interaction and Keyboard Navigation Hardening](./phase-f-1/stage-f1-02-sidebar-navigation-state-alignment/stage-f1-02-slice-02-collapsed-mode-interaction-and-keyboard-navigation-hardening.md)
+
+#### Phase-f-1 Stage-f1-03
+
+- [-] [Stage-f1-03 Overview](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-admin-surface-cohesion.md)
+- [x] [Slice-01: Admin Surface Primitive Extraction and Entities/Inbox Adoption](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-slice-01-admin-surface-primitive-extraction-and-entities-inbox-adoption.md)
+- [ ] [Slice-02: Proposal Review Surface Alignment and Regression Pass](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-slice-02-proposal-review-surface-alignment-and-regression-pass.md)
 
 ## Update Rules
 

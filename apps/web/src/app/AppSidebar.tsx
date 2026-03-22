@@ -1,49 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { sidebarNavigationConfig } from "./sidebarNavigationConfig";
+import { getSidebarRouteState } from "./sidebarRouteState";
 
-const codexGroups = [
-  {
-    label: "Story",
-    items: [
-      { label: "Characters", type: "CHARACTER" },
-      { label: "Factions", type: "FACTION" },
-      { label: "Events", type: "EVENT" },
-    ],
-  },
-  {
-    label: "World",
-    items: [
-      { label: "Locations", type: "LOCATION" },
-      { label: "Creatures", type: "CREATURE" },
-      { label: "Timeline Eras", type: "TIMELINE_ERA" },
-    ],
-  },
-  {
-    label: "Lore",
-    items: [
-      { label: "Belief Systems", type: "BELIEF_SYSTEM" },
-      { label: "Languages", type: "LANGUAGE" },
-      { label: "Political Bodies", type: "POLITICAL_BODY" },
-      { label: "Secrets", type: "SECRET" },
-      { label: "Reveals", type: "REVEAL" },
-      { label: "Artifacts", type: "ARTIFACT" },
-    ],
-  },
-] as const;
+function getPrimaryNavClassName(isActive: boolean): string {
+  return isActive
+    ? "sidebar-link block rounded-2xl border border-[rgba(134,201,255,0.5)] bg-[linear-gradient(135deg,rgba(134,201,255,0.18),rgba(92,167,222,0.08))] px-4 py-3 text-sm text-text shadow-[0_0_0_1px_rgba(134,201,255,0.12)]"
+    : "sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted";
+}
 
-const recentItems = [
-  "Character Development Guide",
-  "World Building Notes",
-  "Plot Outline for Act II",
-  "Dialogue Refinement Session",
-  "Chapter 5 First Draft"
-];
+function getCodexToggleClassName(isActive: boolean): string {
+  return isActive
+    ? "sidebar-link flex w-full items-center justify-between rounded-2xl border border-[rgba(134,201,255,0.5)] bg-[linear-gradient(135deg,rgba(134,201,255,0.18),rgba(92,167,222,0.08))] px-4 py-3 text-sm text-text shadow-[0_0_0_1px_rgba(134,201,255,0.12)]"
+    : "sidebar-link flex w-full items-center justify-between rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted";
+}
+
+function getCodexItemClassName(isActive: boolean): string {
+  return isActive
+    ? "sidebar-link block rounded-xl border border-[rgba(134,201,255,0.42)] bg-[rgba(134,201,255,0.12)] px-3 py-2 text-sm text-text"
+    : "sidebar-link block rounded-xl px-3 py-2 text-sm text-text-muted";
+}
+
+function getCollapsedPrimaryNavClassName(isActive: boolean): string {
+  return isActive
+    ? "sidebar-link flex h-11 w-11 items-center justify-center rounded-2xl border border-[rgba(134,201,255,0.52)] bg-[linear-gradient(135deg,rgba(134,201,255,0.2),rgba(92,167,222,0.1))] text-text shadow-[0_0_0_1px_rgba(134,201,255,0.16)]"
+    : "sidebar-link flex h-11 w-11 items-center justify-center rounded-2xl border border-transparent text-text-muted";
+}
 
 export function AppSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCodexOpen, setIsCodexOpen] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const routeState = getSidebarRouteState(pathname, searchParams.get("type"));
+  const defaultCodexType = sidebarNavigationConfig.codexGroups[0].items[0].type;
+  const collapsedCodexHref = `/admin/entities?type=${routeState.activeCodexType ?? defaultCodexType}`;
 
   return (
     <aside className="shell-panel sidebar-shell flex min-h-[18rem] flex-col overflow-y-auto rounded-[2rem] lg:h-full">
@@ -75,6 +69,7 @@ export function AppSidebar() {
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="sidebar-link rounded-full border border-border bg-[rgba(9,18,31,0.48)] p-2 text-text-muted"
           aria-label="Toggle sidebar"
+          aria-expanded={!isCollapsed}
         >
           <svg
             className="h-5 w-5 text-text-muted"
@@ -142,63 +137,76 @@ export function AppSidebar() {
                 Navigate
               </div>
               <div className="mt-2 space-y-1.5">
-                {/* Chat */}
-                <Link
-                  href="/"
-                  className="sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
-                >
-                  Chat
-                </Link>
+                {sidebarNavigationConfig.primaryNavItems.map((item) => {
+                  if (item.kind === "link") {
+                    const isActive = routeState.activePrimaryNavId === item.id;
 
-                {/* Codex collapsible group */}
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setIsCodexOpen(!isCodexOpen)}
-                    aria-expanded={isCodexOpen}
-                    className="sidebar-link flex w-full items-center justify-between rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
-                  >
-                    <span>Codex</span>
-                    <svg
-                      className={`h-4 w-4 transition-transform ${isCodexOpen ? "rotate-180" : ""}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {isCodexOpen && (
-                    <div className="mt-1 space-y-3 pl-3">
-                      {codexGroups.map((group) => (
-                        <div key={group.label} className="sidebar-card rounded-xl p-2">
-                          <div className="px-2 py-1 text-[0.62rem] uppercase tracking-[0.28em] text-text-muted">
-                            {group.label}
-                          </div>
-                          <div className="mt-1 space-y-0.5">
-                            {group.items.map((item) => (
-                              <Link
-                                key={item.type}
-                                href={`/admin/entities?type=${item.type}`}
-                                className="sidebar-link block rounded-xl px-3 py-2 text-sm text-text-muted"
-                              >
-                                {item.label}
-                              </Link>
-                            ))}
-                          </div>
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        aria-current={isActive ? "page" : undefined}
+                        className={getPrimaryNavClassName(isActive)}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <div key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => setIsCodexOpen(!isCodexOpen)}
+                        aria-expanded={isCodexOpen}
+                        className={getCodexToggleClassName(routeState.isCodexContext)}
+                      >
+                        <span>{item.label}</span>
+                        <svg
+                          className={`h-4 w-4 transition-transform ${isCodexOpen ? "rotate-180" : ""}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                      {isCodexOpen && (
+                        <div className="mt-1 space-y-3 pl-3">
+                          {sidebarNavigationConfig.codexGroups.map((group) => (
+                            <div key={group.label} className="sidebar-card rounded-xl p-2">
+                              <div className="px-2 py-1 text-[0.62rem] uppercase tracking-[0.28em] text-text-muted">
+                                {group.label}
+                              </div>
+                              <div className="mt-1 space-y-0.5">
+                                {group.items.map((codexItem) => {
+                                  const isCodexItemActive =
+                                    routeState.isCodexContext && routeState.activeCodexType === codexItem.type;
+
+                                  return (
+                                    <Link
+                                      key={codexItem.type}
+                                      href={`/admin/entities?type=${codexItem.type}`}
+                                      aria-current={isCodexItemActive ? "page" : undefined}
+                                      className={getCodexItemClassName(isCodexItemActive)}
+                                    >
+                                      {codexItem.label}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
-                </div>
-
-                {/* Review Inbox */}
-                <Link
-                  href="/admin/review-inbox"
-                  className="sidebar-link block rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
-                >
-                  Review Inbox
-                </Link>
+                  );
+                })}
               </div>
             </div>
           </nav>
@@ -208,7 +216,7 @@ export function AppSidebar() {
               Recent Threads
             </div>
             <div className="mt-2 flex-1 space-y-1 overflow-y-auto">
-              {recentItems.map((item) => (
+              {sidebarNavigationConfig.recentItems.map((item) => (
                 <div
                   key={item}
                   className="sidebar-link cursor-default truncate rounded-2xl border border-transparent px-4 py-3 text-sm text-text-muted"
@@ -248,13 +256,66 @@ export function AppSidebar() {
                 />
               </svg>
             </div>
-              <button
-                type="button"
+            <button
+              type="button"
               className="rounded-2xl bg-[linear-gradient(135deg,#86c9ff,#5ca7de)] p-3 text-slate-950 shadow-[0_18px_36px_rgba(92,167,222,0.28)]"
               aria-label="New chat"
             >
               +
             </button>
+
+            <nav aria-label="Collapsed main navigation" className="flex flex-col items-center gap-2">
+              <Link
+                href="/"
+                aria-label="Chat"
+                aria-current={routeState.activePrimaryNavId === "chat" ? "page" : undefined}
+                className={getCollapsedPrimaryNavClassName(routeState.activePrimaryNavId === "chat")}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.9}
+                    d="M8 10h8m-8 4h5m-9 5h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1z"
+                  />
+                </svg>
+                <span className="sr-only">Chat</span>
+              </Link>
+
+              <Link
+                href={collapsedCodexHref}
+                aria-label="Codex"
+                aria-current={routeState.activePrimaryNavId === "codex" ? "page" : undefined}
+                className={getCollapsedPrimaryNavClassName(routeState.activePrimaryNavId === "codex")}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M5 6.75A1.75 1.75 0 016.75 5h5.1a4.15 4.15 0 013.1 1.39A4.15 4.15 0 0118.05 5h.2A1.75 1.75 0 0120 6.75v12.5a.75.75 0 01-1.09.67 8.6 8.6 0 00-6.91-.26.75.75 0 01-.49 0 8.6 8.6 0 00-6.42.16A.75.75 0 015 19.25V6.75z"
+                  />
+                </svg>
+                <span className="sr-only">Codex</span>
+              </Link>
+
+              <Link
+                href="/admin/review-inbox"
+                aria-label="Review Inbox"
+                aria-current={routeState.activePrimaryNavId === "reviewInbox" ? "page" : undefined}
+                className={getCollapsedPrimaryNavClassName(routeState.activePrimaryNavId === "reviewInbox")}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.9}
+                    d="M7 8h10M7 12h10m-6 4h6M6 3h9l4 4v12a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z"
+                  />
+                </svg>
+                <span className="sr-only">Review Inbox</span>
+              </Link>
+            </nav>
           </div>
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#d9c37f,#86c9ff)] text-sm font-bold text-slate-950 shadow-[0_0_28px_rgba(134,201,255,0.22)]">
             A

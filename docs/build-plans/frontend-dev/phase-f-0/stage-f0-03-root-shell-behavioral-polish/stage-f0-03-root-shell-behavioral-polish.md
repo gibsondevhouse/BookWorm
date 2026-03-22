@@ -1,6 +1,6 @@
 # Stage-f0-03: Root Shell Behavioral Polish
 
-**Status:** [ ] Not started  
+**Status:** [x] Complete  
 **Phase:** Phase-f-0  
 **Depends on:** Stage-f0-02 complete (requires `messages` state from Stage-f0-02)  
 **Target files:** `apps/web/src/app/page.tsx`

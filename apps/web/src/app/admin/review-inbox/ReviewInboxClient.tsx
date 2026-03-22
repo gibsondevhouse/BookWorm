@@ -4,6 +4,10 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboa
 
 import styles from "../adminAccessibility.module.css";
 import { moveFocusTrap, moveListCursor, resolveKeyboardShortcut } from "../_lib/accessibilityKeyboard";
+import { AdminSurfaceHeader } from "../../../features/admin-surface/components/AdminSurfaceHeader";
+import { AdminSurfaceSectionCard } from "../../../features/admin-surface/components/AdminSurfaceSectionCard";
+import { AdminSurfaceShell } from "../../../features/admin-surface/components/AdminSurfaceShell";
+import { AdminSurfaceSummaryPanel } from "../../../features/admin-surface/components/AdminSurfaceSummaryPanel";
 
 type ProposalStatus = "PENDING" | "ESCALATED" | "APPROVED";
 
@@ -155,14 +159,17 @@ export function ReviewInboxClient(): ReactElement {
 
   return (
     <main className={styles.page}>
-      <div className={styles.shell}>
+      <AdminSurfaceShell>
         <header className={styles.header}>
-          <h1 ref={inboxRef} tabIndex={-1}>Review Inbox</h1>
-          <p className={styles.muted}>Use Alt+I to focus inbox, arrows to move rows, and Enter to review.</p>
+          <AdminSurfaceHeader
+            title="Review Inbox"
+            description="Use Alt+I to focus inbox, arrows to move rows, and Enter to review."
+            titleRef={inboxRef}
+            titleTabIndex={-1}
+          />
         </header>
 
-        <section aria-labelledby="review-filters-title">
-          <h2 id="review-filters-title">Filters</h2>
+        <AdminSurfaceSectionCard headingId="review-filters-title" title="Filters">
           <div className={styles.controlsRow}>
             <label className={styles.labelGroup} htmlFor="review-search">
               Search proposals
@@ -184,18 +191,16 @@ export function ReviewInboxClient(): ReactElement {
             </label>
           </div>
           <p id="review-filter-help" className={styles.helperText}>Filter by title or status to reduce the queue before opening the focused proposal. The active row summary updates as you move through the list.</p>
-          <div className={styles.summaryPanel} aria-live="polite" aria-atomic="true">
-            <h3 className={styles.summaryTitle}>Queue Summary</h3>
+          <AdminSurfaceSummaryPanel title="Queue Summary" ariaLive="polite" ariaAtomic={true}>
             <ul className={styles.summaryList}>
               <li>{filtered.length} proposals shown for {activeFilterLabel}.</li>
               <li>{activeProposal ? `Focused proposal: ${activeProposal.title}.` : "No proposal is currently focused."}</li>
             </ul>
-          </div>
+          </AdminSurfaceSummaryPanel>
           <p className={styles.srOnly} aria-live="polite" aria-atomic="true">{liveMessage}</p>
-        </section>
+        </AdminSurfaceSectionCard>
 
-        <section aria-labelledby="review-list-title">
-          <h2 id="review-list-title">Pending Proposals</h2>
+        <AdminSurfaceSectionCard headingId="review-list-title" title="Pending Proposals">
           <ul className={styles.list} role="listbox" aria-label="Review proposals" aria-describedby="review-filter-help" onKeyDown={onListKeyDown}>
             {filtered.length === 0 ? (
               <li className={styles.emptyState}>
@@ -229,8 +234,8 @@ export function ReviewInboxClient(): ReactElement {
               </li>
             ))}
           </ul>
-        </section>
-      </div>
+        </AdminSurfaceSectionCard>
+      </AdminSurfaceShell>
 
       {selectedProposal ? (
         <div className={styles.dialogBackdrop}>

@@ -11,6 +11,10 @@ import {
   validateEntityForm,
   type EntityFormValues
 } from "../_lib/accessibilityKeyboard";
+import { AdminSurfaceHeader } from "../../../features/admin-surface/components/AdminSurfaceHeader";
+import { AdminSurfaceSectionCard } from "../../../features/admin-surface/components/AdminSurfaceSectionCard";
+import { AdminSurfaceShell } from "../../../features/admin-surface/components/AdminSurfaceShell";
+import { AdminSurfaceSummaryPanel } from "../../../features/admin-surface/components/AdminSurfaceSummaryPanel";
 
 type EntityRow = {
   id: string;
@@ -42,6 +46,8 @@ export function EntitiesClient(): ReactElement {
   const [errorSummary, setErrorSummary] = useState<string[]>([]);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const rowTriggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const lastDialogTriggerRef = useRef<HTMLElement | null>(null);
 
   const filtered = useMemo(() => {
     const baseline = seedEntities.filter((entity) => entity.name.toLowerCase().includes(query.toLowerCase().trim()));
@@ -65,7 +71,7 @@ export function EntitiesClient(): ReactElement {
 
       if (command === "new-entity") {
         event.preventDefault();
-        setIsEditOpen(true);
+        openDialog(triggerRef.current);
       }
 
       if (command === "cancel" && isEditOpen) {
@@ -146,6 +152,18 @@ export function EntitiesClient(): ReactElement {
     });
   };
 
+  const openDialog = (trigger: HTMLElement | null, rowId?: string): void => {
+    if (trigger) {
+      lastDialogTriggerRef.current = trigger;
+    } else if (rowId) {
+      lastDialogTriggerRef.current = rowTriggerRefs.current.get(rowId) ?? triggerRef.current;
+    } else {
+      lastDialogTriggerRef.current = triggerRef.current;
+    }
+
+    setIsEditOpen(true);
+  };
+
   const onTableKeyDown = (event: ReactKeyboardEvent<HTMLTableSectionElement>): void => {
     if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
       event.preventDefault();
@@ -165,12 +183,24 @@ export function EntitiesClient(): ReactElement {
 
     if (event.key === "Enter" && activeIndex >= 0) {
       event.preventDefault();
-      setIsEditOpen(true);
+
+      const activeEntity = filtered[activeIndex];
+      const trigger = event.target instanceof HTMLElement ? event.target : null;
+
+      openDialog(trigger, activeEntity?.id);
     }
   };
 
   const closeDialog = (): void => {
     setIsEditOpen(false);
+
+    const lastDialogTrigger = lastDialogTriggerRef.current;
+
+    if (lastDialogTrigger && document.contains(lastDialogTrigger)) {
+      lastDialogTrigger.focus();
+      return;
+    }
+
     triggerRef.current?.focus();
   };
 
@@ -190,14 +220,15 @@ export function EntitiesClient(): ReactElement {
 
   return (
     <main className={styles.page}>
-      <div className={styles.shell}>
+      <AdminSurfaceShell>
         <header className={styles.header}>
-          <h1>Entity List</h1>
-          <p className={styles.muted}>Use Alt+N to create, Enter to edit selected row, and Space to select rows.</p>
+          <AdminSurfaceHeader
+            title="Entity List"
+            description="Use Alt+N to create, Enter to edit selected row, and Space to select rows."
+          />
         </header>
 
-        <section aria-labelledby="entity-controls-title">
-          <h2 id="entity-controls-title">Entity Controls</h2>
+        <AdminSurfaceSectionCard headingId="entity-controls-title" title="Entity Controls">
           <div className={styles.controlsRow}>
             <label className={styles.labelGroup} htmlFor="entity-search">
               Search entities
@@ -211,23 +242,26 @@ export function EntitiesClient(): ReactElement {
             >
               Toggle sort
             </button>
-            <button ref={triggerRef} type="button" className={`${styles.button} ${styles.primaryButton}`} onClick={() => setIsEditOpen(true)}>
+            <button
+              ref={triggerRef}
+              type="button"
+              className={`${styles.button} ${styles.primaryButton}`}
+              onClick={(event) => openDialog(event.currentTarget)}
+            >
               New Entity (Alt+N)
             </button>
           </div>
           <p id="entity-controls-help" className={styles.helperText}>Use the search box to narrow the table, then toggle sort to review names in the order that best matches your editing pass.</p>
-          <div className={styles.summaryPanel}>
-            <h3 className={styles.summaryTitle}>Working Set Summary</h3>
+          <AdminSurfaceSummaryPanel title="Working Set Summary">
             <ul className={styles.summaryList}>
               <li>{filtered.length} entities visible.</li>
               <li>{selectedCount} entities selected.</li>
               <li>Current sort: {sortLabel}.</li>
             </ul>
-          </div>
-        </section>
+          </AdminSurfaceSummaryPanel>
+        </AdminSurfaceSectionCard>
 
-        <section aria-labelledby="entity-list-title" aria-describedby="entity-controls-help">
-          <h2 id="entity-list-title">Entities</h2>
+        <AdminSurfaceSectionCard headingId="entity-list-title" title="Entities" ariaDescribedBy="entity-controls-help">
           <table className={styles.table}>
             <thead>
               <tr>
@@ -281,7 +315,19 @@ export function EntitiesClient(): ReactElement {
                     />
                   </td>
                   <td>
-                    <button type="button" className={styles.rowButton} onClick={() => setIsEditOpen(true)}>
+                    <button
+                      ref={(element) => {
+                        if (element) {
+                          rowTriggerRefs.current.set(entity.id, element);
+                          return;
+                        }
+
+                        rowTriggerRefs.current.delete(entity.id);
+                      }}
+                      type="button"
+                      className={styles.rowButton}
+                      onClick={(event) => openDialog(event.currentTarget, entity.id)}
+                    >
                       {entity.name}
                     </button>
                   </td>
@@ -301,7 +347,7 @@ export function EntitiesClient(): ReactElement {
                     </span>
                   </td>
                   <td>
-                    <button type="button" className={styles.button} onClick={() => setIsEditOpen(true)}>
+                    <button type="button" className={styles.button} onClick={(event) => openDialog(event.currentTarget, entity.id)}>
                       Edit
                     </button>
                   </td>
@@ -309,8 +355,8 @@ export function EntitiesClient(): ReactElement {
               ))}
             </tbody>
           </table>
-        </section>
-      </div>
+        </AdminSurfaceSectionCard>
+      </AdminSurfaceShell>
 
       {isEditOpen ? (
         <div className={styles.dialogBackdrop}>

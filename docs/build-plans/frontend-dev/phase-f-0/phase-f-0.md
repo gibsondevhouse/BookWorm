@@ -1,6 +1,6 @@
 # Phase-f-0: Interaction Quality Baseline
 
-**Status:** [ ] Not started  
+**Status:** [x] Complete  
 **Track:** Frontend (`apps/web`)  
 **Parallel to:** Phase 6 Stage 03 (admin visual alignment — non-overlapping surfaces)
 
@@ -56,7 +56,7 @@ was authored (March 21, 2026):
 `leading-loose`, floating send icon button, ghostly opacity controls, `.composer-panel`
 `:focus-within` glow. Target files: `page.tsx`, `globals.css`.
 
-**Status:** [ ] Not started  
+**Status:** [x] Complete  
 **Doc:** [stage-f0-01-composer-interaction-baseline.md](./stage-f0-01-composer-interaction-baseline/stage-f0-01-composer-interaction-baseline.md)
 
 ### Stage-f0-02: Chat Surface and Markdown Output
@@ -65,7 +65,7 @@ was authored (March 21, 2026):
 (user/assistant layout), install `react-markdown`, wire it to AI response rendering.  
 Target files: `page.tsx`, possibly a new `ChatMessageList` component.
 
-**Status:** [ ] Not started  
+**Status:** [x] Complete  
 **Doc:** [stage-f0-02-chat-surface-and-markdown-output.md](./stage-f0-02-chat-surface-and-markdown-output/stage-f0-02-chat-surface-and-markdown-output.md)
 
 ### Stage-f0-03: Root Shell Behavioral Polish
@@ -74,7 +74,7 @@ Target files: `page.tsx`, possibly a new `ChatMessageList` component.
 seeding the composer textarea.  
 Target files: `page.tsx`.
 
-**Status:** [ ] Not started  
+**Status:** [x] Complete  
 **Doc:** [stage-f0-03-root-shell-behavioral-polish.md](./stage-f0-03-root-shell-behavioral-polish/stage-f0-03-root-shell-behavioral-polish.md)
 
 ---
