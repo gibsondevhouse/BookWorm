@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { useMouseSpotlight } from "./hooks/useMouseSpotlight";
@@ -12,18 +12,6 @@ function getPrimaryNavClassName(isActive: boolean): string {
   return isActive
     ? "sidebar-link tactile-press transition-spring block rounded-lg border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.4)] px-4 py-3 text-sm font-medium text-text"
     : "sidebar-link tactile-press transition-spring block rounded-lg px-4 py-3 text-sm text-muted-foreground/80 hover:text-foreground";
-}
-
-function getCodexToggleClassName(isActive: boolean): string {
-  return isActive
-    ? "sidebar-link tactile-press transition-spring flex w-full items-center justify-between rounded-lg border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.4)] px-4 py-3 text-sm font-medium text-text"
-    : "sidebar-link tactile-press transition-spring flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm text-muted-foreground/80 hover:text-foreground";
-}
-
-function getCodexItemClassName(isActive: boolean): string {
-  return isActive
-    ? "sidebar-link tactile-press transition-spring block rounded-lg border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.4)] px-3 py-2 text-sm font-medium text-text"
-    : "sidebar-link tactile-press transition-spring block rounded-lg px-3 py-2 text-sm text-muted-foreground/80 hover:text-foreground";
 }
 
 function getCollapsedPrimaryNavClassName(isActive: boolean): string {
@@ -37,15 +25,11 @@ function getCollapsedPrimaryNavClassName(isActive: boolean): string {
 
 export function AppSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isCodexOpen, setIsCodexOpen] = useState(false);
   const sidebarSpotlight = useMouseSpotlight<HTMLElement>();
   const searchSpotlight = useMouseSpotlight<HTMLDivElement>();
   const profileSpotlight = useMouseSpotlight<HTMLDivElement>();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const routeState = getSidebarRouteState(pathname, searchParams.get("type"));
-  const defaultCodexType = sidebarNavigationConfig.codexGroups[0].items[0].type;
-  const collapsedCodexHref = `/admin/entities?type=${routeState.activeCodexType ?? defaultCodexType}`;
+  const routeState = getSidebarRouteState(pathname);
   const collapsedTooltipClassName =
     "pointer-events-none absolute left-full top-1/2 z-20 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-lg border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.92)] px-2.5 py-1.5 text-xs font-medium tracking-[0.04em] text-[var(--color-foreground)] opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100";
 
@@ -180,73 +164,17 @@ export function AppSidebar() {
               </div>
               <div className="mt-2 space-y-1.5">
                 {sidebarNavigationConfig.primaryNavItems.map((item) => {
-                  if (item.kind === "link") {
-                    const isActive = routeState.activePrimaryNavId === item.id;
-
-                    return (
-                      <Link
-                        key={item.id}
-                        href={item.href}
-                        aria-current={isActive ? "page" : undefined}
-                        className={getPrimaryNavClassName(isActive)}
-                      >
-                        {item.label}
-                      </Link>
-                    );
-                  }
+                  const isActive = routeState.activePrimaryNavId === item.id;
 
                   return (
-                    <div key={item.id}>
-                      <button
-                        type="button"
-                        onClick={() => setIsCodexOpen(!isCodexOpen)}
-                        aria-expanded={isCodexOpen}
-                        className={getCodexToggleClassName(routeState.isCodexContext)}
-                      >
-                        <span>{item.label}</span>
-                        <svg
-                          className={`h-4 w-4 transition-transform ${isCodexOpen ? "rotate-180" : ""}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-                      {isCodexOpen && (
-                        <div className="mt-1 space-y-3 pl-3">
-                          {sidebarNavigationConfig.codexGroups.map((group) => (
-                            <div key={group.label} className="rounded-xl border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.32)] p-2">
-                              <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/50">
-                                {group.label}
-                              </div>
-                              <div className="mt-1 space-y-0.5">
-                                {group.items.map((codexItem) => {
-                                  const isCodexItemActive =
-                                    routeState.isCodexContext && routeState.activeCodexType === codexItem.type;
-
-                                  return (
-                                    <Link
-                                      key={codexItem.type}
-                                      href={`/admin/entities?type=${codexItem.type}`}
-                                      aria-current={isCodexItemActive ? "page" : undefined}
-                                      className={getCodexItemClassName(isCodexItemActive)}
-                                    >
-                                      {codexItem.label}
-                                    </Link>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={getPrimaryNavClassName(isActive)}
+                    >
+                      {item.label}
+                    </Link>
                   );
                 })}
               </div>
@@ -327,7 +255,7 @@ export function AppSidebar() {
               </Link>
 
               <Link
-                href={collapsedCodexHref}
+                href="/admin/codex"
                 aria-label="Codex"
                 title="Codex"
                 aria-current={routeState.activePrimaryNavId === "codex" ? "page" : undefined}

@@ -19,6 +19,8 @@ const proposalReviewPath = join(repositoryRoot, "apps/web/src/app/admin/review/[
 const entitiesPath = join(repositoryRoot, "apps/web/src/app/admin/entities/EntitiesClient.tsx");
 const editEntityPath = join(repositoryRoot, "apps/web/src/app/admin/entities/[slug]/edit/EditEntityPageClient.tsx");
 const sharedStylePath = join(repositoryRoot, "apps/web/src/app/admin/adminAccessibility.module.css");
+const globalStylePath = join(repositoryRoot, "apps/web/src/app/globals.css");
+const accessibilityTokensPath = join(repositoryRoot, "apps/web/src/app/accessibility-tokens.css");
 
 const readSurface = async (path: string): Promise<string> => readFile(path, "utf8");
 
@@ -126,11 +128,20 @@ describe("Phase 5 Stage 04 Part 01: Accessibility & Keyboard Navigation", () => 
     });
 
     test("global focus indicator style is present for keyboard users", async () => {
-      const styleSource = await readSurface(sharedStylePath);
+      const globalSource = await readSurface(globalStylePath);
+      const tokenSource = await readSurface(accessibilityTokensPath);
 
-      assert.match(styleSource, /:where\(button, input, select, textarea, a\):focus-visible/);
-      assert.match(styleSource, /outline: 3px solid/);
-      assert.match(styleSource, /outline-offset: 2px/);
+      // Verify accessibility tokens define focus properties
+      assert.match(tokenSource, /--focus-outline-width:\s*2px/);
+      assert.match(tokenSource, /--focus-outline-color:\s*rgba\(134,\s*201,\s*255,\s*0\.95\)/);
+      assert.match(tokenSource, /--focus-outline-offset:\s*2px/);
+      assert.match(tokenSource, /--focus-outline-glow/);
+
+      // Verify globals.css references the token variables for focus styling
+      assert.match(globalSource, /outline:\s*var\(--focus-outline-width\)/);
+      assert.match(globalSource, /solid var\(--focus-outline-color\)/);
+      assert.match(globalSource, /outline-offset:\s*var\(--focus-outline-offset\)/);
+      assert.match(globalSource, /box-shadow:\s*var\(--focus-outline-glow\)/);
     });
   });
 

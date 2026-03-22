@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./accessibility-tokens.css";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
 @theme {
@@ -80,9 +81,9 @@ textarea {
 }
 
 :focus-visible:not(.composer-field) {
-  outline: 2px solid rgba(134, 201, 255, 0.95);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 5px rgba(134, 201, 255, 0.18);
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: var(--focus-outline-glow);
 }
 
 input::placeholder,

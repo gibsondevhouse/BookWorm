@@ -1,6 +1,6 @@
 # Stage-f1-03: Admin Surface Cohesion
 
-**Status:** [-] In progress  
+**Status:** [x] Completed  
 **Phase:** Phase-f-1  
 **Depends on:** Stage-f1-02 complete  
 **Target files:** admin frontend routes/components under `apps/web/src/app/admin/`, shared frontend UI primitives under `apps/web/src/`
@@ -37,7 +37,7 @@ Out of scope: admin API behavior changes, proposal workflow business-logic owner
 
 ---
 
-## Current State After Slice-01 Completion
+## Current State After Slice-02 Completion
 
 | File | Relevant State |
 |---|---|
@@ -47,7 +47,7 @@ Out of scope: admin API behavior changes, proposal workflow business-logic owner
 | `apps/web/src/features/admin-surface/components/AdminSurfaceSummaryPanel.tsx` | Shared summary-panel primitive now exists for route-level summaries and status framing |
 | `apps/web/src/app/admin/entities/EntitiesClient.tsx` | Entities route now adopts the shared primitives while preserving search, sort, selection, and dialog behavior |
 | `apps/web/src/app/admin/review-inbox/ReviewInboxClient.tsx` | Review inbox now adopts the shared primitives while preserving filter, listbox, live-region, and review-dialog behavior |
-| `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx` | Proposal review route still uses local shell/dialog framing and is the remaining Stage-f1-03 adoption target |
+| `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx` | Proposal review now adopts the shared admin primitives while preserving dialog behavior, focus-trap semantics, and decision shortcut flows |
 
 ## Slices
 
@@ -61,8 +61,8 @@ inbox admin surfaces without changing backend contracts.
 
 ### Slice-02: [Proposal Review Surface Alignment and Regression Pass](./stage-f1-03-slice-02-proposal-review-surface-alignment-and-regression-pass.md)
 
-**Status:** [ ] Not started  
-**Approval:** Pending human approval for execution
+**Status:** [x] Completed  
+**Approval:** Approved for execution
 
 This slice adopts the shared admin primitives in the proposal review route and closes the remaining
 Stage-f1-03 regression pass for dialog, focus-trap, and decision shortcut behavior.
@@ -85,13 +85,20 @@ Stage-f1-03 regression pass for dialog, focus-trap, and decision shortcut behavi
 
 ## Validation Record (current stage execution evidence)
 
-This record reflects checks run through Stage-f1-03 Slice-01 completion. Additional verification for
-proposal review alignment remains pending until Slice-02 executes and the stage is signed off.
+This record reflects checks run through Stage-f1-03 Slice-02 completion.
+
+Automated validation evidence (rerun for audit closure on 2026-03-22):
+
+- `pnpm lint` exited 0.
+- `pnpm type-check` exited 0.
+- `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts` exited 0.
+- `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts` exited 0.
 
 - [x] `pnpm lint` (exit 0)
 - [x] `pnpm type-check` (exit 0)
 - [x] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts` (exit 0)
 - [x] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts` (exit 0)
-- [ ] Manual smoke test: entities, review inbox, and proposal review routes retain expected keyboard flows. (recommended, not executed in Slice-01 run)
-- [ ] Manual smoke test: extracted primitives render consistently across targeted admin routes. (recommended, not executed in Slice-01 run)
-- [ ] Proposal review route alignment and regression validation remain pending Slice-02 execution.
+- [ ] Manual smoke test: entities, review inbox, and proposal review routes retain expected keyboard flows. (open manual QA item; not executed in automation-first runs)
+- [ ] Manual smoke test: extracted primitives render consistently across targeted admin routes. (open manual QA item; not executed in automation-first runs)
+
+Completion exception policy (approved): Stage status remains Completed because all required automated validations passed and the final structural drift in `ProposalReviewClient.tsx` was removed. Open manual smoke checks are explicitly tracked as post-execution QA follow-ups.

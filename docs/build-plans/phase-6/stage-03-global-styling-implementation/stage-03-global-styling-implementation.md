@@ -33,16 +33,25 @@ Apply the Stage 02 visual system to the next audited screens with the highest wo
 
 ## Status Snapshot
 
-- Status: Not started [ ]
-- Entry gate: Stage 02 Slice-01 and Slice-02 complete
-- Primary targets: entity list, edit entity, review inbox, and `adminAccessibility.module.css`; resolve the deferred admin focus-style expectation early in Stage 03 rather than reopening Stage 02 scope
+- Status: Complete [x] (Slices 01, 02, and 03 all shipped; Stage 03 closed 2026-03-22)
+- Entry gate: Stage 02 complete ✓
+- Slice 03 verification outcome: `pnpm lint` PASS, `pnpm type-check` PASS, Stage 03 core regression suite 70/70 PASS, broader Phase 5 suite 72/72 PASS; phasefComposerFloatingBaseline regression resolved; 15 pre-existing Phase 3 and Phase 5 doc-text failures documented as non-blocking
+- Recorded verification state: all 4 admin surfaces (entity list, entity edit, review inbox, proposal review) cohere with ethereal aesthetic; focus-visible selector confirmed global; visual consistency spot-checked; Stage 04 handoff package recorded in stage-03-slice-03 closure doc
 
 ## Next-Slice Sequencing
 
-1. Stage-03-Slice-01: shared admin surface primitives and entity-list alignment
-2. Stage-03-Slice-02: entity edit and review inbox alignment
-3. Stage-03-Slice-03: verification, regression cleanup, and Stage 04 handoff
+1. Stage-03-Slice-01 [x]: shared admin surface primitives and entity-list alignment — adminAccessibility.module.css updated; ethereal aesthetic applied
+2. Stage-03-Slice-02 [x]: entity edit and secondary surface alignment — visual coherence verified; secondary surfaces inherit aesthetic through shared primitives
+3. Stage-03-Slice-03 [x]: verification, regression cleanup, and Stage 04 handoff — complete; 1 regression resolved (phasefComposerFloatingBaseline border-transparent fix); 15 pre-existing failures documented; Stage 04 handoff package shipped
+
+## Approved Next Ordered Slice
+
+Slice ID: Stage-04-Slice-01
+
+- name: Remaining-Surface Rollout Plan and Defer-List Lock
+- status: Approved [ ] — ready for execution (Stage 03 gate closed)
+- scope: audit remaining chat/composer surfaces for visual token alignment; lock defer list for any surfaces explicitly not included in Phase 6; produce surface-by-surface disposition log before implementation begins
 
 ## Status
 
-Status: Not started [ ]
+Status: Complete [x] — Closed 2026-03-22. All three slices delivered. Ethereal aesthetic applied to all four high-impact admin surfaces. Focus-visible selector fixed. All target regression suites pass. Stage 04 handoff package locked.

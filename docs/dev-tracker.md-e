@@ -1,0 +1,130 @@
+# BookWorm Development Tracker
+
+Last updated: 2026-03-22
+Source of truth inputs: GEMINI.md, docs/build-plans/master-plan-tracker.md, docs/build-plans/phase-6/*.md
+
+## Purpose and Scope
+
+This tracker is the execution-facing view of delivery status organized as Phase -> Stage -> Part (or Slice where a stage is sliced). It is intended for weekly planning, daily execution handoff, and release-readiness checks.
+
+Scope includes:
+- Phase and stage status rollup from existing build plans.
+- Immediate execution queue for active and next slices.
+- Per-item ownership, dependency, and evidence tracking.
+
+Scope excludes:
+- Replacing detailed implementation plans in docs/build-plans.
+- Defining new product scope not already represented in repository docs.
+
+## How to Use
+
+1. During planning, select only items with Status = Ready or In Progress.
+2. Before starting work, set Owner and confirm Dependencies are satisfied.
+3. During implementation, attach PR links, test command outputs, and doc links in Evidence/PR.
+4. At completion, move status to Done only after required validations pass.
+5. Update Next Up and Risks/Blockers at least once per work session.
+
+## Status Legend
+
+- NS = Not Started
+- RD = Ready
+- IP = In Progress
+- BL = Blocked
+- RV = In Review
+- DN = Done
+
+## Structured Tracker
+
+### Phase 0
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Foundation and Bootstrap | All documented parts | Unassigned | DN | None | docs/build-plans/phase-0/stage-01-foundation-and-bootstrap/ | Baseline complete per master tracker. |
+| Stage 02 Core Runtime and Auth | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-0/stage-02-core-runtime-and-auth/ | Complete. |
+| Stage 03 Data Model and Release Spine | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-0/stage-03-data-model-and-release-spine/ | Complete. |
+| Stage 04 First Vertical Slice | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-0/stage-04-first-vertical-slice/ | Complete; verification gate closed. |
+
+### Phase 1
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Expanded Content Spine | Parts 01-03 | Unassigned | DN | Phase 0 complete | docs/build-plans/phase-1/stage-01-expanded-content-spine/ | Complete. |
+| Stage 02 Authoring Surface Expansion | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-1/stage-02-authoring-surface-expansion/ | Complete. |
+| Stage 03 Release Validation and Review | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-1/stage-03-release-validation-and-review/ | Complete. |
+| Stage 04 Public Coverage and Verification | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-1/stage-04-public-coverage-and-verification/ | Complete; phase verification closed. |
+
+### Phase 2
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Comprehensive Entity Management | Parts 01, 02, 02b, 03 | Unassigned | DN | Phase 1 complete | docs/build-plans/phase-2/stage-01-comprehensive-entity-management/ | Complete. |
+| Stage 02 Public Codex and Reader | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-2/stage-02-public-codex-and-reader/ | Complete. |
+| Stage 03 Search and Continuity Foundation | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-2/stage-03-search-and-continuity-foundation/ | Complete. |
+| Stage 04 Portability and Delivery | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-2/stage-04-portability-and-delivery/ | Complete; phase verification closed. |
+
+### Phase 3
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Collaboration and Review Workflows | Parts 01-03 | Unassigned | DN | Phase 2 complete | docs/build-plans/phase-3/stage-01-collaboration-and-review-workflows/ | Complete. |
+| Stage 02 Proposal Workflow Enhancement | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-3/stage-02-proposal-workflow-enhancement/ | Complete. |
+| Stage 03 Comment Structure and Feedback System | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-3/stage-03-comment-structure-and-feedback-system/ | Complete. |
+| Stage 04 Content Comparison and Proposal Review Tools | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-3/stage-04-content-comparison-and-proposal-review-tools/ | Complete. |
+
+### Phase 4
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Review Request and Assignment Foundation | Parts 01-03 | Unassigned | DN | Phase 3 complete | docs/build-plans/phase-4/stage-01-review-request-and-assignment-foundation/ | Complete. |
+| Stage 02 Approval Chain and Policy Enforcement | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-4/stage-02-approval-chain-and-policy-enforcement/ | Complete. |
+| Stage 03 Collaboration Notifications and Observability | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-4/stage-03-collaboration-notifications-and-observability/ | Complete. |
+| Stage 04 Operational Hardening and Verification | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-4/stage-04-operational-hardening-and-phase-4-verification/ | Complete; phase verification gate closed. |
+
+### Phase 5
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Search Tuning and Query Quality | Parts 01-03 | Unassigned | DN | Phase 4 complete | docs/build-plans/phase-5/stage-01-search-tuning-and-query-quality/ | Complete. |
+| Stage 02 Continuity Intelligence Expansion | Parts 01-03 | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-5/stage-02-continuity-intelligence-expansion/ | Complete. |
+| Stage 03 Portability Maturity and Operator Workflows | Parts 01-03 | Unassigned | DN | Stage 02 complete | docs/build-plans/phase-5/stage-03-portability-maturity-and-operator-workflows/ | Complete. |
+| Stage 04 UX Accessibility and Feedback Integration | Parts 01-03 | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-5/stage-04-ux-accessibility-and-feedback-integration/ | Complete with documented closeout exception in stage notes. |
+
+### Phase 6 (Active)
+
+| Stage | Part | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 01 Phase 5 Closeout Unblock Surfaces | Stage complete | Unassigned | DN | Phase 5 closeout context | docs/build-plans/phase-6/stage-01-phase-5-closeout-unblock-surfaces/ | Closed baseline and handoff recorded. |
+| Stage 02 Joint Styling Foundation | Slice 01: UI vision checklist, gap audit, root-shell alignment | Unassigned | DN | Stage 01 complete | docs/build-plans/phase-6/stage-02-joint-styling-foundation/stage-02-slice-01-ui-vision-checklist-audit-and-root-shell-alignment.md | Shipped per stage snapshot. |
+| Stage 02 Joint Styling Foundation | Slice 02: Sidebar Codex Navigation Refactor | Unassigned | DN | Slice 01 complete | docs/build-plans/phase-6/stage-02-joint-styling-foundation/stage-02-slice-02-sidebar-codex-nav-refactor.md | Shipped; lint/type-check reported passing. |
+| Stage 02 Joint Styling Foundation | Slice 03: Root-shell verification closeout and Stage 03 handoff lock | Lead Coder | DN | Slices 01-02 complete | docs/build-plans/phase-6/stage-02-joint-styling-foundation/stage-02-slice-03-root-shell-verification-closeout.md | Closed: Verification pass recorded; out-of-scope admin focus-indicator deferred to Stage 03; handoff locked. See stage-02-slice-03 closure doc. |
+| Stage 03 Global Styling Implementation | Slice 01: Shared admin primitives + entity list alignment | Lead Coder | DN | Stage 02 complete | docs/build-plans/phase-6/stage-03-global-styling-implementation/stage-03-slice-01-shared-admin-primitives-entity-list-alignment.md | Closed: adminAccessibility.module.css updated to ethereal aesthetic; focus-visible selector fixed; phase5AccessibilityKeyboardNavigationPart01 now passes. |
+| Stage 03 Global Styling Implementation | Slice 02: Entity edit and secondary surface alignment | Lead Coder | DN | Slice 01 complete | docs/build-plans/phase-6/stage-03-global-styling-implementation/stage-03-slice-02-entity-edit-secondary-surface-alignment.md | Closed: Secondary surfaces (edit form, proposal review) automatically aligned through Slice 01 CSS update; visual coherence confirmed; all tests pass. |
+| Stage 03 Global Styling Implementation | Slice 03: Verification, regression cleanup, and Stage 04 handoff | Lead Coder | DN | Slices 01-02 complete | docs/build-plans/phase-6/stage-03-global-styling-implementation/stage-03-slice-03-verification-regression-cleanup-stage04-handoff.md | Closed: lint/type-check PASS; Stage 03 regression suite 70/70 PASS; Phase 5 broad suite 72/72 PASS; phasefComposerFloatingBaseline regression resolved (border-transparent fix); 15 pre-existing Phase 3 + Phase 5 doc-text failures documented as non-blocking. Full handoff package shipped. |
+| Stage 04 UI/UX Surface Expansion | Slice 01: Remaining-surface rollout plan and defer-list lock | Unassigned | DN | Stage 03 complete | docs/build-plans/phase-6/stage-04-ui-ux-surface-expansion/stage-04-slice-01-surface-rollout-disposition.md | Closed: disposition matrix and defer-list lock recorded. |
+| Stage 04 UI/UX Surface Expansion | Slice 02: Polish implementation on deferred surfaces | Unassigned | DN | Slice 01 complete | docs/build-plans/phase-6/stage-04-ui-ux-surface-expansion/stage-04-slice-02-polish-deferred-surfaces.md | Closed: settings route gap resolved and deferred items locked. |
+| Stage 04 UI/UX Surface Expansion | Slice 03: Codex dashboard entry and sidebar simplification | Lead Coder | DN | Slices 01-02 complete | docs/build-plans/phase-6/stage-04-ui-ux-surface-expansion/stage-04-slice-03-codex-dashboard-entry-sidebar-simplification.md | Closed: Codex sidebar disclosure removed; direct `/admin/codex` entry added (expanded + collapsed); Codex dashboard route/client shipped with quick links to existing entity type flows; web lint/type-check passing. |
+| Stage 04 UI/UX Surface Expansion | Slice 04: Final verification and phase closeout | Unassigned | NS | Slice 03 complete | docs/build-plans/phase-6/stage-04-ui-ux-surface-expansion/stage-04-ui-ux-surface-expansion.md | Closeout docs must distinguish shipped vs deferred work. |
+
+### Phase 6 Stage 05 (Proposed)
+
+| Stage | Slice | Owner | Status | Dependencies | Evidence/PR | Notes |
+|---|---|---|---|---|---|---|
+| Stage 05 Accessibility System Formalization | Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 01: Token Architecture & Theming Foundation | Unassigned | RD | WCAG Hardening | Slice 01: Token Architecture | Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 01: Token Architecture & Theming Foundation | Unassigned | RD | Theming Foundation | @gibdevlite | DN | Stage 04 complete | docs/build-plans/phase-6/stage-05-accessibility-system-formalization-wcag-hardening/stage-05.md | Defines accessibility tokens (focus, motion, affordance, spacing), creates `accessibility-tokens.css`, refactors globals.css to use tokens, consolidates prefers-reduced-motion support. |
+| Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 02: CSS Architecture Cleanup & CSS Module Issue Resolution | Unassigned | RD | Slice 01 complete | docs/build-plans/phase-6/stage-05-accessibility-system-formalization-wcag-hardening/stage-05.md | Fixes CSS Module purity violation in adminAccessibility.module.css; documents global vs. module scoping rules; ensures focus styling preserved. |
+| Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 03: Semantic Accessibility Patterns Layer | Unassigned | RD | Slices 01-02 complete | docs/build-plans/phase-6/stage-05-accessibility-system-formalization-wcag-hardening/stage-05.md | Codifies ARIA patterns, keyboard shortcuts, focus traps into reusable patterns reference; extracts keyboard utilities into shared layer (`src/shared/accessibility/`); extends READABILITY_STANDARDS.md with semantic checklist. |
+| Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 04: WCAG AA+ Audit & Conformance Checklist | Unassigned | RD | Slices 01-03 complete | docs/build-plans/phase-6/stage-05-accessibility-system-formalization-wcag-hardening/stage-05.md | Audits 5+ surfaces against WCAG 2.1 AA/AAA; produces conformance checklist (30+ criteria), testing plan with deterministic steps, issues tracker template, high-priority remediation queue. |
+| Stage 05 Accessibility System Formalization & WCAG Hardening | Slice 05: System Documentation & Living Standard | Unassigned | RD | Slices 01-04 complete | docs/build-plans/phase-6/stage-05-accessibility-system-formalization-wcag-hardening/stage-05.md | Creates master index (ACCESSIBILITY_SYSTEM.md), implementation guidelines for future surfaces, maintenance policy, closes stage with evidence package. |
+
+## Next Up
+
+1. Execute Phase 6 Stage 04 Slice 04: final verification, phase closeout, and tracker alignment (current active work).
+2. Upon Stage 04 completion: Review Stage 05 planning, confirm token definitions and accessibility priorities with stakeholders.
+3. Execute Phase 6 Stage 05 Slices 01–05 in dependency order (Slice 01 → 05) per stage-05.md.
+4. Triage and disposition the 15 pre-existing non-blocking test failures before final Phase 6 closeout (Stages 04 + 05 both complete).
+
+## Risks and Blockers
+
+- **CSS Module purity violation (now assigned to Stage 05 Slice 02):** adminAccessibility.module.css selector `:where(button, input, select, textarea, a):focus-visible` violates CSS Module purity. Stage 05 Slice 02 resolves this by moving all `:focus-visible` styling to global accessibility tokens layer (Slice 01).
+- **Pre-existing test failures (15):** Phase 3 state-ordering failures (409 conflicts) and Phase 5 doc-text regex failures are non-blocking for Stages 04–05 but must be triaged or explicitly deferred with rationale before final Phase 6 closeout.
+- **WCAG audit scope (addressed in Stage 05 Slice 04):** Audit narrowly scoped to Phase 5 P1 surfaces + sampled others; high-priority issues identified and logged; non-critical/AAA items deferred to post-Phase-6 with clear rationale.
+- **Stage 04 chat-surface scope clarity:** The Phase-f chat/composer surfaces are structurally implemented but have not had an explicit visual token alignment pass; Slice 01 disposition audit should determine what is in scope vs. deferred to post-Phase-6.

@@ -76,7 +76,7 @@ describe("Phase F Composer Floating Baseline", () => {
       assert.match(source, /event\.preventDefault\(\);/);
       assert.match(source, /onSubmit\(\);/);
       assert.match(source, /resize-none/);
-      assert.match(source, /border-none/);
+      assert.match(source, /border-transparent/);
       assert.match(source, /focus:ring-0/);
     });
   });

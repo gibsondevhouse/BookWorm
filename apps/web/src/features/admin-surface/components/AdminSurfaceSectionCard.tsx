@@ -7,19 +7,23 @@ type AdminSurfaceSectionCardProps = {
   title: ReactNode;
   children: ReactNode;
   ariaDescribedBy?: string;
+  headingTag?: "h2" | "h3";
 };
 
 export function AdminSurfaceSectionCard({
   headingId,
   title,
   children,
-  ariaDescribedBy
+  ariaDescribedBy,
+  headingTag = "h2"
 }: AdminSurfaceSectionCardProps): ReactElement {
+  const HeadingTag = headingTag;
+
   return (
     <section aria-labelledby={headingId} aria-describedby={ariaDescribedBy} className={styles.sectionCard}>
-      <h2 id={headingId} className={styles.sectionTitle}>
+      <HeadingTag id={headingId} className={styles.sectionTitle}>
         {title}
-      </h2>
+      </HeadingTag>
       <div className={styles.sectionBody}>{children}</div>
     </section>
   );

@@ -1,0 +1,102 @@
+/* ============================================================================
+   Accessibility Tokens Layer
+   ============================================================================
+   Systematized design tokens for focus, motion, affordance, and theming.
+   This layer provides reusable CSS custom properties that underpin all
+   accessibility-related styling across the application.
+   
+   Layering: This file should be imported at the top of globals.css to ensure
+   tokens are available to all subsequent rules.
+   
+   Reduced-Motion Support: Motion tokens are dynamically overridden via
+   @media (prefers-reduced-motion: reduce) to provide instant transitions
+   and no-animation behavior automatically across all components that use
+   these tokens.
+   ============================================================================ */
+
+:root {
+  /* ========================================================================
+     Focus & Outline Tokens
+     ======================================================================== 
+     These tokens control the visual appearance of focus rings on interactive
+     elements (buttons, inputs, links, etc.). All values are derived from
+     the current ethereal design system.
+     
+     - --focus-outline-width: Width of the focus ring outline
+     - --focus-outline-color: Color of the focus ring (luminous blue)
+     - --focus-outline-offset: Space between element and focus ring
+     - --focus-outline-glow: Additional shadow/glow effect
+     ======================================================================== */
+  --focus-outline-width: 2px;
+  --focus-outline-color: rgba(134, 201, 255, 0.95);
+  --focus-outline-offset: 2px;
+  --focus-outline-glow: 0 0 0 5px rgba(134, 201, 255, 0.18);
+
+  /* ========================================================================
+     Motion & Animation Tokens
+     ======================================================================== 
+     These tokens define the duration and timing functions for transitions
+     and key frame animations. They support consistent motion across all
+     components and automatically respond to prefers-reduced-motion.
+     
+     - --motion-standard-duration: Default transition/animation duration
+     - --motion-slow-duration: Longer duration for complex transitions
+     - --motion-fast-duration: Shorter duration for quick feedback
+     - --motion-spring-timing: Spring-based cubic-bezier (expressive)
+     - --motion-ease-in-out: Standard ease-in-out curve (smooth)
+     ======================================================================== */
+  --motion-standard-duration: 160ms;
+  --motion-slow-duration: 180ms;
+  --motion-fast-duration: 120ms;
+  --motion-spring-timing: cubic-bezier(0.25, 1, 0.5, 1);
+  --motion-ease-in-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* ========================================================================
+     Affordance & Interaction Tokens
+     ======================================================================== 
+     These tokens enforce accessibility constraints around touch targets,
+     spacing, and interaction sizing.
+     
+     - --affordance-touch-min-height: Min height for touch/keyboard targets (44px WCAG AA)
+     - --affordance-touch-min-width: Min width for touch/keyboard targets
+     - --affordance-focus-ring-width: Alias for focus outline width
+     - --affordance-form-group-spacing: Vertical spacing between form groups
+     - --affordance-section-spacing: Spacing between major content sections
+     ======================================================================== */
+  --affordance-touch-min-height: 44px;
+  --affordance-touch-min-width: 44px;
+  --affordance-focus-ring-width: 2px;
+  --affordance-form-group-spacing: 1rem;
+  --affordance-section-spacing: 1.5rem;
+
+  /* ========================================================================
+     Color Scheme & Theming
+     ======================================================================== 
+     Currently: dark-only (Phase 6 foundation)
+     Future: Light mode support will be added via @media (prefers-color-scheme: light)
+     without requiring changes to this fundamental architecture.
+     ======================================================================== */
+}
+
+/* ============================================================================
+   Reduced-Motion Support
+   ============================================================================
+   When the user has `prefers-reduced-motion: reduce` enabled, all motion
+   tokens are overridden to remove animations and make transitions instant.
+   
+   This centralizes reduced-motion behavior in one place, so any component
+   using these tokens will automatically respect the user's motion preference
+   without requiring per-component `@media (prefers-reduced-motion: reduce)` rules.
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Override motion durations to instant (0ms) */
+    --motion-standard-duration: 0ms;
+    --motion-slow-duration: 0ms;
+    --motion-fast-duration: 0ms;
+
+    /* Override timing functions to linear (no easing curve) */
+    --motion-spring-timing: cubic-bezier(0, 0, 1, 1);
+    --motion-ease-in-out: cubic-bezier(0, 0, 1, 1);
+  }
+}

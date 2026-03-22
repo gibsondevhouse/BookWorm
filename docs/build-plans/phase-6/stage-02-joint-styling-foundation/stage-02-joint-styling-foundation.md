@@ -45,25 +45,26 @@ This stage is intentionally narrow: it does not attempt a phase-wide restyle. It
 
 ## Status Snapshot
 
-- Status: In Progress [-]
+- Status: Complete [x]
 - Entry gate: satisfied by the Stage 01 shipped baseline and the Phase 6 vision rebaseline
-- Active boundary: `Stage-02-Slice-01` and `Stage-02-Slice-02` implementation are both complete; verification closeout and Stage 03 handoff lock remain (Slice-03)
-- Recorded verification state: `pnpm lint`, `pnpm type-check`, and `phase5AdminUsabilityReadabilityPart02` passed; `phase5AccessibilityKeyboardNavigationPart01` remains open only on the out-of-scope admin expectation for a global focus-indicator style in `apps/web/src/app/admin/adminAccessibility.module.css`; Slice-02 lint and type-check gates additionally confirmed at exit 0
+- Active boundary: All three slices (verification closeout, root shell alignment, sidebar nav refactor) are complete; Stage 02 handoff locked for Stage 03 entry
+- Recorded verification state: `pnpm lint`, `pnpm type-check`, and `phase5AdminUsabilityReadabilityPart02` all passed; `phase5AccessibilityKeyboardNavigationPart01` contains expected out-of-scope admin focus-indicator selector issue carried forward to Stage 03 Slice 01 (documented in stage-02-slice-03 closure)
 
 ## Next-Slice Sequencing
 
 1. Stage-02-Slice-01 [x]: UI vision checklist, gap audit, and root shell alignment
-2. Stage-02-Slice-02 [x]: Sidebar Codex Navigation Refactor — `AppSidebar.tsx` refactored; stale Collections section removed; collapsible Codex entity-type group (Story / World / Lore) in the Navigate section; lint and type-check gates confirmed exit 0
-3. Stage-02-Slice-03 [ ]: Root-shell verification closeout and Stage 03 handoff lock
+2. Stage-02-Slice-02 [x]: Sidebar Codex Navigation Refactor — `AppSidebar.tsx` refactored; stale Collections section removed; collapsible Codex entity-type group (Story / World / Lore) in the Navigate section
+3. Stage-02-Slice-03 [x]: Root-shell verification closeout and Stage 03 handoff lock — documented in stage-02-slice-03-root-shell-verification-closeout.md
 
-## Approved Next Ordered Slice
+## Next Ordered Stage
 
-Slice ID: Stage-02-Slice-03
+Stage ID: Stage-03
 
-- name: Root-Shell Verification Closeout and Stage 03 Handoff Lock
-- status: Approved [ ] — ready for execution
-- scope: disposition all open verification items for Stage 02 and produce the ranked Stage 03 handoff for entity list, entity edit form, review inbox, and shared admin styling primitives
+- name: High-Impact Surface Alignment (Shared Admin Primitives + Entity List Alignment)
+- status: Approved [Ready] — entry gate satisfied
+- scope: Apply Stage 02 visual system to entity list, review inbox, proposal review, entity edit form, and consolidate admin surface primitives with corrected focus-indicator selector
+- handoff order: Ranked per stage-02-slice-03-root-shell-verification-closeout.md
 
 ## Status
 
-Status: In Progress [-] (both implementation slices — Slice-01 root-shell alignment and Slice-02 sidebar Codex nav refactor — have shipped; Stage 02 remains open until Slice-03 verification closeout is dispositioned and the Stage 03 handoff is locked)
+Status: Complete [x] (Stage 02 locked; all root shell and sidebar surfaces now ship with ethereal aesthetic; admin surfaces ready for Stage 03 alignment; known out-of-scope focus-indicator issue documented and deferred)

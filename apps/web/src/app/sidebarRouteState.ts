@@ -2,13 +2,11 @@ type SidebarPrimaryNavId = "chat" | "codex" | "reviewInbox";
 
 type SidebarRouteState = {
   activePrimaryNavId: SidebarPrimaryNavId | null;
-  isCodexContext: boolean;
-  activeCodexType: string | null;
 };
 
-export function getSidebarRouteState(pathname: string, codexEntityTypeParam: string | null): SidebarRouteState {
+export function getSidebarRouteState(pathname: string): SidebarRouteState {
   const isChatRoute = pathname === "/";
-  const isCodexContext = pathname.startsWith("/admin/entities");
+  const isCodexContext = pathname.startsWith("/admin/codex") || pathname.startsWith("/admin/entities");
   const isReviewInboxRoute = pathname.startsWith("/admin/review-inbox");
 
   let activePrimaryNavId: SidebarPrimaryNavId | null = null;
@@ -22,7 +20,5 @@ export function getSidebarRouteState(pathname: string, codexEntityTypeParam: str
 
   return {
     activePrimaryNavId,
-    isCodexContext,
-    activeCodexType: isCodexContext ? codexEntityTypeParam : null,
   };
 }

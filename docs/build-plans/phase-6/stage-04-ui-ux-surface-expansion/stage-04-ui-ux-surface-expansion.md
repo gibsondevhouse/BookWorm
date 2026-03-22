@@ -15,6 +15,7 @@ Extend the approved Phase 6 visual system to the remaining already-implemented s
 
 - remaining-surface rollout plan and disposition log
 - implemented polish and consistency updates on deferred screens
+- codex dashboard entry and sidebar navigation simplification (single Codex dashboard entry)
 - Phase 6 verification and tracker closeout record
 
 ## Dependencies
@@ -32,7 +33,7 @@ Extend the approved Phase 6 visual system to the remaining already-implemented s
 
 ## Status Snapshot
 
-- Status: Not started [ ]
+- Status: In progress [x]
 - Entry gate: Stage 03 complete
 - Sequencing note: Stage 04 is the cleanup and closeout stage, not the first implementation stage
 
@@ -40,8 +41,9 @@ Extend the approved Phase 6 visual system to the remaining already-implemented s
 
 1. Stage-04-Slice-01: remaining-surface rollout plan and defer-list lock
 2. Stage-04-Slice-02: polish implementation on deferred surfaces
-3. Stage-04-Slice-03: final verification, closeout, and tracker alignment
+3. Stage-04-Slice-03: codex dashboard entry and sidebar simplification
+4. Stage-04-Slice-04: final verification, closeout, and tracker alignment
 
 ## Status
 
-Status: Not started [ ]
+Status: In progress [x]

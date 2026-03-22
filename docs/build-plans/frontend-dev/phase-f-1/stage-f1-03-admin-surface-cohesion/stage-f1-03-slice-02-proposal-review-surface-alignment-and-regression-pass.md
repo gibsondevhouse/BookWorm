@@ -1,8 +1,8 @@
 # Stage-f1-03 Slice-02: Proposal Review Surface Alignment and Regression Pass
 
 **Slice ID:** Stage-f1-03-Slice-02  
-**Status:** [ ] Not started  
-**Approval:** Pending human approval for execution  
+**Status:** [x] Completed
+**Approval:** Approved for execution  
 **Stage:** Stage-f1-03 (Admin Surface Cohesion)  
 **Phase:** Phase-f-1  
 **Depends on:** Stage-f1-03 Slice-01 complete  
@@ -28,7 +28,7 @@ Primary outcomes:
 3. Stage-f1-03 ends with all three targeted admin surfaces using the same composition primitives
    without introducing backend or schema changes.
 
-This is the next executable frontend slice after Stage-f1-03 Slice-01 completion.
+This slice was the final executable frontend slice for Stage-f1-03 after Stage-f1-03 Slice-01 completion.
 
 ---
 
@@ -93,13 +93,22 @@ Baseline captured after Slice-01 completion (March 21, 2026):
 
 ## Validation Checklist
 
-- [ ] `pnpm lint`
-- [ ] `pnpm type-check`
-- [ ] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`
-- [ ] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts`
-- [ ] Manual smoke check: proposal review dialog still traps focus correctly and restores expected keyboard navigation behavior.
-- [ ] Manual smoke check: decision shortcuts and action buttons still produce the expected review-state messaging.
-- [ ] Manual smoke check: proposal review now matches the shared admin shell/header/section-card presentation used by entities and review inbox.
+Automated validation evidence (rerun for audit closure on 2026-03-22):
+
+- `pnpm lint` exited 0.
+- `pnpm type-check` exited 0.
+- `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts` exited 0.
+- `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts` exited 0.
+
+- [x] `pnpm lint`
+- [x] `pnpm type-check`
+- [x] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AccessibilityKeyboardNavigationPart01.test.ts`
+- [x] `pnpm --filter @book-worm/api exec tsx --test --test-concurrency=1 ../../tests/phase5AdminUsabilityReadabilityPart02.test.ts`
+- [ ] Manual smoke check: proposal review dialog still traps focus correctly and restores expected keyboard navigation behavior. (open manual QA item)
+- [ ] Manual smoke check: decision shortcuts and action buttons still produce the expected review-state messaging. (open manual QA item)
+- [ ] Manual smoke check: proposal review now matches the shared admin shell/header/section-card presentation used by entities and review inbox. (open manual QA item)
+
+Completion exception policy (approved): Slice status remains Completed because required automated checks passed and shared section-card adoption is now complete in proposal review. Open manual smoke checks are intentionally tracked as explicit post-execution QA follow-ups.
 
 ---
 

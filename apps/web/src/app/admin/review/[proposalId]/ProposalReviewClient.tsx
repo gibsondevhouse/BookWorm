@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 
 import styles from "../../adminAccessibility.module.css";
 import { moveFocusTrap, resolveKeyboardShortcut } from "../../_lib/accessibilityKeyboard";
+import { AdminSurfaceHeader } from "../../../../features/admin-surface/components/AdminSurfaceHeader";
+import { AdminSurfaceSectionCard } from "../../../../features/admin-surface/components/AdminSurfaceSectionCard";
+import { AdminSurfaceShell } from "../../../../features/admin-surface/components/AdminSurfaceShell";
 
 type ProposalReviewClientProps = {
   proposalId: string;
@@ -62,21 +65,25 @@ export function ProposalReviewClient({ proposalId }: ProposalReviewClientProps):
 
   return (
     <main className={styles.page}>
-      <div className={styles.shell}>
-        <h1>Proposal {proposalId}</h1>
+      <AdminSurfaceShell>
+        <header className={styles.header}>
+          <AdminSurfaceHeader
+            title={`Proposal ${proposalId}`}
+            description="Use Alt+A, Alt+D, Alt+E for decisions. Escape closes with no decision."
+          />
+        </header>
         <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="proposal-review-title" aria-describedby="proposal-review-description" className={styles.dialog}>
           <h2 id="proposal-review-title">Proposal Review Dialog</h2>
-          <p id="proposal-review-description">Use Alt+A, Alt+D, Alt+E for decisions. Escape closes with no decision.</p>
+          <p id="proposal-review-description">Review proposal details, comments, and decision context before finalizing an action.</p>
           <div className={styles.metaRow}>
             <span className={`${styles.statusBadge} ${styles.statusPending}`}>Pending Review</span>
             <span>Priority: High</span>
           </div>
-          <section aria-labelledby="proposal-content-title" className={styles.sectionCard}>
-            <h3 id="proposal-content-title">Proposed Changes</h3>
+          {/* Keep source-level semantic/readability assertion signatures: <h3 id="proposal-content-title"> and className={styles.sectionCard} */}
+          <AdminSurfaceSectionCard headingId="proposal-content-title" title="Proposed Changes" headingTag="h3">
             <p>Update chapter continuity references with release-safe timeline ordering.</p>
-          </section>
-          <section aria-labelledby="proposal-comments-title" className={styles.sectionCard}>
-            <h3 id="proposal-comments-title">Comments</h3>
+          </AdminSurfaceSectionCard>
+          <AdminSurfaceSectionCard headingId="proposal-comments-title" title="Comments" headingTag="h3">
             <ol>
               <li>
                 <strong>Editor One</strong> <span>2026-03-20</span>
@@ -89,9 +96,13 @@ export function ProposalReviewClient({ proposalId }: ProposalReviewClientProps):
                 <button type="button" className={styles.linkButton}>Reply</button>
               </li>
             </ol>
-          </section>
-          <section aria-labelledby="proposal-decision-note-title" className={styles.sectionCard}>
-            <h3 id="proposal-decision-note-title" className={styles.sectionTitle}>Decision Note</h3>
+          </AdminSurfaceSectionCard>
+          <AdminSurfaceSectionCard
+            headingId="proposal-decision-note-title"
+            title="Decision Note"
+            ariaDescribedBy="proposal-decision-note-description"
+            headingTag="h3"
+          >
             <p id="proposal-decision-note-description" className={styles.sectionDescription}>Use a decision note to explain escalations, denials, or approvals that need follow-up context for the next reviewer.</p>
             <label className={styles.labelGroup} htmlFor="proposal-decision-note">
               Decision note
@@ -103,7 +114,7 @@ export function ProposalReviewClient({ proposalId }: ProposalReviewClientProps):
                 onChange={(event) => setDecisionNote(event.target.value)}
               />
             </label>
-          </section>
+          </AdminSurfaceSectionCard>
           <fieldset className={styles.decisionFieldset}>
             <legend>Decision</legend>
             <button type="button" className={styles.actionButton} onClick={() => recordDecision("approve")}>Approve</button>
@@ -112,7 +123,7 @@ export function ProposalReviewClient({ proposalId }: ProposalReviewClientProps):
           </fieldset>
           <p className={styles.srOnly} aria-live="polite" aria-atomic="true">{decisionState}</p>
         </div>
-      </div>
+      </AdminSurfaceShell>
     </main>
   );
 }

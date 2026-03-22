@@ -43,7 +43,7 @@
 
 ### Phase-f-1
 
-- [-] [Phase-f-1 Overview](./phase-f-1/phase-f-1.md)
+- [x] [Phase-f-1 Overview](./phase-f-1/phase-f-1.md)
 
 #### Phase-f-1 Stage-f1-01
 
@@ -58,9 +58,9 @@
 
 #### Phase-f-1 Stage-f1-03
 
-- [-] [Stage-f1-03 Overview](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-admin-surface-cohesion.md)
+- [x] [Stage-f1-03 Overview](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-admin-surface-cohesion.md)
 - [x] [Slice-01: Admin Surface Primitive Extraction and Entities/Inbox Adoption](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-slice-01-admin-surface-primitive-extraction-and-entities-inbox-adoption.md)
-- [ ] [Slice-02: Proposal Review Surface Alignment and Regression Pass](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-slice-02-proposal-review-surface-alignment-and-regression-pass.md)
+- [x] [Slice-02: Proposal Review Surface Alignment and Regression Pass](./phase-f-1/stage-f1-03-admin-surface-cohesion/stage-f1-03-slice-02-proposal-review-surface-alignment-and-regression-pass.md)
 
 ## Update Rules
 

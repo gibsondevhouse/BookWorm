@@ -1,6 +1,6 @@
 # Phase-f-1: Frontend Surface Architecture and Navigation Readiness
 
-**Status:** [-] In progress  
+**Status:** [x] Completed  
 **Track:** Frontend (`apps/web`)  
 **Depends on:** Phase-f-0 complete
 
@@ -33,7 +33,7 @@ All planning decisions in Phase-f-1 are anchored in repository state snapshots.
 | `apps/web/src/app/admin/*` clients | Admin surfaces use a separate CSS module and local interaction patterns that are not yet aligned with the chat/root-shell composition model |
 | `apps/web/src/app/globals.css` | Frontend tokens and shell styles exist and are usable for shared surface cohesion work |
 
-### Current state after Stage-f1-03 Slice-01 completion
+### Current state after Stage-f1-03 Slice-02 completion
 
 | File | Relevant State |
 |---|---|
@@ -47,7 +47,7 @@ All planning decisions in Phase-f-1 are anchored in repository state snapshots.
 | `apps/web/src/features/admin-surface/components/*` | Shared admin shell/header/section-card/summary primitives now exist for repeated admin surface composition |
 | `apps/web/src/app/admin/entities/EntitiesClient.tsx` | Entities route now uses the shared admin primitives while preserving search, sort, selection, and edit-dialog interaction behavior |
 | `apps/web/src/app/admin/review-inbox/ReviewInboxClient.tsx` | Review inbox now uses the shared admin primitives while preserving filter, listbox, live-region, and review-dialog interaction behavior |
-| `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx` | Proposal review surface remains the outstanding Stage-f1-03 adoption target for the next slice |
+| `apps/web/src/app/admin/review/[proposalId]/ProposalReviewClient.tsx` | Proposal review now uses shared admin primitives while preserving decision flow, dialog semantics, and keyboard/focus behavior |
 
 ---
 
@@ -65,7 +65,7 @@ All planning decisions in Phase-f-1 are anchored in repository state snapshots.
 
 ### Stage-f1-03: Admin Surface Cohesion
 
-**Status:** [-] In progress  
+**Status:** [x] Completed  
 **Doc:** [stage-f1-03-admin-surface-cohesion.md](./stage-f1-03-admin-surface-cohesion/stage-f1-03-admin-surface-cohesion.md)
 
 ---
@@ -102,7 +102,14 @@ All planning decisions in Phase-f-1 are anchored in repository state snapshots.
 
 ## Validation Checklist
 
-- [ ] `pnpm lint`
-- [ ] `pnpm type-check`
-- [ ] Confirm all new links under `docs/build-plans/frontend-dev/phase-f-1/` resolve.
-- [ ] Confirm tracker statuses are synchronized with each new doc header.
+Validation evidence (audit reconciliation run on 2026-03-22):
+
+- `pnpm lint` exited 0.
+- `pnpm type-check` exited 0.
+- Verified phase stage-doc links resolve for Stage-f1-01, Stage-f1-02, and Stage-f1-03.
+- Verified tracker status rows for Phase-f-1 and Stage-f1-03 match linked doc header statuses.
+
+- [x] `pnpm lint`
+- [x] `pnpm type-check`
+- [x] Confirm all new links under `docs/build-plans/frontend-dev/phase-f-1/` resolve.
+- [x] Confirm tracker statuses are synchronized with each new doc header.
