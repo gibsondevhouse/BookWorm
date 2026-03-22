@@ -97,11 +97,13 @@ export function useComposerState(props: ComposerProps) {
   const [dictationError, setDictationError] = useState<string | null>(null);
   const [isDictating, setIsDictating] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [speechSupported, setSpeechSupported] = useState(false);
 
   const speechRecognitionRef = useRef<SpeechRecognition | null>(null);
-  const speechSupported = useMemo(() => {
+
+  useEffect(() => {
     if (typeof window === "undefined") {
-      return false;
+      return;
     }
 
     const maybeWindow = window as typeof window & {
@@ -109,7 +111,7 @@ export function useComposerState(props: ComposerProps) {
       SpeechRecognition?: SpeechRecognitionConstructor;
     };
 
-    return Boolean(maybeWindow.SpeechRecognition || maybeWindow.webkitSpeechRecognition);
+    setSpeechSupported(Boolean(maybeWindow.SpeechRecognition || maybeWindow.webkitSpeechRecognition));
   }, []);
 
   const currentMode = useMemo(() => {

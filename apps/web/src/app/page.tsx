@@ -48,9 +48,9 @@ export default function Page() {
   );
 
   return (
-    <div className="relative flex h-full w-full flex-col bg-paper text-text">
+    <div className="relative flex h-full w-full flex-col text-text">
       <ol
-        className="m-0 flex flex-1 list-none flex-col gap-4 overflow-y-auto px-4 py-5 pb-52 sm:px-6 sm:pb-56 lg:px-10 lg:py-8 lg:pb-60"
+        className="m-0 flex flex-1 list-none flex-col gap-4 overflow-y-auto px-4 py-5 pb-52 scroll-mask-y gap-5 pt-6 sm:px-6 sm:pt-7 sm:pb-56 lg:px-10 lg:pt-8 lg:pb-60"
         aria-label="Chat messages"
       >
         <ChatMessages messages={messages} onQuickAction={handleQuickAction} />

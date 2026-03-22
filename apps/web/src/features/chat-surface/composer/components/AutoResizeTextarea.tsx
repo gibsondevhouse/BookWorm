@@ -39,7 +39,7 @@ export function AutoResizeTextarea({
   return (
     <textarea
       ref={textareaRef}
-      className="composer-field font-body max-h-56 w-full resize-none rounded-[1.4rem] border-none bg-[rgba(5,12,21,0.6)] px-4 py-3 pb-12 text-base leading-relaxed text-text outline-none focus:ring-0"
+      className="composer-field composer-scrollbar-hide font-body max-h-64 w-full resize-none border-transparent bg-transparent shadow-none px-1 py-1 text-base leading-relaxed text-text outline-none ring-0 focus:border-transparent focus:outline-none focus:ring-0 focus-visible:border-transparent focus-visible:outline-none focus-visible:ring-0"
       placeholder={placeholder}
       rows={1}
       disabled={disabled}

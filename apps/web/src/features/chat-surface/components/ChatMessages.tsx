@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import type { CSSProperties } from "react";
 
 import type { ChatMessage } from "../types/ChatMessage";
 
@@ -14,7 +15,7 @@ export function ChatMessages({ messages, onQuickAction }: ChatMessagesProps) {
     return (
       <li className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-center">
         <section className="shell-panel relative w-full overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(134,201,255,0.18),transparent_28%),radial-gradient(circle_at_90%_10%,rgba(217,195,127,0.1),transparent_18%),linear-gradient(135deg,transparent,rgba(134,201,255,0.04))]" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 border-b border-white/5 bg-gradient-to-b from-white/[0.04] to-transparent" />
           <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
             <div className="text-center lg:text-left">
               <div className="hero-badge inline-flex rounded-full px-4 py-1.5 text-[0.7rem] uppercase tracking-[0.34em] text-[rgba(237,245,255,0.82)]">
@@ -34,7 +35,7 @@ export function ChatMessages({ messages, onQuickAction }: ChatMessagesProps) {
                   <button
                     key={action}
                     type="button"
-                    className="quick-chip rounded-full px-5 py-2.5 text-sm tracking-[0.16em] text-text"
+                    className="quick-chip tactile-press transition-spring rounded-full px-5 py-2.5 text-sm tracking-[0.16em] text-text"
                     onClick={() => onQuickAction(action)}
                   >
                     {action}
@@ -79,16 +80,17 @@ export function ChatMessages({ messages, onQuickAction }: ChatMessagesProps) {
 
   return (
     <>
-      {messages.map((message) => (
+      {messages.map((message, index) => (
         <li
           key={message.id}
-          className={`mx-auto flex w-full max-w-6xl ${message.role === "user" ? "justify-end" : "justify-start"}`}
+          style={{ "--stagger": index } as CSSProperties}
+          className={`stagger-fade-up mx-auto flex w-full max-w-6xl ${message.role === "user" ? "justify-end" : "justify-start"}`}
         >
           <div
             className={`max-w-[80%] rounded-[1.5rem] px-5 py-4 text-base text-text ${
               message.role === "user"
-                ? "border border-[rgba(217,195,127,0.28)] bg-[rgba(14,24,38,0.92)] text-right"
-                : "mr-auto border border-[rgba(134,201,255,0.2)] bg-[rgba(8,16,27,0.88)]"
+                ? "border border-white/10 bg-white/[0.08] text-right backdrop-blur-md"
+                : "mr-auto border border-white/8 bg-white/[0.05] backdrop-blur-md"
             }`}
           >
             {message.role === "user" ? (

@@ -1,8 +1,43 @@
 import { useEffect, useId, useRef, useState } from "react";
 
+import { useMouseSpotlight } from "../../../../app/hooks/useMouseSpotlight";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 import { useComposerState } from "../hooks/useComposerState";
 import type { ComposerProps } from "../types/ComposerProps";
+
+const TOOL_BUTTON_CLASS =
+  "tactile-press transition-spring inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.4)] text-text-muted transition-[border-color,color,box-shadow,opacity] duration-150 ease-out hover:border-[rgba(134,201,255,0.2)] hover:text-text hover:shadow-[0_0_14px_var(--color-primary-glow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50";
+
+type ComposerToolButtonProps = {
+  "aria-label": string;
+  disabled: boolean;
+  onClick: () => void;
+  isPressed?: boolean;
+  className?: string;
+  children: React.ReactNode;
+};
+
+function ComposerToolButton({
+  "aria-label": ariaLabel,
+  disabled,
+  onClick,
+  isPressed,
+  className = "",
+  children,
+}: ComposerToolButtonProps) {
+  return (
+    <button
+      type="button"
+      className={`${TOOL_BUTTON_CLASS} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      aria-pressed={isPressed}
+    >
+      {children}
+    </button>
+  );
+}
 
 export function Composer(props: ComposerProps) {
   const {
@@ -29,6 +64,7 @@ export function Composer(props: ComposerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConnectorPopoverOpen, setIsConnectorPopoverOpen] = useState(false);
   const composer = useComposerState(props);
+  const composerSpotlight = useMouseSpotlight<HTMLDivElement>();
 
   useEffect(() => {
     if (!isConnectorPopoverOpen) {
@@ -126,13 +162,25 @@ export function Composer(props: ComposerProps) {
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center px-3 sm:bottom-6 sm:px-6">
-      <div className="pointer-events-auto w-full max-w-4xl rounded-[1.75rem] border border-[rgba(164,193,229,0.24)] bg-[linear-gradient(180deg,rgba(9,19,30,0.85)_0%,rgba(6,14,25,0.92)_100%)] p-3 shadow-[0_24px_60px_rgba(0,0,0,0.44),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:p-4">
+      <div
+        ref={composerSpotlight.spotlightRef}
+        onPointerMove={composerSpotlight.onPointerMove}
+        onPointerLeave={composerSpotlight.onPointerLeave}
+        data-processing={isSubmitting || composer.isDictating}
+        className="composer-panel composer-shimmer spotlight-surface pointer-events-auto flex w-full max-w-4xl flex-col gap-2 rounded-[1.75rem] p-4 backdrop-blur-xl shadow-[0_24px_60px_rgba(0,0,0,0.44)] transition-all duration-500 focus-within:ring-1 focus-within:ring-[var(--color-primary-glow)] focus-within:shadow-[0_0_30px_var(--color-primary-glow)]"
+      >
+        {composer.isDictating && composer.transcriptBuffer ? (
+          <p className="px-1 text-xs leading-snug text-text-muted" aria-live="polite">
+            {composer.transcriptBuffer}
+          </p>
+        ) : null}
+
         {composer.stagedFiles.length > 0 ? (
-          <ul className="mb-2 flex flex-wrap gap-2" aria-label="Staged attachments">
+          <ul className="flex flex-wrap gap-2" aria-label="Staged attachments">
             {composer.stagedFiles.map((file) => (
               <li
                 key={file.id}
-                className="inline-flex items-center gap-1 rounded-full border border-[rgba(164,193,229,0.24)] bg-[rgba(8,16,27,0.75)] px-3 py-1 text-xs text-text"
+                className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.46)] px-3 py-1 text-xs text-text"
               >
                 <span className="max-w-40 truncate">{file.name}</span>
                 <button
@@ -150,157 +198,151 @@ export function Composer(props: ComposerProps) {
           </ul>
         ) : null}
 
-        <div className="flex items-end gap-2 sm:gap-3">
-          <div className="relative flex shrink-0 items-center gap-1">
-            <input
-              id={fileInputId}
-              ref={fileInputRef}
-              type="file"
-              className="sr-only"
-              multiple
-              accept={allowedFileTypes.join(",")}
-              onChange={handleFileInput}
-            />
+        <AutoResizeTextarea
+          textareaRef={textareaRef}
+          value={composer.textPayload}
+          placeholder={placeholder}
+          disabled={disabled || isSubmitting}
+          onChange={composer.setTextPayload}
+          onSubmit={submit}
+        />
 
-            <button
-              type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-text-muted transition-colors hover:border-[rgba(164,193,229,0.24)] hover:bg-[rgba(16,30,45,0.75)] hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={disabled || isSubmitting}
-              aria-label="Upload files"
-            >
-              <svg aria-hidden className="h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-                />
-              </svg>
-            </button>
+        <input
+          id={fileInputId}
+          ref={fileInputRef}
+          type="file"
+          className="sr-only"
+          multiple
+          accept={allowedFileTypes.join(",")}
+          onChange={handleFileInput}
+        />
 
-            <button
-              type="button"
-              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                composer.isDictating
-                  ? "bg-[rgba(190,70,70,0.2)] text-[rgb(255,151,151)]"
-                  : "text-text-muted hover:border-[rgba(164,193,229,0.24)] hover:bg-[rgba(16,30,45,0.75)] hover:text-text"
-              }`}
-              onClick={composer.toggleDictation}
-              disabled={!composer.speechSupported || disabled || isSubmitting}
-              aria-label={composer.isDictating ? "Stop dictation" : "Start dictation"}
-              aria-pressed={composer.isDictating}
-            >
-              <span className="relative inline-flex items-center justify-center">
-                {composer.isDictating ? (
-                  <span className="absolute h-6 w-6 rounded-full bg-[rgba(255,120,120,0.25)] animate-ping" aria-hidden />
-                ) : null}
-                <svg aria-hidden className="relative h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3zm5 9a5 5 0 11-10 0m5 5v4m-3 0h6"
-                  />
-                </svg>
-              </span>
-            </button>
-
-            <div className="relative">
-              <button
-                ref={connectorButtonRef}
-                type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-text-muted transition-colors hover:border-[rgba(164,193,229,0.24)] hover:bg-[rgba(16,30,45,0.75)] hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                onClick={() => setIsConnectorPopoverOpen((prev) => !prev)}
+        <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex items-center gap-1">
+              <ComposerToolButton
+                aria-label="Upload files"
                 disabled={disabled || isSubmitting}
-                aria-label="Configure connectors"
-                aria-expanded={isConnectorPopoverOpen}
-                aria-controls={popoverId}
-                aria-haspopup="dialog"
+                onClick={() => fileInputRef.current?.click()}
               >
-                <svg aria-hidden className="h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M7 8h10M7 12h10M7 16h10M4 8h.01M4 12h.01M4 16h.01"
+                    d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
                   />
                 </svg>
-              </button>
+              </ComposerToolButton>
 
-              {enabledConnectorCount > 0 ? (
-                <span className="pointer-events-none absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-[rgb(4,10,18)]">
-                  {enabledConnectorCount}
+              <ComposerToolButton
+                aria-label={composer.isDictating ? "Stop dictation" : "Start dictation"}
+                disabled={!composer.speechSupported || disabled || isSubmitting}
+                onClick={composer.toggleDictation}
+                isPressed={composer.isDictating}
+                className={
+                  composer.isDictating
+                    ? "border-[rgba(255,128,128,0.35)] bg-[rgba(190,70,70,0.2)] text-[rgb(255,151,151)]"
+                    : ""
+                }
+              >
+                <span className="relative inline-flex items-center justify-center">
+                  {composer.isDictating ? (
+                    <span className="absolute h-6 w-6 rounded-full bg-[rgba(255,120,120,0.25)] animate-ping" aria-hidden />
+                  ) : null}
+                  <svg aria-hidden className="relative h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3zm5 9a5 5 0 11-10 0m5 5v4m-3 0h6"
+                    />
+                  </svg>
                 </span>
-              ) : null}
+              </ComposerToolButton>
 
-              {isConnectorPopoverOpen ? (
-                <div
-                  id={popoverId}
-                  ref={connectorPanelRef}
-                  role="dialog"
-                  aria-label="Connector selector"
-                  className="absolute bottom-12 left-0 z-30 w-72 rounded-2xl border border-[rgba(164,193,229,0.22)] bg-[rgba(6,14,25,0.97)] p-3 shadow-2xl"
+              <div className="relative">
+                <button
+                  ref={connectorButtonRef}
+                  type="button"
+                  className={TOOL_BUTTON_CLASS}
+                  onClick={() => setIsConnectorPopoverOpen((prev) => !prev)}
+                  disabled={disabled || isSubmitting}
+                  aria-label="Configure connectors"
+                  aria-expanded={isConnectorPopoverOpen}
+                  aria-controls={popoverId}
+                  aria-haspopup="dialog"
                 >
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-xs uppercase tracking-[0.16em] text-text-muted">Connectors</p>
-                    <button
-                      ref={connectorCloseButtonRef}
-                      type="button"
-                      className="rounded-full p-1 text-text-muted transition-colors hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      onClick={() => {
-                        setIsConnectorPopoverOpen(false);
-                        connectorButtonRef.current?.focus();
-                      }}
-                      aria-label="Close connectors"
-                    >
-                      <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 6l12 12M18 6L6 18"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                  <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 8h10M7 12h10M7 16h10M4 8h.01M4 12h.01M4 16h.01"
+                    />
+                  </svg>
+                </button>
 
-                  <ul className="space-y-1.5">
-                    {composer.connectors.map((connector) => (
-                      <li key={connector.id}>
-                        <label className="flex cursor-pointer items-start gap-2 rounded-xl px-2 py-1.5 hover:bg-[rgba(16,30,45,0.65)]">
-                          <input
-                            type="checkbox"
-                            checked={connector.enabled}
-                            onChange={() => composer.toggleConnector(connector.id)}
-                            className="mt-0.5"
+                {enabledConnectorCount > 0 ? (
+                  <span className="pointer-events-none absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-[rgb(4,10,18)]">
+                    {enabledConnectorCount}
+                  </span>
+                ) : null}
+
+                {isConnectorPopoverOpen ? (
+                  <div
+                    id={popoverId}
+                    ref={connectorPanelRef}
+                    role="dialog"
+                    aria-label="Connector selector"
+                    className="absolute bottom-12 left-0 z-30 w-72 rounded-2xl border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.76)] p-3 backdrop-blur-2xl"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-xs uppercase tracking-[0.16em] text-text-muted">Connectors</p>
+                      <button
+                        ref={connectorCloseButtonRef}
+                        type="button"
+                        className="rounded-full p-1 text-text-muted transition-colors hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        onClick={() => {
+                          setIsConnectorPopoverOpen(false);
+                          connectorButtonRef.current?.focus();
+                        }}
+                        aria-label="Close connectors"
+                      >
+                        <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 6l12 12M18 6L6 18"
                           />
-                          <span>
-                            <span className="block text-sm text-text">{connector.label}</span>
-                            <span className="block text-xs text-text-muted">{connector.description}</span>
-                          </span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-          </div>
+                        </svg>
+                      </button>
+                    </div>
 
-          <div className="relative min-w-0 flex-1">
-            <AutoResizeTextarea
-              textareaRef={textareaRef}
-              value={composer.textPayload}
-              placeholder={placeholder}
-              disabled={disabled || isSubmitting}
-              onChange={composer.setTextPayload}
-              onSubmit={submit}
-            />
+                    <ul className="space-y-1.5">
+                      {composer.connectors.map((connector) => (
+                        <li key={connector.id}>
+                          <label className="flex cursor-pointer items-start gap-2 rounded-xl px-2 py-1.5 hover:shadow-[0_0_12px_var(--color-primary-glow)]">
+                            <input
+                              type="checkbox"
+                              checked={connector.enabled}
+                              onChange={() => composer.toggleConnector(connector.id)}
+                              className="mt-0.5"
+                            />
+                            <span>
+                              <span className="block text-sm text-text">{connector.label}</span>
+                              <span className="block text-xs text-text-muted">{connector.description}</span>
+                            </span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
 
-            <div className="pointer-events-none absolute bottom-2 right-2 left-2 flex items-center justify-between gap-2">
               <select
-                className="pointer-events-auto h-8 max-w-36 rounded-full border border-[rgba(164,193,229,0.2)] bg-[rgba(6,14,25,0.88)] px-3 text-xs uppercase tracking-[0.12em] text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="tactile-press transition-spring h-9 min-w-28 rounded-full border border-[var(--color-border-glass)] bg-[rgba(10,16,29,0.4)] px-3 text-xs uppercase tracking-[0.12em] text-text transition-[border-color,color,box-shadow,opacity] duration-150 ease-out hover:border-[rgba(134,201,255,0.2)] hover:shadow-[0_0_12px_var(--color-primary-glow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 value={composer.currentMode.id}
                 onChange={(event) => composer.setMode(event.target.value)}
                 aria-label="Chat mode"
@@ -312,26 +354,25 @@ export function Composer(props: ComposerProps) {
                   </option>
                 ))}
               </select>
-
-              <button
-                type="button"
-                className="pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[rgb(4,10,18)] shadow-[0_8px_18px_rgba(134,201,255,0.3)] transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-55"
-                aria-label="Send message"
-                onClick={submit}
-                disabled={disabled || isSubmitting}
-              >
-                <svg aria-hidden className="h-4.5 w-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 12h14M13 6l6 6-6 6"
-                  />
-                </svg>
-              </button>
             </div>
+
+            <button
+              type="button"
+              className="btn-primary-neural tactile-press transition-spring inline-flex h-9 w-9 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-55"
+              aria-label="Send message"
+              onClick={submit}
+              disabled={disabled || isSubmitting}
+            >
+              <svg aria-hidden className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 12h14M13 6l6 6-6 6"
+                />
+              </svg>
+            </button>
           </div>
-        </div>
 
         {composer.attachmentError ? (
           <p className="mt-2 text-xs text-[rgb(235,120,120)]">{composer.attachmentError}</p>
@@ -339,12 +380,6 @@ export function Composer(props: ComposerProps) {
 
         {composer.dictationError ? (
           <p className="mt-1 text-xs text-[rgb(235,120,120)]">{composer.dictationError}</p>
-        ) : null}
-
-        {composer.transcriptBuffer ? (
-          <p className="mt-1 text-xs text-text-muted" aria-live="polite">
-            Dictation buffer: {composer.transcriptBuffer}
-          </p>
         ) : null}
       </div>
     </div>
